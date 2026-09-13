@@ -88,11 +88,11 @@
       gap: 1rem;
       align-items: start;
     }
-    .matrix {
+    .matrixwrap {
       padding-left: 0;
       padding-bottom: 0;
     }
-    .matrix .axis {
+    .matrixwrap .axis {
       display: none;
     }
     .gq {

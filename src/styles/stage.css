@@ -36,25 +36,28 @@
    * something to sit on. It shifts with the chapter, which keeps consecutive scenes from
    * sitting on an identical ground.
    */
+  /*
+   * Driven by `--chapter` (0 → 1 across the reel), which the stage sets from the same fraction
+   * that drives the pour and the corridor's pan.
+   *
+   * The inherited version keyed three magic chapter indices — `[data-scene="3"]`, `="4"` —
+   * which is the thing the glass's own comment two rules down warns against: inserting a
+   * chapter silently re-points them at different scenes. A continuous function of progress
+   * has nothing to re-point, and drifts across the whole reel rather than jumping on three
+   * arbitrary cuts.
+   */
   .wash {
     position: absolute;
     inset: -20%;
     z-index: 1;
+    transform: scale(calc(1.04 + var(--chapter, 0) * 0.14))
+      translateY(calc(var(--chapter, 0) * -2.4%));
     transition:
       opacity 1.2s var(--ease-house),
       transform 1.6s var(--ease-house);
     background:
       radial-gradient(58% 42% at 50% 44%, rgba(67, 97, 255, 0.13), transparent 72%),
       radial-gradient(90% 70% at 50% 118%, rgba(12, 18, 46, 0.85), transparent 70%);
-  }
-  .stage[data-scene="0"] .wash {
-    transform: scale(1.05);
-  }
-  .stage[data-scene="3"] .wash {
-    transform: scale(1.16) translateY(-3%);
-  }
-  .stage[data-scene="4"] .wash {
-    transform: scale(1.1) translateY(2%);
   }
 
   /*

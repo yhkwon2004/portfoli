@@ -124,6 +124,16 @@
     text-transform: uppercase;
     color: transparent;
     -webkit-text-stroke: 1px rgba(150, 175, 235, 0.14);
+    /*
+     * Chromatic dispersion, the reference's oil-slick fringing — three offsets of the same
+     * outline in the dispersion hues. Done as text-shadows on one element rather than three
+     * stacked copies: a 30rem word repeated three times per scene, twelve scenes, is a lot of
+     * glyph rasterisation for an effect that is three pixels wide.
+     */
+    text-shadow:
+      -2px 0 0 color-mix(in srgb, var(--color-disp-cyan) 12%, transparent),
+      2px 0 0 color-mix(in srgb, var(--color-disp-magenta) 10%, transparent),
+      0 2px 0 color-mix(in srgb, var(--color-disp-amber) 7%, transparent);
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.06);
     transition:

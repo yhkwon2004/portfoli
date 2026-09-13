@@ -16,11 +16,10 @@
  * chrome look lit by the grid rather than pasted onto it.
  */
 @theme {
-  /* ── ground: four steps of void, each one lift of the same blue-black ── */
+  /* ── ground: three steps of void, each one lift of the same blue-black ── */
   --color-void: #05060d;
   --color-void-2: #0a0c17;
   --color-void-3: #0f1220;
-  --color-void-4: #161a2b;
 
   /* ── the wireframe room ── */
   --color-grid: #1b2447;

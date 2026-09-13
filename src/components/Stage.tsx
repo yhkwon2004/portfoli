@@ -149,6 +149,9 @@ export function Stage() {
         data-scene={machine.chapter}
         data-finale={machine.chapter === LAST}
         data-reversing={machine.reversing}
+        // Progress as a number the stylesheet can compute with — the backdrop wash drifts
+        // across the reel from this rather than from hard-coded chapter indices.
+        style={{ "--chapter": machine.chapter / LAST } as React.CSSProperties}
       >
         <GridRoomCanvas progress={machine.chapter / LAST} animate={animate} />
         <div className="wash" aria-hidden="true" />

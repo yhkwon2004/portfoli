@@ -28,9 +28,16 @@ export function GrainScene({ index, live }: { index: number; live: boolean }) {
           </p>
         </div>
 
-        <div className="matrix">
+        {/*
+          The axes sit in a wrapper, not in the matrix itself. The matrix has to clip — equal
+          `1fr` rows land on fractional pixels and shave the last line off the tallest
+          quadrant — and the rotated 중요도 label extends a few pixels past the matrix's left
+          edge, so clipping there erased it completely.
+        */}
+        <div className="matrixwrap">
           <Txt v={UI.axisWeight} as="span" className="axis ay" />
           <Txt v={UI.axisUrgency} as="span" className="axis ax" />
+          <div className="matrix">
           {GRAINS.map((g, n) => (
             <article
               key={g.name.ko}
@@ -47,6 +54,7 @@ export function GrainScene({ index, live }: { index: number; live: boolean }) {
               <Txt v={g.body} as="p" className="gbody" />
             </article>
           ))}
+          </div>
         </div>
       </div>
     </Scene>

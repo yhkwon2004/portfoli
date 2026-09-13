@@ -58,7 +58,7 @@ export function Hourglass({ progress, animate, onTelemetry }: Props) {
       // The loop is not running, so this is the only chance to report a reading.
       reportRef.current?.(simRef.current.telemetry());
     }
-  }, [progress, animate]);
+  }, [progress, animate, reportRef]);
 
   useRafLoop((dt) => {
     const ctx = ctxRef.current;

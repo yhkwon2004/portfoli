@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import { Txt } from "@/components/Txt";
-import { RAMP, SERIES, SOLO } from "@/data/charts";
+import { RAMP, SERIES, SOLO, SURFACE } from "@/data/charts";
 import {
   gradeDistribution,
   stats,
@@ -47,7 +47,9 @@ export function MetricsScene({ index, live }: { index: number; live: boolean }) 
         </div>
       </div>
 
-      <div className="metrics">
+      {/* The validated surface is applied here, so the colour the palette was checked against
+          is provably the colour the panels are painted. */}
+      <div className="metrics" style={{ "--chart-surface": SURFACE } as React.CSSProperties}>
         <OutputPanel lang={lang} />
         <GradePanel lang={lang} />
         <DepthPanel lang={lang} />

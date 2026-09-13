@@ -33,8 +33,31 @@ const COL_W = (X1 - X0) / COLS;
 /**
  * The steepest step the pile tolerates between neighbouring columns before material slides
  * downhill. This one constant is what makes the pile form a cone instead of a tower.
+ *
+ * 0.675 × the column width is a slope of ~34°, which is the real angle of repose for dry
+ * sand. The inherited value was 1.5 — about 56°, steeper than dry sand can actually stand,
+ * and steep enough to break the pour outright: see VOLUME_FACTOR below.
  */
-const REPOSE = 1.5 * COL_W;
+const REPOSE = 0.675 * COL_W;
+
+/**
+ * How much of the lower bulb a full glass fills.
+ *
+ * This has to leave headroom for the cone. Grains are emitted just under the neck, and a
+ * grain that spawns below the pile's surface is counted as landed on its very first step —
+ * so if the cone's peak ever reaches the neck, the stream stops dead.
+ *
+ * That is exactly what used to happen. With the old 56° repose and a 0.84 factor the peak
+ * passed the neck at around 60% full, and from there to the end of the reel the hourglass
+ * was a still image: no grains in flight, no motion, on five of the twelve chapters. Nothing
+ * reported it because nothing measured it — the bug only surfaced when the telemetry block
+ * started printing FLOW and it read 000 for half the site.
+ *
+ * At 34° and 0.74, the fall distance stays positive all the way to a full glass (~8 units at
+ * the very end), so the stream thins as the glass fills and never stops — which is also what
+ * a real hourglass does.
+ */
+const VOLUME_FACTOR = 0.74;
 
 /**
  * Physics, in units-per-second.
@@ -104,7 +127,7 @@ export class HourglassSim {
     this.target = this.level = Math.max(0, Math.min(1, fraction));
     this.pourBoost = 0;
     this.drops = [];
-    const depth = this.level * SPAN * 0.84;
+    const depth = this.level * SPAN * VOLUME_FACTOR;
     this.heap.fill(depth);
   }
 
@@ -190,7 +213,7 @@ export class HourglassSim {
     this.level += (this.target - this.level) * Math.min(1, dt * 1.7);
     let volume = 0;
     for (let i = 0; i < COLS; i++) volume += this.heap[i] ?? 0;
-    const wanted = this.level * SPAN * COLS * 0.84;
+    const wanted = this.level * SPAN * COLS * VOLUME_FACTOR;
     if (volume > 0.01) {
       const k = 1 + (wanted / volume - 1) * Math.min(1, dt * 2.6);
       for (let i = 0; i < COLS; i++) this.heap[i] = (this.heap[i] ?? 0) * k;

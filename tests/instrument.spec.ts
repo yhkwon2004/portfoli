@@ -49,6 +49,35 @@ test.describe("telemetry", () => {
     expect(late).toBeGreaterThan(early);
   });
 
+  /**
+   * Regression: the pour used to stop dead.
+   *
+   * Grains are emitted just under the neck, and a grain that spawns below the pile's surface
+   * counts as landed on its first step. With the inherited 56° angle of repose the cone's peak
+   * passed the neck at around 60% full — so from the middle of the reel onward the hourglass
+   * was a still image, FLOW pinned at zero, on five of the twelve chapters.
+   *
+   * Nothing caught it because nothing measured it. This is the check that would have.
+   */
+  test("the pour never stalls, at any fill level", async ({ page }) => {
+    await page.goto("/#profile");
+    await settle(page);
+
+    const flow = async () => Number(await page.locator(".telemetry .tel-grid dd").first().textContent());
+    const fill = async () => Number(await page.locator(".telemetry .tel-grid dd").nth(1).textContent());
+
+    // Sample across the reel, including the late chapters where the glass is nearly full.
+    for (const chapter of [1, 4, 7, 9, 10]) {
+      await page.locator(".chapters button").nth(chapter).click();
+      await settle(page);
+      // Let the surge decay so this measures the resting stream, not the post-cut burst.
+      await page.waitForTimeout(1400);
+
+      expect(await flow(), `chapter ${chapter} (fill ${await fill()}) has no grains in flight`)
+        .toBeGreaterThan(0);
+    }
+  });
+
   test("it steps aside on the bookends, where the glass owns the frame", async ({ page }) => {
     await page.goto("/");
     await settle(page);

@@ -47,18 +47,12 @@ export const SERIES = {
 /** Single-series bars. The accent, since there is no second identity to tell apart. */
 export const SOLO = "#4361ff";
 
-/** Chart surface. Must match what the validator was run against. */
-export const SURFACE = "#0f1220";
-
 /**
- * Mark geometry, from the skill's fixed specs. Bars are capped rather than filling their band,
- * so the leftover is air instead of ink.
+ * The chart surface — the colour every ratio above was measured against.
+ *
+ * Exported and applied to the panels as `--chart-surface`, rather than left as a comment
+ * beside a duplicate hex in the stylesheet. The validation record is only worth anything if
+ * the value that was validated is the value that gets painted, and two copies of a hex in two
+ * files is exactly how that stops being true.
  */
-export const MARK = {
-  /** Max bar/column thickness in px. */
-  maxThickness: 24,
-  /** Rounded data-end; the baseline end stays square. */
-  endRadius: 4,
-  /** The surface-coloured gap that separates touching marks. One consistent width. */
-  gap: 2,
-} as const;
+export const SURFACE = "#0f1220";
