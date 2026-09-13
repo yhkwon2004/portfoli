@@ -1,0 +1,246 @@
+@layer components {
+  /* ─────────────────────────────  DOSSIER  ─────────────────────────────
+   * The full record for any item. Opened from a tile, a pick card, a capability chip or
+   * the focus panel; steps through whichever set the item came from.
+   */
+  .dossier {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    background: rgba(4, 4, 6, 0.82);
+    backdrop-filter: blur(14px);
+    opacity: 0;
+    visibility: hidden;
+    /*
+     * `visibility` is stepped, not faded — and the *delay* is what does the work here.
+     *
+     * Transitioning it over the same 0.4s as the opacity (the obvious way to write this)
+     * keeps the dialog computed-`hidden` for the whole fade-in. An element that is
+     * `visibility: hidden` cannot receive focus: `.focus()` on it is specified to do nothing,
+     * silently. So the focus trap would run, find the close button, call focus on it, and
+     * leave focus sitting on the wall tile behind the backdrop — with no error anywhere.
+     *
+     * Closing: flip after the fade (0.4s delay), so the sheet is still painted while it fades.
+     * Opening: flip immediately (no delay), so it is focusable in the same frame.
+     */
+    transition:
+      opacity 0.4s var(--ease-house),
+      visibility 0s linear 0.4s;
+  }
+  .dossier[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.4s var(--ease-house),
+      visibility 0s linear 0s;
+  }
+  .dossier .sheet {
+    position: relative;
+    width: min(1140px, 93vw);
+    max-height: min(86vh, 860px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--color-line);
+    background: linear-gradient(170deg, #101016, #08080b);
+    transform: scale(0.92) translateY(18px);
+    opacity: 0;
+    transition:
+      transform 0.5s var(--ease-house),
+      opacity 0.4s var(--ease-house);
+  }
+  .dossier[data-open="true"] .sheet {
+    transform: none;
+    opacity: 1;
+  }
+  .dossier .sheet::-webkit-scrollbar {
+    width: 5px;
+  }
+  .dossier .sheet::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+  }
+
+  /* Sticky control bar: close, and step the set without leaving the sheet. */
+  .dossier .bar-top {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0.8rem;
+    background: linear-gradient(180deg, rgba(8, 8, 11, 0.94), rgba(8, 8, 11, 0.55));
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .dossier .bar-top button {
+    font-family: var(--font-disp);
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    color: var(--color-sand);
+    text-transform: uppercase;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+  .dossier .bar-top button:hover:not(:disabled) {
+    border-color: var(--color-line);
+  }
+  .dossier .bar-top button:disabled {
+    opacity: 0.28;
+    cursor: not-allowed;
+  }
+  .dossier .dpos {
+    font-family: var(--font-disp);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--color-bone-dim);
+  }
+  .dossier .steps {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* A plate across the top: the cover image with the identity laid over it. */
+  .dossier .hero {
+    position: relative;
+    height: clamp(150px, 26vh, 270px);
+    overflow: hidden;
+    background: var(--color-ink-2);
+  }
+  .dossier .hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.22) brightness(0.72);
+    animation: ken 16s ease-in-out infinite alternate;
+  }
+  .dossier .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, #0b0b10 4%, rgba(11, 11, 16, 0.55) 45%, rgba(11, 11, 16, 0.2));
+  }
+  .dossier .hero .cap {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 1;
+    padding: clamp(16px, 2.6vw, 32px) clamp(20px, 3.4vw, 46px) clamp(12px, 1.6vw, 20px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .dossier .hero .tagrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .dossier .drank {
+    font-family: var(--font-disp);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    font-weight: 600;
+    padding: 0.26rem 0.62rem;
+    color: var(--color-ink);
+    background: var(--rk, var(--color-sand));
+  }
+  .dossier .drank:empty {
+    display: none;
+  }
+  .dossier .dyear {
+    font-family: var(--font-disp);
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    color: var(--color-sand);
+  }
+  .dossier h2 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(1.3rem, 2.9vw, 2.3rem);
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+  }
+
+  .dossier .pad {
+    padding: clamp(18px, 2.8vw, 38px) clamp(20px, 3.4vw, 46px) clamp(24px, 3.4vw, 44px);
+    display: grid;
+    gap: 1.5rem;
+  }
+  .dossier .lede {
+    color: var(--color-bone-dim);
+    line-height: 1.8;
+    font-size: clamp(0.86rem, 1.2vw, 1rem);
+    max-width: 74ch;
+    font-weight: 300;
+  }
+  .dossier .gal {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+    gap: 9px;
+  }
+  .dossier .gal img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 1px solid var(--color-line);
+    filter: sepia(0.2) brightness(0.9);
+    transition:
+      filter 0.35s,
+      transform 0.5s var(--ease-house);
+  }
+  .dossier .gal img:hover {
+    filter: none;
+    transform: scale(1.02);
+  }
+  /* Two columns of field cards on a wide sheet — the details are the substance here. */
+  .dossier .det {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+  }
+  .dossier .det section {
+    background: var(--color-ink-3);
+    padding: 1.1rem 1.15rem;
+  }
+  .dossier .det h3 {
+    font-family: var(--font-myeongjo);
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    color: var(--color-sand);
+    margin-bottom: 0.6rem;
+  }
+  .dossier .det p,
+  .dossier .det li {
+    font-size: 0.84rem;
+    line-height: 1.78;
+    color: var(--color-bone-dim);
+    font-weight: 300;
+  }
+  .dossier .det ul {
+    list-style: none;
+    display: grid;
+    gap: 0.42rem;
+    padding: 0;
+  }
+  .dossier .det li {
+    padding-left: 0.95rem;
+    position: relative;
+  }
+  .dossier .det li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-sand);
+  }
+}

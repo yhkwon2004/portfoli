@@ -1,0 +1,63 @@
+/*
+ * Design tokens, as Tailwind theme variables.
+ *
+ * Declaring them in `@theme` rather than a plain `:root` block is what makes them do
+ * double duty: `--color-sand` becomes the utility `text-sand` / `border-sand` as well as
+ * the variable `var(--color-sand)`, so the authored CSS in cinematic.css and the utility
+ * classes in the components are provably reading the same value. There is no second
+ * palette to drift out of step.
+ */
+@theme {
+  /* ── ground ── */
+  --color-ink: #07070a;
+  --color-ink-2: #0d0d12;
+  --color-ink-3: #0b0b10;
+
+  /* ── the sand palette. everything gold on this site is one of these four. ── */
+  --color-sand: #e0a53f;
+  --color-sand-hi: #ffd489;
+  --color-sand-deep: #8a5f1c;
+  --color-bone: #efe9dd;
+  --color-bone-dim: #a29a8b;
+
+  /* Hairline rule, used for every border on the site. */
+  --color-line: rgba(224, 165, 63, 0.22);
+
+  /* ── SWOT quadrant hues: warm for what is true, cool-red for what is at risk ── */
+  --color-quad-s: #ffd489;
+  --color-quad-w: #c98a6a;
+  --color-quad-o: #9fc98a;
+  --color-quad-t: #c96a6a;
+
+  /*
+   * Typography. Cinzel is a Roman inscriptional face — it carries the numerals, chapter
+   * marks and rubrics. Korean is set in Myeongjo (a serif) to match, because the same copy
+   * in a sans reads as a UI label rather than a title. Sans survives only below ~0.62rem,
+   * where serif detail turns to mush.
+   *
+   * The --font-* values come from next/font in layout.tsx, so the files are self-hosted and
+   * there is no render-blocking request to a third party.
+   */
+  --font-disp: var(--font-cinzel), "Nanum Myeongjo", serif;
+  --font-head: var(--font-cormorant), var(--font-myeongjo), "Noto Serif KR", serif;
+  --font-body: var(--font-noto-kr), "Malgun Gothic", system-ui, -apple-system, sans-serif;
+  --font-myeongjo: var(--font-nanum-myeongjo), serif;
+
+  /*
+   * Easings. --ease decelerates hard and is the house curve; --ease-io is for things that
+   * travel across the frame (the rail, the wipe); --settle overshoots slightly and is only
+   * for objects that physically land — a certificate onto a shelf, a plate being stamped.
+   */
+  --ease-house: cubic-bezier(0.16, 0.84, 0.28, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-settle: cubic-bezier(0.22, 1.24, 0.34, 1);
+}
+
+:root {
+  /*
+   * Letterbox bar height. Not a theme token: it is a layout measure that every scene's
+   * padding and the HUD's offsets are computed from, and it is read by JS-free CSS `calc`
+   * in a dozen places — a utility class cannot express that.
+   */
+  --bar: clamp(22px, 4.2vh, 54px);
+}

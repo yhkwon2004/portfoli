@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # Next 16 removed `next lint`, so the build does not lint — the two steps above are not
+      # redundant with this one.
+      - name: Build
+        run: npm run build
+
+      # Reports untranslated copy and the unreviewed 분석 screen, and recounts every figure the
+      # prose quotes. Non-blocking by design: these are facts for the author to act on, not
+      # reasons to fail a build. A figure that contradicts the data *does* fail (exit 1).
+      - name: Content audit
+        run: npm run audit
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Test
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

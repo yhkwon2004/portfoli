@@ -1,0 +1,28 @@
+/*
+ * The stylesheet, in cascade order.
+ *
+ * Tailwind first (it declares `@layer theme, base, components, utilities`), then the tokens
+ * into `@theme`, then this site's own CSS into `@layer components` — which sits *before*
+ * `utilities`, so a Tailwind utility in a component can still override a rule here. That
+ * ordering is deliberate: the authored CSS is the system, and utilities are the escape hatch.
+ *
+ * Why so much of this is hand-written rather than utilities: nearly all of it is keyframe
+ * choreography driven by per-element custom properties (`--i` for the stagger, `--gs` for
+ * grain weight, `--rk` for an award's grade colour, `--w` for a bar's length). A stagger of
+ * `calc(0.34s + var(--i) * 0.075s)` has no utility form, and expressing the hourglass or the
+ * award-shelf drop as arbitrary-value classes would be strictly less readable than the CSS
+ * it compiles to. Utilities are used where they are genuinely better — one-off spacing and
+ * layout inside components.
+ */
+@import "tailwindcss";
+
+@import "../styles/tokens.css";
+@import "../styles/base.css";
+@import "../styles/stage.css";
+@import "../styles/scene.css";
+@import "../styles/walls.css";
+@import "../styles/panels.css";
+@import "../styles/charts.css";
+@import "../styles/hud.css";
+@import "../styles/dossier.css";
+@import "../styles/responsive.css";

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="HOURGLASS">
+  <!--
+    The site's vessel, squared off for an icon. Same silhouette as the SVG in
+    src/components/Hourglass.tsx, scaled from its 200x300 viewBox into 64x64 so the mark is
+    recognisably the same object at 16px.
+  -->
+  <rect width="64" height="64" fill="#07070a"/>
+  <defs>
+    <linearGradient id="topSand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffdb9a"/>
+      <stop offset="100%" stop-color="#9c6116"/>
+    </linearGradient>
+    <linearGradient id="botSand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd489"/>
+      <stop offset="100%" stop-color="#8f570f"/>
+    </linearGradient>
+  </defs>
+  <!-- upper bulb, still full -->
+  <path d="M16 14 H48 L34 32 H30 Z" fill="url(#topSand)"/>
+  <!-- the pile below -->
+  <path d="M30 32 H34 L46 50 H18 Z" fill="url(#botSand)"/>
+  <!-- the vessel outline and caps -->
+  <path d="M16 14 H48 L34 32 L48 50 H16 L30 32 Z" fill="none" stroke="#e0a53f" stroke-width="2.4" stroke-linejoin="round"/>
+  <line x1="13" y1="13" x2="51" y2="13" stroke="#e0a53f" stroke-width="4" stroke-linecap="round"/>
+  <line x1="13" y1="51" x2="51" y2="51" stroke="#e0a53f" stroke-width="4" stroke-linecap="round"/>
+</svg>

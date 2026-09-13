@@ -1,0 +1,151 @@
+@layer components {
+  /* ─────────────────────────────  HUD  ─────────────────────────────
+   * The frame's instrumentation. The wrapper is transparent to the pointer so it never
+   * steals a click from a tile underneath; each control opts back in.
+   */
+  .hud {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+  }
+  .hud > * {
+    pointer-events: auto;
+  }
+  .chapters button,
+  .topbar,
+  .footbar,
+  .lang button {
+    font-family: var(--font-disp);
+    font-weight: 500;
+  }
+
+  .topbar {
+    position: absolute;
+    left: clamp(14px, 2.4vw, 34px);
+    right: clamp(14px, 2.4vw, 34px);
+    top: calc(var(--bar) + 1.1vh);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.58rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-bone-dim);
+  }
+  .topbar .rec {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .topbar .rec i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #e0533f;
+    animation: pulse 1.6s infinite;
+  }
+  .lang {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .lang button {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    opacity: 0.4;
+    transition:
+      opacity 0.3s,
+      color 0.3s;
+  }
+  .lang button[aria-pressed="true"] {
+    opacity: 1;
+    color: var(--color-sand);
+  }
+
+  .chapters {
+    position: absolute;
+    right: clamp(14px, 2.4vw, 34px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    align-items: flex-end;
+  }
+  .chapters button {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    color: var(--color-bone-dim);
+    text-transform: uppercase;
+    opacity: 0.45;
+    transition:
+      opacity 0.35s,
+      color 0.35s;
+  }
+  .chapters button .tick {
+    width: 14px;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.35s var(--ease-house);
+  }
+  .chapters button:hover {
+    opacity: 0.9;
+  }
+  .chapters button[aria-current="true"] {
+    opacity: 1;
+    color: var(--color-sand);
+  }
+  .chapters button[aria-current="true"] .tick {
+    width: 34px;
+  }
+
+  .footbar {
+    position: absolute;
+    left: clamp(14px, 2.4vw, 34px);
+    right: clamp(14px, 2.4vw, 34px);
+    bottom: calc(var(--bar) + 1.1vh);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-bone-dim);
+  }
+  .timecode {
+    font-family: var(--font-disp);
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    color: var(--color-sand);
+  }
+  .nav-btns {
+    display: flex;
+    gap: 0.55rem;
+  }
+  .nav-btns button {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--color-line);
+    display: grid;
+    place-items: center;
+    transition:
+      border-color 0.3s,
+      color 0.3s,
+      background 0.3s;
+  }
+  .nav-btns button:hover:not(:disabled) {
+    border-color: var(--color-sand);
+    color: var(--color-sand);
+    background: rgba(224, 165, 63, 0.07);
+  }
+  .nav-btns button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+}
