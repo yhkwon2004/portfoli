@@ -1,7 +1,7 @@
 @layer components {
   /* ─────────────────────────────  HUD  ─────────────────────────────
-   * The frame's instrumentation. The wrapper is transparent to the pointer so it never
-   * steals a click from a tile underneath; each control opts back in.
+   * The frame's instrumentation. The wrapper is transparent to the pointer so it never steals
+   * a click from a tile underneath; each control opts back in.
    */
   .hud {
     position: absolute;
@@ -16,136 +16,236 @@
   .topbar,
   .footbar,
   .lang button {
-    font-family: var(--font-disp);
-    font-weight: 500;
+    font-family: var(--font-mono);
+    font-weight: 400;
   }
 
   .topbar {
     position: absolute;
     left: clamp(14px, 2.4vw, 34px);
     right: clamp(14px, 2.4vw, 34px);
-    top: calc(var(--bar) + 1.1vh);
+    top: calc(var(--bar) + 1.2vh);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.58rem;
-    letter-spacing: 0.28em;
+    font-size: 0.6rem;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: var(--color-bone-dim);
+    color: var(--color-steel);
   }
   .topbar .rec {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
+    color: var(--color-ice);
   }
-  .topbar .rec i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #e0533f;
-    animation: pulse 1.6s infinite;
+  /* The wordmark's own triangle, drawn rather than set — the A of ALCHE's mark, our Δ. */
+  .topbar .mark {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 9px solid var(--color-chrome);
   }
   .lang {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.45rem;
     align-items: center;
   }
   .lang button {
-    font-size: 0.58rem;
-    letter-spacing: 0.2em;
-    opacity: 0.4;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    opacity: 0.42;
     transition:
       opacity 0.3s,
       color 0.3s;
   }
   .lang button[aria-pressed="true"] {
     opacity: 1;
-    color: var(--color-sand);
+    color: var(--color-electric);
   }
 
+  /*
+   * The chapter rail, on the left — the reference's section rail, where a vertical list of
+   * ticks doubles as the progress readout. It moved from the right because the telemetry block
+   * now occupies that side, under the docked glass.
+   */
   .chapters {
     position: absolute;
-    right: clamp(14px, 2.4vw, 34px);
+    left: clamp(14px, 2.4vw, 34px);
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    align-items: flex-end;
+    gap: 0.72rem;
+    align-items: flex-start;
   }
   .chapters button {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.58rem;
-    letter-spacing: 0.22em;
-    color: var(--color-bone-dim);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--color-steel);
     text-transform: uppercase;
-    opacity: 0.45;
+    opacity: 0.4;
     transition:
       opacity 0.35s,
       color 0.35s;
   }
   .chapters button .tick {
-    width: 14px;
+    width: 12px;
     height: 1px;
     background: currentColor;
     transition: width 0.35s var(--ease-house);
   }
   .chapters button:hover {
-    opacity: 0.9;
+    opacity: 0.85;
   }
   .chapters button[aria-current="true"] {
     opacity: 1;
-    color: var(--color-sand);
+    color: var(--color-electric);
   }
   .chapters button[aria-current="true"] .tick {
-    width: 34px;
+    width: 30px;
   }
 
   .footbar {
     position: absolute;
     left: clamp(14px, 2.4vw, 34px);
     right: clamp(14px, 2.4vw, 34px);
-    bottom: calc(var(--bar) + 1.1vh);
+    bottom: calc(var(--bar) + 1.2vh);
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     gap: 1rem;
-    font-size: 0.58rem;
-    letter-spacing: 0.24em;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-bone-dim);
+    color: var(--color-steel);
   }
   .timecode {
-    font-family: var(--font-disp);
+    font-family: var(--font-mono);
     font-weight: 500;
-    font-size: 1rem;
-    letter-spacing: 0.2em;
-    color: var(--color-sand);
+    font-size: 0.86rem;
+    letter-spacing: 0.16em;
+    color: var(--color-ice);
+    font-variant-numeric: tabular-nums;
   }
   .nav-btns {
     display: flex;
-    gap: 0.55rem;
+    gap: 0.5rem;
   }
   .nav-btns button {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     border: 1px solid var(--color-line);
     display: grid;
     place-items: center;
+    font-family: var(--font-mono);
     transition:
       border-color 0.3s,
       color 0.3s,
       background 0.3s;
   }
   .nav-btns button:hover:not(:disabled) {
-    border-color: var(--color-sand);
-    color: var(--color-sand);
-    background: rgba(224, 165, 63, 0.07);
+    border-color: var(--color-electric);
+    color: var(--color-electric);
+    background: rgba(67, 97, 255, 0.08);
   }
   .nav-btns button:disabled {
-    opacity: 0.25;
+    opacity: 0.22;
     cursor: not-allowed;
+  }
+
+  /* ─────────────────────────  TELEMETRY  ─────────────────────────
+   * The instrument block, under the docked glass on the right. Every figure is a real reading
+   * off the pour — see src/components/Telemetry.tsx.
+   */
+  .telemetry {
+    position: absolute;
+    z-index: 5;
+    right: clamp(14px, 2.4vw, 34px);
+    top: calc(var(--bar) + 20vh);
+    width: 152px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    pointer-events: auto;
+    /* Below the hero glass on the bookend scenes, where the glass owns that side of the frame. */
+    opacity: 1;
+    transition: opacity 0.7s var(--ease-house);
+  }
+  .stage[data-scene="0"] .telemetry,
+  .stage[data-finale="true"] .telemetry {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tel-head {
+    font-size: 0.52rem;
+    letter-spacing: 0.26em;
+    color: var(--color-electric);
+    text-transform: uppercase;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .tel-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.14rem 0.6rem;
+    margin: 0;
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+  }
+  .tel-grid dt {
+    color: var(--color-chrome-4);
+  }
+  .tel-grid dd {
+    margin: 0;
+    text-align: right;
+    color: var(--color-chrome-2);
+    /* Tabular: these are a column of numbers that must not shuffle as they change. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tel-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 0.15rem;
+  }
+  .tel-bar {
+    display: block;
+    height: 2px;
+    background: rgba(67, 97, 255, 0.14);
+    overflow: hidden;
+  }
+  .tel-bar i {
+    display: block;
+    height: 100%;
+    background: var(--color-electric);
+    transform-origin: left;
+    /* Matches the 8 Hz sample rate, so the bars glide between readings instead of stepping. */
+    transition: transform 0.14s linear;
+  }
+
+  .tel-reset {
+    align-self: flex-start;
+    margin-top: 0.2rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-chrome-4);
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.3s,
+      border-color 0.3s;
+  }
+  .tel-reset:hover {
+    color: var(--color-electric);
+    border-color: var(--color-line-hot);
   }
 }

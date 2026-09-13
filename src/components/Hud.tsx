@@ -41,7 +41,8 @@ export function Hud({ chapter, onGo, onLang, chaptersId }: Props) {
     <div className="hud">
       <div className="topbar">
         <div className="rec">
-          <i aria-hidden="true" />
+          {/* The wordmark's triangle — drawn, not set, so it needs no glyph or asset. */}
+          <i className="mark" aria-hidden="true" />
           <span>{UI.rec}</span>
         </div>
         <div className="lang">

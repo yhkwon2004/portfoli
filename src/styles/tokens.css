@@ -1,52 +1,85 @@
 /*
  * Design tokens, as Tailwind theme variables.
  *
- * Declaring them in `@theme` rather than a plain `:root` block is what makes them do
- * double duty: `--color-sand` becomes the utility `text-sand` / `border-sand` as well as
- * the variable `var(--color-sand)`, so the authored CSS in cinematic.css and the utility
- * classes in the components are provably reading the same value. There is no second
- * palette to drift out of step.
+ * Declaring them in `@theme` rather than a plain `:root` block makes them do double duty:
+ * `--color-electric` becomes the utility `text-electric` as well as the variable
+ * `var(--color-electric)`, so the authored CSS and the utility classes are provably reading
+ * the same value. There is no second palette to drift out of step.
+ *
+ * ── the palette ──────────────────────────────────────────────────────────────────────
+ * Chrome and electric blue on a blue-shifted void, after ALCHE (alche.inc): a near-black
+ * that is never neutral, a navy wireframe room behind everything, and light that arrives as
+ * polished metal rather than as colour.
+ *
+ * The greys are all blue-shifted on purpose. A neutral grey next to the electric blue reads
+ * as dirty; carrying a few degrees of the same hue through every step is what makes the
+ * chrome look lit by the grid rather than pasted onto it.
  */
 @theme {
-  /* ── ground ── */
-  --color-ink: #07070a;
-  --color-ink-2: #0d0d12;
-  --color-ink-3: #0b0b10;
+  /* ── ground: four steps of void, each one lift of the same blue-black ── */
+  --color-void: #05060d;
+  --color-void-2: #0a0c17;
+  --color-void-3: #0f1220;
+  --color-void-4: #161a2b;
 
-  /* ── the sand palette. everything gold on this site is one of these four. ── */
-  --color-sand: #e0a53f;
-  --color-sand-hi: #ffd489;
-  --color-sand-deep: #8a5f1c;
-  --color-bone: #efe9dd;
-  --color-bone-dim: #a29a8b;
+  /* ── the wireframe room ── */
+  --color-grid: #1b2447;
+  --color-grid-hot: #2d43a8;
 
-  /* Hairline rule, used for every border on the site. */
-  --color-line: rgba(224, 165, 63, 0.22);
-
-  /* ── SWOT quadrant hues: warm for what is true, cool-red for what is at risk ── */
-  --color-quad-s: #ffd489;
-  --color-quad-w: #c98a6a;
-  --color-quad-o: #9fc98a;
-  --color-quad-t: #c96a6a;
+  /* ── accent. One blue, used for state and emphasis and nothing else. ── */
+  --color-electric: #4361ff;
+  --color-electric-dim: #2a3ba8;
 
   /*
-   * Typography. Cinzel is a Roman inscriptional face — it carries the numerals, chapter
-   * marks and rubrics. Korean is set in Myeongjo (a serif) to match, because the same copy
-   * in a sans reads as a UI label rather than a title. Sans survives only below ~0.62rem,
-   * where serif detail turns to mush.
-   *
-   * The --font-* values come from next/font in layout.tsx, so the files are self-hosted and
-   * there is no render-blocking request to a third party.
+   * Chrome ramp — the material the type and the sand are made of. Light to dark, so a
+   * gradient across all four reads as a curved metal surface catching one light source.
    */
-  --font-disp: var(--font-cinzel), "Nanum Myeongjo", serif;
-  --font-head: var(--font-cormorant), var(--font-myeongjo), "Noto Serif KR", serif;
-  --font-body: var(--font-noto-kr), "Malgun Gothic", system-ui, -apple-system, sans-serif;
-  --font-myeongjo: var(--font-nanum-myeongjo), serif;
+  --color-chrome: #ffffff;
+  --color-chrome-2: #d7dde8;
+  --color-chrome-3: #98a2b6;
+  --color-chrome-4: #5d6678;
+
+  /* Body text and its dimmer companion. */
+  --color-ice: #e8ecf4;
+  --color-steel: #8d97ab;
+
+  /* Hairline rule. Every border on the site is this. */
+  --color-line: rgba(155, 175, 225, 0.18);
+  --color-line-hot: rgba(67, 97, 255, 0.45);
 
   /*
-   * Easings. --ease decelerates hard and is the house curve; --ease-io is for things that
-   * travel across the frame (the rail, the wipe); --settle overshoots slightly and is only
-   * for objects that physically land — a certificate onto a shelf, a plate being stamped.
+   * Dispersion — the oil-slick fringing ALCHE puts on its chrome. Used only as accents on
+   * moving edges, never as fills: three saturated hues across a dark UI would fight
+   * everything else on screen.
+   */
+  --color-disp-cyan: #22d3ee;
+  --color-disp-magenta: #e879f9;
+  --color-disp-amber: #fbbf24;
+
+  /* ── SWOT quadrant hues: the one place the UI carries four separable colours ── */
+  --color-quad-s: #7dd3fc;
+  --color-quad-w: #fbbf24;
+  --color-quad-o: #86efac;
+  --color-quad-t: #fb7185;
+
+  /*
+   * Typography.
+   *
+   * Mono is the instrument voice — nav, labels, telemetry, tags, every number. Grotesque is
+   * the headline voice, set tight and heavy. Korean takes a gothic, not a 명조: the previous
+   * serif pairing belonged to the film-plate concept, and against chrome and a wireframe grid
+   * a serif reads as a different site.
+   */
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-grot: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-kr: var(--font-noto-kr), var(--font-inter), "Malgun Gothic", sans-serif;
+  /* Body copy is Korean far more often than not, so the Korean face leads the stack. */
+  --font-body: var(--font-noto-kr), var(--font-inter), system-ui, sans-serif;
+
+  /*
+   * Easings. --ease-house decelerates hard and is the default; --ease-io is for things that
+   * travel across the frame; --ease-settle overshoots slightly and is only for objects that
+   * physically land.
    */
   --ease-house: cubic-bezier(0.16, 0.84, 0.28, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
@@ -56,8 +89,7 @@
 :root {
   /*
    * Letterbox bar height. Not a theme token: it is a layout measure that every scene's
-   * padding and the HUD's offsets are computed from, and it is read by JS-free CSS `calc`
-   * in a dozen places — a utility class cannot express that.
+   * padding and the HUD's offsets compute from, read by JS-free CSS `calc` in a dozen places.
    */
-  --bar: clamp(22px, 4.2vh, 54px);
+  --bar: clamp(18px, 3.4vh, 44px);
 }

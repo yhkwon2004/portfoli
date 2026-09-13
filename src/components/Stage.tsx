@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { AmbientSandCanvas } from "@/components/AmbientSandCanvas";
+import { GridRoomCanvas } from "@/components/GridRoomCanvas";
 import { Dossier } from "@/components/Dossier";
 import { Hourglass } from "@/components/Hourglass";
 import { Hud } from "@/components/Hud";
+import { TelemetryBlock } from "@/components/Telemetry";
 import { LangProvider } from "@/components/LangProvider";
 import { Txt } from "@/components/Txt";
 import { AimScene } from "@/components/scenes/AimScene";
@@ -26,6 +28,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useSceneMachine } from "@/hooks/useSceneMachine";
 import { DEFAULT_LANG, text } from "@/lib/i18n";
 import { SETS, awards, itemById, projects } from "@/lib/select";
+import type { Telemetry } from "@/lib/sim/hourglass";
 import type { Item, Lang } from "@/lib/types";
 
 /**
@@ -45,6 +48,9 @@ export function Stage() {
   const [lang, setLang] = useState<Lang>(DEFAULT_LANG);
   const [openId, setOpenId] = useState<string | null>(null);
   const [booted, setBooted] = useState(false);
+  const [reading, setReading] = useState<Telemetry | null>(null);
+  /** Bumped to make the hourglass re-aim at the current chapter and surge again. */
+  const [flowNonce, setFlowNonce] = useState(0);
   const chaptersId = useId();
 
   const reduced = useReducedMotion();
@@ -144,9 +150,17 @@ export function Stage() {
         data-finale={machine.chapter === LAST}
         data-reversing={machine.reversing}
       >
+        <GridRoomCanvas progress={machine.chapter / LAST} animate={animate} />
         <div className="wash" aria-hidden="true" />
         <AmbientSandCanvas cut={machine.cut} animate={animate} />
-        <Hourglass progress={machine.chapter / LAST} animate={animate} />
+        <Hourglass
+          // `flowNonce` is in the key so the reset button rebuilds the simulation, which is
+          // the honest way to "reset the flow" — it re-runs the pour rather than faking it.
+          key={flowNonce}
+          progress={machine.chapter / LAST}
+          animate={animate}
+          onTelemetry={setReading}
+        />
 
         <div className="scenes">
           <TitleScene index={chapterAt("title")} live={isLive("title")} />
@@ -184,6 +198,7 @@ export function Stage() {
         </div>
 
         <Hud chapter={machine.chapter} onGo={machine.go} onLang={setLang} chaptersId={chaptersId} />
+        <TelemetryBlock reading={reading} onReset={() => setFlowNonce((n) => n + 1)} />
 
         {/*
           A chapter change is a visual cut with no text to announce it. This is the only thing

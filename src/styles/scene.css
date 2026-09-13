@@ -1,7 +1,7 @@
 @layer components {
   /* ─────────────────────────────  SCENES  ─────────────────────────────
-   * One fixed row and column. Without `1fr` the tallest scene stretches the row and —
-   * through `height: 100%` — drags every other scene off-screen with it.
+   * One fixed row and column. Without `1fr` the tallest scene stretches the row and — through
+   * `height: 100%` — drags every other scene off-screen with it.
    */
   .scenes {
     position: absolute;
@@ -19,66 +19,75 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-    padding: calc(var(--bar) + 3.2vh) clamp(20px, 5vw, 84px) calc(var(--bar) + 4.4vh);
+    padding: calc(var(--bar) + 3.4vh) clamp(20px, 5vw, 84px) calc(var(--bar) + 4.4vh);
     display: flex;
     flex-direction: column;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    /* Same stepped-visibility pattern as the dossier — see the comment there. A scene whose
-       visibility lagged its `data-live` flag would have un-focusable buttons for half a
-       second after every cut. */
+    /*
+     * Stepped visibility with a delay on the way out. Transitioning it over the same duration
+     * as the opacity keeps the scene computed-`hidden` for the whole fade, and an element that
+     * is `visibility: hidden` cannot take focus — so a keyboard user would find the live
+     * scene's controls unreachable for half a second after every cut.
+     */
     transition:
       opacity 0.5s var(--ease-house),
       visibility 0s linear 0.5s,
       transform 0.9s var(--ease-house);
-    transform: scale(1.035);
+    transform: scale(1.02);
   }
-  /* The delay lets the outgoing scene clear before the incoming one starts rising — on
-     opacity and transform only; visibility has to flip at once so the scene is focusable. */
   .scene[data-live="true"] {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     transform: none;
+    /* The delay lets the outgoing scene clear before the incoming one rises — on opacity and
+       transform only; visibility has to flip at once so the scene is focusable. */
     transition:
       opacity 0.5s var(--ease-house) 0.28s,
       visibility 0s linear 0s,
       transform 0.9s var(--ease-house) 0.28s;
   }
 
-  /* The middle scenes keep a right gutter clear for the docked glass and the chapter rail. */
+  /* The middle scenes keep gutters clear for the chapter rail (left) and telemetry (right). */
   .scene[data-gutter="true"] {
-    padding-right: clamp(122px, 13vw, 205px);
+    padding-left: clamp(96px, 10vw, 150px);
+    padding-right: clamp(120px, 12vw, 196px);
   }
-  /* Scenes that fill the frame start below the chapter slate rather than centred on it. */
+  /* Scenes that fill the frame start below the slate rather than centred on it. */
   .scene[data-top="true"] {
     justify-content: flex-start;
-    padding-top: calc(var(--bar) + 8.6vh);
+    padding-top: calc(var(--bar) + 8.2vh);
   }
 
-  /* ── chapter slate: the film card that stamps in on every scene ── */
+  /* ── chapter slate: the frame marker that stamps in on every scene ── */
   .slate {
     position: absolute;
     left: clamp(20px, 5vw, 84px);
-    top: calc(var(--bar) + 3.2vh);
+    top: calc(var(--bar) + 3.4vh);
     display: flex;
-    align-items: baseline;
-    gap: 0.85rem;
-    letter-spacing: 0.34em;
-    font-size: 0.66rem;
-    color: var(--color-sand);
+    align-items: center;
+    gap: 0.8rem;
+    letter-spacing: 0.26em;
+    font-size: 0.58rem;
+    color: var(--color-steel);
     text-transform: uppercase;
-    font-family: var(--font-myeongjo);
+    font-family: var(--font-mono);
+    z-index: 2;
+  }
+  .scene[data-gutter="true"] .slate {
+    left: clamp(96px, 10vw, 150px);
   }
   .slate b {
-    font-family: var(--font-disp);
+    font-family: var(--font-mono);
     font-weight: 500;
-    font-size: 1.55rem;
+    font-size: 0.86rem;
     letter-spacing: 0.1em;
     line-height: 1;
-    text-shadow: 0 0 22px rgba(224, 165, 63, 0.4);
+    color: var(--color-electric);
+    font-variant-numeric: tabular-nums;
   }
   .slate .rule {
     width: 0;
@@ -87,17 +96,54 @@
     transition: width 0.9s var(--ease-house) 0.45s;
   }
   .scene[data-live="true"] .slate .rule {
-    width: clamp(60px, 14vw, 220px);
+    width: clamp(48px, 11vw, 180px);
   }
 
   /*
-   * The house entrance. Anything marked `.rise` comes up out of blur on a stagger keyed by
-   * its own `--i`, so a scene assembles in a readable order instead of appearing at once.
+   * ── the ghost ──
+   * The chapter's English name, set enormous and bled off both edges, sitting behind the
+   * content as an outline. It is the reference's most recognisable move, and it earns its
+   * place: the scenes are mostly small text on a dark ground, and a single object at this
+   * scale is what gives the frame a foreground and a background.
+   *
+   * Outline rather than fill — a filled word this large would compete with the content instead
+   * of sitting behind it. `aria-hidden` at the call site: it restates the slate.
+   */
+  .ghost {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    font-family: var(--font-grot);
+    font-weight: 900;
+    font-size: clamp(9rem, 28vw, 30rem);
+    line-height: 0.78;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(150, 175, 235, 0.14);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.06);
+    transition:
+      opacity 1.1s var(--ease-house),
+      transform 1.4s var(--ease-house);
+  }
+  .scene[data-live="true"] .ghost {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    transition-delay: 0.3s;
+  }
+
+  /*
+   * The house entrance. Anything marked `.rise` comes up out of blur on a stagger keyed by its
+   * own `--i`, so a scene assembles in a readable order instead of appearing at once.
    */
   .rise {
     opacity: 0;
-    transform: translateY(22px);
-    filter: blur(9px);
+    transform: translateY(18px);
+    filter: blur(7px);
   }
   .scene[data-live="true"] .rise {
     opacity: 1;
@@ -112,75 +158,95 @@
 
   /* ─────────────────────────  SHARED TYPOGRAPHY  ───────────────────────── */
   .name {
-    font-family: var(--font-head);
-    font-weight: 400;
-    font-size: clamp(3.4rem, 11vw, 9.4rem);
-    line-height: 0.9;
-    letter-spacing: 0.01em;
-    text-shadow: 0 0 60px rgba(224, 165, 63, 0.22);
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-grot);
+    font-weight: 900;
+    font-size: clamp(3.2rem, 10.5vw, 9rem);
+    line-height: 0.88;
+    letter-spacing: -0.045em;
+    /* Chrome: a vertical sweep from specular white through steel, clipped to the glyphs. */
+    background: linear-gradient(
+      176deg,
+      #ffffff 4%,
+      #dee5f2 26%,
+      #8b95aa 50%,
+      #f4f7fd 62%,
+      #6f7a92 88%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 70px rgba(120, 155, 255, 0.22);
   }
-  /*
-   * Hangul at display size needs the heavier Myeongjo and a touch more tracking — Cormorant
-   * has no hangul at all, so the name would otherwise fall through to a system serif.
-   *
-   * `:lang()` rather than `[lang]`: it matches on the *inherited* language, so this fires
-   * from `<html lang="ko">` without every title element having to restate it — and it still
-   * fires on a `lang="ko"` span when English falls back to Korean (see src/lib/i18n.ts).
-   */
   .name:lang(ko) {
-    font-family: var(--font-myeongjo);
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    font-size: clamp(2.65rem, 8.6vw, 7.3rem);
+    font-family: var(--font-kr);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.7rem, 8.6vw, 7.2rem);
   }
 
   .tagline {
-    font-size: clamp(0.92rem, 1.5vw, 1.24rem);
-    color: var(--color-bone-dim);
-    max-width: 44ch;
-    line-height: 1.75;
+    font-size: clamp(0.88rem, 1.4vw, 1.14rem);
+    color: var(--color-steel);
+    max-width: 46ch;
+    line-height: 1.8;
     font-weight: 300;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
   }
   .tagline b {
-    color: var(--color-sand);
+    color: var(--color-ice);
     font-weight: 600;
   }
 
+  /* Labels are machine voice: mono, spaced, small, uppercase. */
   .eyebrow {
-    font-family: var(--font-disp);
-    font-size: 0.7rem;
-    letter-spacing: 0.46em;
-    color: var(--color-sand);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    color: var(--color-electric);
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 400;
   }
 
+  /* Tags are lowercase mono with an underscore feel, after the reference's chips. */
   .tag {
-    font-family: var(--font-disp);
-    font-size: 0.64rem;
-    letter-spacing: 0.2em;
-    padding: 0.44rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.6rem;
     border: 1px solid var(--color-line);
-    border-radius: 99px;
-    color: var(--color-sand);
-    text-transform: uppercase;
+    color: var(--color-chrome-3);
     white-space: nowrap;
-    font-weight: 500;
+    font-weight: 400;
+    transition:
+      border-color 0.3s,
+      color 0.3s;
+  }
+  .tag:hover {
+    border-color: var(--color-line-hot);
+    color: var(--color-ice);
   }
 
   .creed {
-    font-family: var(--font-head);
-    font-size: clamp(1.05rem, 2.1vw, 1.7rem);
-    line-height: 1.4;
-    color: var(--color-sand);
-    letter-spacing: 0.01em;
+    font-family: var(--font-grot);
+    font-size: clamp(1.1rem, 2.2vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.36;
+    color: var(--color-ice);
+    letter-spacing: -0.02em;
     /* The copy carries its own line breaks; honouring them keeps the couplet a couplet. */
     white-space: pre-line;
   }
+  .creed:lang(ko) {
+    font-family: var(--font-kr);
+  }
 
   /* ── 01 title · 12 credits ── */
+  /* The rail runs down the left edge on every scene, so even the ungutted bookends have to
+     start inside it — otherwise the name sits a few pixels from the chapter list. */
   .s-bookend {
+    padding-left: clamp(96px, 10vw, 150px);
     display: grid;
     grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
     align-items: center;
@@ -188,9 +254,11 @@
     justify-content: normal;
   }
   .s-bookend .col-l {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 1.1rem;
+    gap: 1.05rem;
     align-items: flex-start;
   }
   .s-title .name {
@@ -200,17 +268,17 @@
     margin-top: 1.4vh;
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    color: var(--color-bone-dim);
+    gap: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--color-steel);
     text-transform: uppercase;
   }
   .begin .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-sand);
+    width: 5px;
+    height: 5px;
+    background: var(--color-electric);
     animation: pulse 1.9s var(--ease-house) infinite;
   }
   @keyframes pulse {
@@ -221,47 +289,51 @@
     }
     50% {
       opacity: 1;
-      transform: scale(1.25);
+      transform: scale(1.3);
     }
   }
 
   .quote {
-    font-family: var(--font-head);
-    font-size: clamp(1.3rem, 3.3vw, 2.7rem);
-    font-weight: 400;
-    line-height: 1.48;
+    font-family: var(--font-grot);
+    font-size: clamp(1.3rem, 3.1vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.4;
     max-width: 20ch;
-    letter-spacing: 0.01em;
-    text-shadow: 0 0 50px rgba(224, 165, 63, 0.2);
+    letter-spacing: -0.03em;
+    color: var(--color-ice);
+  }
+  .quote:lang(ko) {
+    font-family: var(--font-kr);
   }
   .quote .mark {
-    color: var(--color-sand);
-    font-size: 1.15em;
+    color: var(--color-electric);
+    font-size: 1.1em;
     line-height: 0;
   }
   .links {
     display: flex;
-    gap: 1.6rem;
+    gap: 1.4rem;
     flex-wrap: wrap;
     margin-top: 0.6rem;
   }
   .links a,
   .links button {
-    font-size: 0.68rem;
-    letter-spacing: 0.28em;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-bone-dim);
+    color: var(--color-steel);
     text-decoration: none;
     border-bottom: 1px solid var(--color-line);
-    padding-bottom: 0.3rem;
+    padding-bottom: 0.28rem;
     transition:
       color 0.3s,
       border-color 0.3s;
   }
   .links a:hover,
   .links button:hover {
-    color: var(--color-sand);
-    border-color: var(--color-sand);
+    color: var(--color-electric);
+    border-color: var(--color-line-hot);
   }
 
   /* ── 02 profile ── */
@@ -271,25 +343,31 @@
     grid-template-rows: auto auto;
     align-items: start;
     align-content: center;
-    gap: clamp(20px, 3.4vh, 40px) clamp(24px, 4.5vw, 72px);
+    gap: clamp(20px, 3.2vh, 38px) clamp(24px, 4.5vw, 72px);
   }
   .s-profile .col-l,
   .s-profile .col-r {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 1.05rem;
+    gap: 1rem;
   }
   .who {
-    font-family: var(--font-head);
+    font-family: var(--font-grot);
     font-weight: 800;
-    font-size: clamp(1.7rem, 3.6vw, 3rem);
-    line-height: 1.08;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.6rem, 3.4vw, 2.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    color: var(--color-ice);
+  }
+  .who:lang(ko) {
+    font-family: var(--font-kr);
   }
   .tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
   .stat-row {
     display: flex;
@@ -298,20 +376,21 @@
   }
   .stat b {
     display: block;
-    font-family: var(--font-disp);
-    font-weight: 400;
-    font-size: clamp(2.2rem, 4.6vw, 3.5rem);
+    font-family: var(--font-mono);
+    font-weight: 300;
+    font-size: clamp(2rem, 4.2vw, 3.2rem);
     line-height: 1;
-    color: var(--color-sand);
-    letter-spacing: 0.04em;
-    text-shadow: 0 0 34px rgba(224, 165, 63, 0.3);
+    color: var(--color-chrome);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
   }
   .stat span {
-    font-size: 0.62rem;
-    letter-spacing: 0.26em;
-    color: var(--color-bone-dim);
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.2em;
+    color: var(--color-chrome-4);
     text-transform: uppercase;
-    font-weight: 300;
+    font-weight: 400;
   }
 
   /* ── 04 chronicle: a rail that draws itself, with nodes lighting as it passes ── */
@@ -321,9 +400,12 @@
     align-items: baseline;
     gap: 1rem;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
   }
   .rail {
     position: relative;
+    z-index: 1;
     display: flex;
     align-items: stretch;
     gap: clamp(8px, 1.4vw, 20px);
@@ -334,9 +416,9 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 7px;
+    top: 6px;
     height: 1px;
-    background: linear-gradient(90deg, var(--color-sand), rgba(224, 165, 63, 0.18));
+    background: linear-gradient(90deg, var(--color-electric), rgba(67, 97, 255, 0.1));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 2.1s var(--ease-io) 0.3s;
@@ -348,11 +430,11 @@
     position: relative;
     flex: 1 1 0;
     min-width: 0;
-    padding: 1.7rem 0.1rem 0 0.8rem;
+    padding: 1.6rem 0.1rem 0 0.8rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 0.42rem;
+    gap: 0.4rem;
     border-left: 1px solid var(--color-line);
   }
   .node:first-child {
@@ -360,21 +442,23 @@
     padding-left: 0;
   }
   .node .yr {
-    font-family: var(--font-disp);
-    font-weight: 600;
-    font-size: clamp(0.92rem, 1.75vw, 1.32rem);
-    color: var(--color-sand);
-    letter-spacing: 0.06em;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: clamp(0.82rem, 1.5vw, 1.12rem);
+    color: var(--color-electric);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
   }
   .node .ttl {
     font-size: clamp(0.7rem, 1.05vw, 0.88rem);
     font-weight: 600;
     line-height: 1.45;
+    color: var(--color-ice);
   }
   .node .sub {
     font-size: clamp(0.62rem, 0.9vw, 0.74rem);
-    color: var(--color-bone-dim);
-    line-height: 1.55;
+    color: var(--color-steel);
+    line-height: 1.6;
     font-weight: 300;
     display: -webkit-box;
     -webkit-line-clamp: 4;
@@ -384,16 +468,15 @@
   }
   .node .pip {
     position: absolute;
-    left: -4px;
-    top: 4px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--color-sand);
-    box-shadow: 0 0 12px rgba(224, 165, 63, 0.9);
+    left: -3px;
+    top: 3px;
+    width: 5px;
+    height: 5px;
+    background: var(--color-electric);
+    box-shadow: 0 0 12px rgba(67, 97, 255, 0.9);
     transform: scale(0);
   }
-  /* One at a time: the pip lights, then the text rises under it. */
+  /* One by one: the pip lights, then the text rises under it. */
   .scene[data-live="true"] .node {
     animation: node-in 0.78s var(--ease-house) both;
     animation-delay: calc(0.42s + var(--i) * 0.17s);
@@ -405,8 +488,8 @@
   @keyframes node-in {
     from {
       opacity: 0;
-      transform: translateY(26px);
-      filter: blur(7px);
+      transform: translateY(22px);
+      filter: blur(6px);
     }
     to {
       opacity: 1;

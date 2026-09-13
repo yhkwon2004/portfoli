@@ -47,6 +47,8 @@ export function FocusPanel({ item, position, total, contain = false, turn, onOpe
       key={turn}
       data-turn="true"
     >
+      {/* The reference frames its panels with corner crosshairs; so does a film gate. */}
+      <span className="regmarks" aria-hidden="true" />
       <button
         type="button"
         className="fimg"

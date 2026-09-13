@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import { Txt } from "@/components/Txt";
-import { RAMP, SERIES } from "@/data/charts";
+import { RAMP, SERIES, SOLO } from "@/data/charts";
 import {
   gradeDistribution,
   stats,
@@ -63,6 +63,7 @@ function OutputPanel({ lang }: { lang: "ko" | "en" }) {
 
   return (
     <section className="mpanel rise" style={{ "--i": 1 } as React.CSSProperties}>
+      <span className="regmarks" aria-hidden="true" />
       <header>
         <Txt v={UI.metricOutput} as="h3" />
         <Txt v={UI.metricOutputNote} as="span" className="mnote" />
@@ -150,6 +151,7 @@ function GradePanel({ lang }: { lang: "ko" | "en" }) {
 
   return (
     <section className="mpanel rise" style={{ "--i": 2 } as React.CSSProperties}>
+      <span className="regmarks" aria-hidden="true" />
       <header>
         <Txt v={UI.metricGrades} as="h3" />
         <Txt v={UI.metricGradesNote} as="span" className="mnote" />
@@ -202,6 +204,7 @@ function DepthPanel({ lang }: { lang: "ko" | "en" }) {
 
   return (
     <section className="mpanel rise" style={{ "--i": 3 } as React.CSSProperties}>
+      <span className="regmarks" aria-hidden="true" />
       <header>
         <Txt v={UI.metricDepth} as="h3" />
         <span className="mnote">{text(UI.metricDepthNote, lang).replace("{n}", String(rows.length))}</span>
@@ -219,7 +222,7 @@ function DepthPanel({ lang }: { lang: "ko" | "en" }) {
                 <i
                   className="mfill"
                   style={
-                    { "--w": `${(r.count / max) * 100}%`, "--sw": RAMP[2], "--i": n } as React.CSSProperties
+                    { "--w": `${(r.count / max) * 100}%`, "--sw": SOLO, "--i": n } as React.CSSProperties
                   }
                 />
               </span>

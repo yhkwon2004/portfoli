@@ -7,7 +7,7 @@ import { Scene } from "@/components/scenes/Scene";
 
 export function TitleScene({ index, live }: { index: number; live: boolean }) {
   return (
-    <Scene index={index} live={live} className="s-bookend s-title">
+    <Scene index={index} live={live} className="s-bookend s-title" noGhost>
       <div className="col-l">
         <p className="eyebrow rise" style={{ "--i": 0 } as React.CSSProperties} lang="en">
           {UI.titleEyebrow}

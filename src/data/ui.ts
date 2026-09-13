@@ -14,7 +14,10 @@ export type Emphasised = readonly { readonly text: string; readonly em?: boolean
 
 export const UI = {
   // ── chrome ──
-  rec: "REC · HOURGLASS",
+  rec: "HOURGLASS",
+  /** The instrument block beside the glass. Latin on purpose — it is machine voice. */
+  telemetryTitle: "SAND SYSTEM",
+  telemetryReset: { ko: "흐름 재설정", en: "Reset flow" } satisfies Bi,
   dialogLabel: { ko: "상세 기록", en: "Record detail" } satisfies Bi,
   close: { ko: "닫기", en: "Close" } satisfies Bi,
   prevScene: { ko: "이전 장면", en: "Previous scene" } satisfies Bi,

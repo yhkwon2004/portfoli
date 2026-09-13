@@ -53,6 +53,22 @@ const MAX_DROPS = 260;
 /** How much pile depth one landed grain adds. */
 const GRAIN_VOLUME = 0.55;
 
+/** A measured reading of the pour. See `HourglassSim.telemetry()`. */
+export type Telemetry = {
+  /** Grains in the air right now. */
+  readonly flow: number;
+  /** Eased fill level, 0–1. */
+  readonly fill: number;
+  /** Where the fill is heading, 0–1. */
+  readonly target: number;
+  /** Summed heightmap, normalised against the bulb, 0–1. */
+  readonly volume: number;
+  /** The angle the pile has actually settled at, in degrees. */
+  readonly repose: number;
+  /** How hard the neck is running after the last cut, 0–1. */
+  readonly surge: number;
+};
+
 type Drop = {
   x: number;
   y: number;
@@ -181,6 +197,40 @@ export class HourglassSim {
     }
   }
 
+  /**
+   * A reading of the simulation's real state, for the HUD.
+   *
+   * Every field is measured, not staged: `flow` counts the grains actually in the air this
+   * frame, `fill` is the eased level the pile is being steered toward, `volume` is the summed
+   * heightmap, and `repose` is the steepest column-to-column step the slump left behind — the
+   * angle of repose the pile has actually settled at, which drifts as it grows.
+   *
+   * This is what makes the telemetry block honest. The reference's `MainLogo Quaternion`
+   * readout narrates a real 3D object; if these numbers were decorative the device would be a
+   * lie, and a portfolio that lies in its chrome is worse than one with no chrome.
+   */
+  telemetry(): Telemetry {
+    let volume = 0;
+    let steepest = 0;
+    for (let i = 0; i < COLS; i++) {
+      volume += this.heap[i] ?? 0;
+      if (i < COLS - 1) {
+        const step = Math.abs((this.heap[i] ?? 0) - (this.heap[i + 1] ?? 0));
+        if (step > steepest) steepest = step;
+      }
+    }
+    return {
+      flow: this.drops.length,
+      fill: this.level,
+      target: this.target,
+      // Normalised against the full bulb so the figure reads 0–1 like the others.
+      volume: volume / (SPAN * COLS),
+      // As an angle: the slump caps the step at REPOSE per column of width COL_W.
+      repose: (Math.atan2(steepest, COL_W) * 180) / Math.PI,
+      surge: this.pourBoost,
+    };
+  }
+
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.clearRect(0, 0, 200, 300);
     const topY = TOP_Y + SPAN * this.level;
@@ -203,13 +253,16 @@ export class HourglassSim {
     ctx.lineTo(112, NECK);
     ctx.lineTo(88, NECK);
     ctx.closePath();
+    // Chrome, not sand: a bright specular band near the surface falling to a cold shadow at
+    // the neck. Three stops rather than two — the mid stop is what reads as a curved metal
+    // face instead of a flat ramp.
     const grad = ctx.createLinearGradient(0, topY, 0, NECK);
-    grad.addColorStop(0, "#ffdb9a");
-    grad.addColorStop(0.5, "#e0a53f");
-    grad.addColorStop(1, "#9c6116");
+    grad.addColorStop(0, "#ffffff");
+    grad.addColorStop(0.42, "#c3ccdc");
+    grad.addColorStop(1, "#4a5468");
     ctx.fillStyle = grad;
     ctx.fill();
-    ctx.strokeStyle = "rgba(255,236,197,.55)";
+    ctx.strokeStyle = "rgba(255,255,255,.62)";
     ctx.lineWidth = 0.8;
     ctx.stroke();
     speckle(ctx, 100 - hw, topY + 2, hw * 2, NECK - topY, 34);
@@ -232,9 +285,9 @@ export class HourglassSim {
     ctx.lineTo(X0, BOT_Y);
     ctx.closePath();
     const grad = ctx.createLinearGradient(0, BOT_Y - SPAN, 0, BOT_Y);
-    grad.addColorStop(0, "#ffd489");
-    grad.addColorStop(0.55, "#d99a36");
-    grad.addColorStop(1, "#8f570f");
+    grad.addColorStop(0, "#eef2f9");
+    grad.addColorStop(0.55, "#98a2b6");
+    grad.addColorStop(1, "#3b4356");
     ctx.fillStyle = grad;
     ctx.fill();
     speckle(ctx, X0, BOT_Y - SPAN, X1 - X0, SPAN, 30);
@@ -245,15 +298,18 @@ export class HourglassSim {
   private drawNeckAndGrains(ctx: CanvasRenderingContext2D): void {
     ctx.globalCompositeOperation = "lighter";
     if (this.level < 0.995) {
+      // The neck is the one place the accent blue touches the glass — it reads as the light
+      // the wireframe room is casting through the pour.
       const glow = ctx.createRadialGradient(100, NECK, 0, 100, NECK, 26);
-      glow.addColorStop(0, "rgba(255,224,166,.5)");
-      glow.addColorStop(1, "rgba(255,212,137,0)");
+      glow.addColorStop(0, "rgba(150,180,255,.55)");
+      glow.addColorStop(0.45, "rgba(67,97,255,.22)");
+      glow.addColorStop(1, "rgba(67,97,255,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(100, NECK, 26, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.strokeStyle = "rgba(255,235,190,.9)";
+    ctx.strokeStyle = "rgba(240,246,255,.92)";
     ctx.lineCap = "round";
     for (const g of this.drops) {
       ctx.lineWidth = g.s;
@@ -278,7 +334,7 @@ function speckle(
   h: number,
   n: number,
 ): void {
-  ctx.fillStyle = "rgba(255,241,214,.4)";
+  ctx.fillStyle = "rgba(255,255,255,.42)";
   for (let i = 0; i < n; i++) ctx.fillRect(x + Math.random() * w, y + Math.random() * h, 0.7, 0.7);
 }
 

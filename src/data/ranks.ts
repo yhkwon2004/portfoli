@@ -1,3 +1,4 @@
+import { RAMP } from "@/data/charts";
 import type { Item } from "@/lib/types";
 
 /**
@@ -17,14 +18,28 @@ export type Rank = {
   readonly weight: number;
 };
 
+/**
+ * Grade → a step of the validated chrome ramp, by weight.
+ *
+ * The grades are *ordinal*: swapping 대상 and 입선 changes what the wall says. So they take one
+ * hue in monotone lightness steps rather than separate hues, and the step comes from the same
+ * ramp the charts use — `RAMP` in src/data/charts.ts, which carries the validation record.
+ * That way a grade is the same colour on a wall tile, on a dossier badge and in the metrics
+ * bar chart, and there is one ramp to check rather than three palettes to keep in step.
+ *
+ * Two grades sharing a step is correct where they genuinely share a tier (대상 and 국가장학 are
+ * both weight 4); the label beside the swatch tells them apart.
+ */
+const step = (weight: number): string => RAMP[Math.max(0, Math.min(RAMP.length - 1, 4 - weight))] ?? RAMP[2];
+
 export const RANKS = [
-  { key: "대상", en: "Grand Prize", color: "#ffd489", weight: 4 },
-  { key: "국가장학", en: "National Scholarship", color: "#ffd489", weight: 4 },
-  { key: "최우수상", en: "Gold", color: "#f0b959", weight: 3 },
-  { key: "우수상", en: "Silver", color: "#c9a06a", weight: 2 },
-  { key: "장려상", en: "Merit", color: "#9d8464", weight: 1 },
-  { key: "3위", en: "3rd Place", color: "#9d8464", weight: 1 },
-  { key: "입선", en: "Selected", color: "#7d7058", weight: 0 },
+  { key: "대상", en: "Grand Prize", color: step(4), weight: 4 },
+  { key: "국가장학", en: "National Scholarship", color: step(4), weight: 4 },
+  { key: "최우수상", en: "Gold", color: step(3), weight: 3 },
+  { key: "우수상", en: "Silver", color: step(2), weight: 2 },
+  { key: "장려상", en: "Merit", color: step(1), weight: 1 },
+  { key: "3위", en: "3rd Place", color: step(1), weight: 1 },
+  { key: "입선", en: "Selected", color: step(0), weight: 0 },
 ] as const satisfies readonly Rank[];
 
 /** The grade an item carries, or null if it has none (every project, and a few awards). */

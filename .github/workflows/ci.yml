@@ -30,6 +30,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Malformed hex is dropped silently by both CSS and canvas — nothing else in the
+      # pipeline notices. See the "색상 검사" section of the README.
+      - name: Colour literals
+        run: npm run check:css
+
       # Next 16 removed `next lint`, so the build does not lint — the two steps above are not
       # redundant with this one.
       - name: Build

@@ -9,7 +9,7 @@
     z-index: 10;
     display: grid;
     place-items: center;
-    background: rgba(4, 4, 6, 0.82);
+    background: rgba(3, 4, 10, 0.86);
     backdrop-filter: blur(14px);
     opacity: 0;
     visibility: hidden;
@@ -43,7 +43,7 @@
     overflow: auto;
     overscroll-behavior: contain;
     border: 1px solid var(--color-line);
-    background: linear-gradient(170deg, #101016, #08080b);
+    background: linear-gradient(170deg, var(--color-void-3), var(--color-void));
     transform: scale(0.92) translateY(18px);
     opacity: 0;
     transition:
@@ -76,10 +76,10 @@
     border-bottom: 1px solid var(--color-line);
   }
   .dossier .bar-top button {
-    font-family: var(--font-disp);
+    font-family: var(--font-mono);
     font-size: 0.6rem;
     letter-spacing: 0.22em;
-    color: var(--color-sand);
+    color: var(--color-electric);
     text-transform: uppercase;
     padding: 0.4rem 0.7rem;
     border: 1px solid transparent;
@@ -93,10 +93,10 @@
     cursor: not-allowed;
   }
   .dossier .dpos {
-    font-family: var(--font-disp);
+    font-family: var(--font-mono);
     font-size: 0.62rem;
     letter-spacing: 0.2em;
-    color: var(--color-bone-dim);
+    color: var(--color-steel);
   }
   .dossier .steps {
     display: flex;
@@ -109,20 +109,20 @@
     position: relative;
     height: clamp(150px, 26vh, 270px);
     overflow: hidden;
-    background: var(--color-ink-2);
+    background: var(--color-void-2);
   }
   .dossier .hero img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: sepia(0.22) brightness(0.72);
+    filter: grayscale(0.35) brightness(0.62) contrast(1.1);
     animation: ken 16s ease-in-out infinite alternate;
   }
   .dossier .hero::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, #0b0b10 4%, rgba(11, 11, 16, 0.55) 45%, rgba(11, 11, 16, 0.2));
+    background: linear-gradient(0deg, var(--color-void-3) 4%, rgba(15, 18, 32, 0.5) 45%, rgba(15, 18, 32, 0.18));
   }
   .dossier .hero .cap {
     position: absolute;
@@ -140,25 +140,25 @@
     flex-wrap: wrap;
   }
   .dossier .drank {
-    font-family: var(--font-disp);
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    font-weight: 600;
-    padding: 0.26rem 0.62rem;
-    color: var(--color-ink);
-    background: var(--rk, var(--color-sand));
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+    padding: 0.24rem 0.56rem;
+    color: var(--color-void);
+    background: var(--rk, var(--color-electric));
   }
   .dossier .drank:empty {
     display: none;
   }
   .dossier .dyear {
-    font-family: var(--font-disp);
+    font-family: var(--font-mono);
     font-size: 0.8rem;
     letter-spacing: 0.18em;
-    color: var(--color-sand);
+    color: var(--color-electric);
   }
   .dossier h2 {
-    font-family: var(--font-head);
+    font-family: var(--font-grot);
     font-weight: 700;
     font-size: clamp(1.3rem, 2.9vw, 2.3rem);
     line-height: 1.25;
@@ -171,7 +171,7 @@
     gap: 1.5rem;
   }
   .dossier .lede {
-    color: var(--color-bone-dim);
+    color: var(--color-steel);
     line-height: 1.8;
     font-size: clamp(0.86rem, 1.2vw, 1rem);
     max-width: 74ch;
@@ -187,7 +187,7 @@
     aspect-ratio: 4 / 3;
     object-fit: cover;
     border: 1px solid var(--color-line);
-    filter: sepia(0.2) brightness(0.9);
+    filter: grayscale(0.45) brightness(0.82) contrast(1.06);
     transition:
       filter 0.35s,
       transform 0.5s var(--ease-house);
@@ -205,22 +205,22 @@
     border: 1px solid var(--color-line);
   }
   .dossier .det section {
-    background: var(--color-ink-3);
+    background: var(--color-void-2);
     padding: 1.1rem 1.15rem;
   }
   .dossier .det h3 {
-    font-family: var(--font-myeongjo);
+    font-family: var(--font-kr);
     font-weight: 700;
     font-size: 0.68rem;
     letter-spacing: 0.22em;
-    color: var(--color-sand);
+    color: var(--color-electric);
     margin-bottom: 0.6rem;
   }
   .dossier .det p,
   .dossier .det li {
     font-size: 0.84rem;
     line-height: 1.78;
-    color: var(--color-bone-dim);
+    color: var(--color-steel);
     font-weight: 300;
   }
   .dossier .det ul {
@@ -241,6 +241,6 @@
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: var(--color-sand);
+    background: var(--color-electric);
   }
 }

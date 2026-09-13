@@ -4,14 +4,16 @@ import { Txt } from "@/components/Txt";
 import { CHAPTERS } from "@/data/chapters";
 
 type Props = {
-  /** Position in CHAPTERS. Drives the slate number and name — never passed as a literal. */
+  /** Position in CHAPTERS. Drives the slate number, the name and the ghost — never a literal. */
   index: number;
   live: boolean;
   className: string;
-  /** Keep a right gutter clear for the docked glass and the chapter rail. */
+  /** Keep gutters clear for the chapter rail (left) and the telemetry block (right). */
   gutter?: boolean;
   /** Start below the slate instead of centring on it — for scenes that fill the frame. */
   top?: boolean;
+  /** Suppress the oversized ghost word. The bookends give that job to the hourglass. */
+  noGhost?: boolean;
   children: React.ReactNode;
 };
 
@@ -23,7 +25,17 @@ type Props = {
  * off-screen ones are `inert` and `aria-hidden`, so eleven hidden scenes' worth of buttons
  * stay out of the tab order and out of a screen reader's way.
  */
-export function Scene({ index, live, className, gutter = false, top = false, children }: Props) {
+export function Scene({
+  index,
+  live,
+  className,
+  gutter = false,
+  top = false,
+  noGhost = false,
+  children,
+}: Props) {
+  const chapter = CHAPTERS[index];
+
   return (
     <section
       className={`scene ${className}`}
@@ -33,20 +45,26 @@ export function Scene({ index, live, className, gutter = false, top = false, chi
       aria-hidden={!live}
       {...(!live ? { inert: true } : {})}
     >
-      <Slate index={index} />
+      {/*
+        The ghost: the chapter's English name at display scale, bled off both edges, behind
+        everything. Always the English name — at 28vw a Korean word is three or four glyphs
+        and reads as a logo rather than as a word running off the frame.
+
+        Decorative: it restates the slate directly beneath it.
+      */}
+      {!noGhost && chapter && (
+        <span className="ghost" aria-hidden="true">
+          {chapter.name.en}
+        </span>
+      )}
+
+      <div className="slate">
+        <b>{String(index + 1).padStart(2, "0")}</b>
+        {chapter && <Txt v={chapter.name} as="span" />}
+        <span className="rule" aria-hidden="true" />
+      </div>
+
       {children}
     </section>
-  );
-}
-
-/** The film card that stamps in on every scene: number, chapter name, and a rule that draws. */
-function Slate({ index }: { index: number }) {
-  const chapter = CHAPTERS[index];
-  return (
-    <div className="slate">
-      <b>{String(index + 1).padStart(2, "0")}</b>
-      {chapter && <Txt v={chapter.name} as="span" />}
-      <span className="rule" aria-hidden="true" />
-    </div>
   );
 }

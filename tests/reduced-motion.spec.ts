@@ -73,3 +73,15 @@ test.describe("reduced motion", () => {
     await expect(page.locator(".s-awards .fpos")).toContainText("07 / 35");
   });
 });
+
+test("the wireframe room is stopped too, not just the sand", async ({ page }) => {
+  await page.goto("/#profile");
+  await page.waitForTimeout(900);
+
+  const pixels = () =>
+    page.locator(".grid-room").evaluate((c) => (c as HTMLCanvasElement).toDataURL());
+
+  const first = await pixels();
+  await page.waitForTimeout(700);
+  expect(await pixels()).toBe(first);
+});

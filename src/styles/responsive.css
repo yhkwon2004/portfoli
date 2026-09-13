@@ -11,7 +11,20 @@
       display: none;
     }
     .scene[data-gutter="true"] {
+      padding-left: clamp(20px, 5vw, 84px);
       padding-right: clamp(20px, 5vw, 84px);
+    }
+    .scene[data-gutter="true"] .slate {
+      left: clamp(20px, 5vw, 84px);
+    }
+    /* No room for an instrument block beside a phone-width scene. */
+    .telemetry {
+      display: none;
+    }
+    /* The ghost is a foreground object at this width, not a background one. */
+    .ghost {
+      font-size: 46vw;
+      -webkit-text-stroke-width: 1px;
     }
     .stage[data-scene] .glass {
       transform: translate(-50%, -50%) scale(0.85);

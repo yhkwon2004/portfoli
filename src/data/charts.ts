@@ -1,52 +1,58 @@
 /**
  * The chart palette — validated, not eyeballed.
  *
- * Every value below was checked with the dataviz skill's `validate_palette.js` against
- * this site's chart surface (`--color-ink-3`, #0b0b10). Reproduce with:
+ * Every value below was checked with the dataviz skill's `validate_palette.js` against this
+ * site's chart surface (`--color-void-3`, #0f1220). Reproduce with:
  *
- *   node scripts/validate_palette.js "#ffe7b8,#f5c877,#e0a53f,#b8801f,#8a5f1c" \
- *        --ordinal --mode dark --surface "#0b0b10"      → ALL CHECKS PASS
- *   node scripts/validate_palette.js "#f5c877,#b8801f" --mode dark --surface "#0b0b10"
- *        → CVD ΔE 21.4 · normal ΔE 21.5 · contrast ≥3:1 all PASS; lightness band FAIL
+ *   node scripts/validate_palette.js "#eef3ff,#c2d0ea,#94a4c6,#66759c,#414e70" \
+ *        --ordinal --mode dark --surface "#0f1220"        → ALL CHECKS PASS
+ *   node scripts/validate_palette.js "#4361ff,#1fa8a0" --mode dark --surface "#0f1220"
+ *                                                        → ALL CHECKS PASS
  *
- * ── the one deliberate deviation, and why ──────────────────────────────────────────
- * The two-series stack fails the *categorical lightness band* (0.48–0.67 in dark mode)
- * because `#f5c877` sits at L 0.855. That band exists to keep a multi-hue identity
- * palette at comparable visual weight, so no single hue shouts. This chart is not a
- * multi-hue palette: it is one hue in two shades — the form the skill itself prescribes
- * for a two-part comparison — and on a #0b0b10 ground a lighter step means *more*
- * contrast, not less.
+ * ── what changed with the reskin ──────────────────────────────────────────────────────
+ * The previous gold palette could not clear the categorical *lightness band*: a single-hue
+ * two-shade encoding puts one slot far outside 0.48–0.67 by construction, and the deviation
+ * had to be documented and justified. The chrome palette has no such problem, because it
+ * brings a second hue the old one did not have. The accent blue and a teal from the same
+ * dispersion family both sit inside the band at full chroma, so the two-series stack is now
+ * fully compliant on all six checks rather than compliant-with-an-exception:
  *
- * The checks that actually protect readability all pass with wide margins: CVD separation
- * 21.4 (target 8), normal-vision floor 21.5 (floor 15), contrast ≥3:1. And the secondary
- * encoding the skill requires is all present: a legend, a 2px surface gap between the
- * segments, direct value labels, and a real <table> of the same numbers for screen
- * readers. Adopting a band-compliant pair instead would mean abandoning the site's gold
- * for a flat mustard-and-brown that matches nothing else on screen — a worse chart, for a
- * check that is not measuring the risk it was written for.
+ *   CVD separation 22.7 (target 8) · normal-vision floor 25.9 (floor 15) · contrast ≥3:1
  *
- * Text never wears a series colour: axis ticks, values and legends use --color-bone-dim
- * and --color-bone (7.04:1 and 16.24:1 on the surface — both clear WCAG AA for text).
+ * Teal was picked over the other passing candidates for its tritan margin (10.5 against
+ * 6–9 elsewhere). Tritan is the weakest channel for a blue-versus-blue-green pair, so it is
+ * the one worth optimising; the green that scored highest overall belongs to no part of this
+ * site and would read as a third brand colour wandering into a chart.
+ *
+ * The secondary encoding the skill asks for is present regardless: a legend, a 2px surface gap
+ * between the segments, direct value labels, and a real <table> of the same numbers for screen
+ * readers.
+ *
+ * Text never wears a series colour: axis ticks, values and legends use --color-steel and
+ * --color-ice, both of which clear WCAG AA for text on this surface.
  */
 
-/** Single-hue ordinal ramp, light → dark. Passes monotone L, ΔL ≥ 0.06, light-end contrast. */
-export const RAMP = ["#ffe7b8", "#f5c877", "#e0a53f", "#b8801f", "#8a5f1c"] as const;
+/** Single-hue chrome ramp, light → dark. Passes monotone L, ΔL ≥ 0.06, light-end contrast. */
+export const RAMP = ["#eef3ff", "#c2d0ea", "#94a4c6", "#66759c", "#414e70"] as const;
 
 /**
- * The two-series stack. Steps 2 and 4 of RAMP — one step of air between them on each side,
- * which is what buys the ΔE 21.5 separation.
+ * The two-series stack. The accent the whole site already uses, against a teal from its
+ * dispersion family — so the chart introduces no colour the rest of the page has not.
  */
 export const SERIES = {
-  awards: RAMP[1],
-  projects: RAMP[3],
+  awards: "#4361ff",
+  projects: "#1fa8a0",
 } as const;
 
+/** Single-series bars. The accent, since there is no second identity to tell apart. */
+export const SOLO = "#4361ff";
+
 /** Chart surface. Must match what the validator was run against. */
-export const SURFACE = "#0b0b10";
+export const SURFACE = "#0f1220";
 
 /**
- * Mark geometry, from the skill's fixed specs. Bars are capped rather than filling their
- * band, so the leftover is air instead of ink.
+ * Mark geometry, from the skill's fixed specs. Bars are capped rather than filling their band,
+ * so the leftover is air instead of ink.
  */
 export const MARK = {
   /** Max bar/column thickness in px. */

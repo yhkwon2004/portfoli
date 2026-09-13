@@ -15,7 +15,7 @@ export function CreditsScene({
   onReplay: () => void;
 }) {
   return (
-    <Scene index={index} live={live} className="s-bookend s-credits">
+    <Scene index={index} live={live} className="s-bookend s-credits" noGhost>
       <div className="col-l">
         <p className="eyebrow rise" style={{ "--i": 0 } as React.CSSProperties} lang="en">
           {UI.creditsEyebrow}

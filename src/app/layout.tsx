@@ -1,55 +1,48 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Cormorant_Garamond, Nanum_Myeongjo, Noto_Sans_KR } from "next/font/google";
+import { Inter, JetBrains_Mono, Noto_Sans_KR } from "next/font/google";
 import { DESCRIPTION, OWNER_EN, OWNER_KO, SITE_URL, personJsonLd, worksJsonLd } from "@/lib/site";
 import "./globals.css";
 
 /*
- * Fonts are self-hosted by next/font: the files are fetched at build time and served from our
- * own origin with the @font-face unicode-ranges Google generated — 936 of them across the four
- * families. That removes a render-blocking round trip to a third party, and for the two Korean
- * faces it keeps the per-range chunking that stops a phone downloading megabytes of hangul it
- * will never draw.
+ * Three faces, one job each.
  *
- * `display: "swap"` throughout: the first paint is a name at 9rem, and showing it late in the
- * right face is worse than showing it immediately in a fallback.
+ * Inter carries the headlines — a neo-grotesque set tight and heavy, which is the voice the
+ * reference uses for display type. JetBrains Mono is the instrument voice: nav, labels, tags,
+ * and every number in the telemetry block, where digits have to hold a column without
+ * shifting. Noto Sans KR is the Korean gothic that most of the copy is actually written in.
+ *
+ * Fonts are self-hosted by next/font: the files are fetched at build time and served from our
+ * own origin with the @font-face unicode-ranges Google generated. That removes a
+ * render-blocking round trip to a third party, and for the Korean face it keeps the per-range
+ * chunking that stops a phone downloading megabytes of hangul it will never draw.
+ *
+ * `display: "swap"` throughout: the first paint is a name at display size, and showing it late
+ * in the right face is worse than showing it immediately in a fallback.
  *
  * Only `latin` is requested, which is the only named subset Google exposes for these families —
  * the hangul still arrives, in the unicode-range blocks the CSS declares.
  */
-const cinzel = Cinzel({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-cinzel",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
   display: "swap",
 });
 
-const cormorant = Cormorant_Garamond({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["300", "400", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
-
-const nanumMyeongjo = Nanum_Myeongjo({
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  variable: "--font-nanum-myeongjo",
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-jetbrains",
   display: "swap",
 });
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "700"],
+  weight: ["200", "300", "400", "500", "700", "900"],
   variable: "--font-noto-kr",
   display: "swap",
 });
 
-/**
- * The original was a client-rendered page that built its DOM from a script, so a crawler saw
- * an empty document and there was nothing to describe. This build prerenders all twelve
- * chapters, so the metadata below describes a page that genuinely contains what it claims.
- */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -94,7 +87,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   // The letterbox bars run to the edge of a notched display.
   viewportFit: "cover",
-  themeColor: "#07070a",
+  themeColor: "#05060d",
   colorScheme: "dark",
 };
 
@@ -102,7 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="ko"
-      className={`${cinzel.variable} ${cormorant.variable} ${nanumMyeongjo.variable} ${notoSansKr.variable}`}
+      className={`${inter.variable} ${jetbrains.variable} ${notoSansKr.variable}`}
     >
       <body>
         {children}

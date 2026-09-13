@@ -102,8 +102,9 @@ export class AmbientSand {
     ctx.lineCap = "round";
     for (const g of this.grains) {
       ctx.globalAlpha = g.a;
-      // Near grains catch the highlight; far ones stay in the deeper gold.
-      ctx.strokeStyle = g.z > 0.62 ? "#ffd489" : "#d79c3c";
+      // Near grains catch the specular highlight; far ones fall back into the cold steel of
+      // the room behind them.
+      ctx.strokeStyle = g.z > 0.62 ? "#f2f6ff" : "#7d89a3";
       ctx.lineWidth = g.r;
       ctx.beginPath();
       ctx.moveTo(g.x, g.py);
