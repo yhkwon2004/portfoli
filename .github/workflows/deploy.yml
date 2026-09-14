@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Auto-deploys on a push to `main`. This repository does not have a `main` yet — its default
+# branch is the working branch — so until one exists, deploy from the Actions tab
+# (Deploy to GitHub Pages → Run workflow) or with `gh workflow run deploy.yml`.
 on:
   push:
     branches: [main]
@@ -31,6 +34,10 @@ jobs:
 
       - uses: actions/configure-pages@v5
         id: pages
+        with:
+          # Turns Pages on and sets its source to GitHub Actions if it is not already
+          # configured, so a fresh repository does not need anyone to visit Settings first.
+          enablement: true
 
       - name: Build
         # Pages serves a project site from /<repo>, so the router and every asset URL need
