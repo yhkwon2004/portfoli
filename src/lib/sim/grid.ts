@@ -28,6 +28,22 @@ const HALF_W = 4.6;
 /** Distance from the camera axis to floor and ceiling. */
 const FLOOR_Y = 1.5;
 const CEIL_Y = 2.1;
+/**
+ * How far the room bows toward the camera at its edges, in world units.
+ *
+ * The reference's ground is not a flat corridor — it is a cylindrical wall with the camera
+ * sitting inside it, so the grid cells compress toward the left and right of the frame. That
+ * curvature is most of what makes it read as a room rather than as a perspective diagram.
+ */
+const BOW = 1.5;
+/**
+ * The bow fades out close to the camera. At full strength a near rung's edges would bow past
+ * the camera plane and vanish mid-line; and the curvature has nothing to say at two world
+ * units anyway — it is the far half of the room that carries it.
+ */
+const BOW_ONSET = 3.4;
+/** Points across each bowed surface. A straight line needs two; an arc needs enough to read. */
+const ARC_STEPS = 14;
 
 export type GridTheme = {
   /** Lines at the vanishing point. */
@@ -69,6 +85,15 @@ export class GridRoom {
     this.pan += (this.targetPan - this.pan) * Math.min(1, dt * 1.6);
   }
 
+  /**
+   * The depth of a point at lateral position `u` (-1 at the left wall, +1 at the right) on a
+   * rung nominally at `z`. Squared in `u`, so the middle of the frame is unmoved and the
+   * edges pull forward.
+   */
+  private bowed(u: number, z: number): number {
+    return z - BOW * u * u * Math.min(1, z / BOW_ONSET);
+  }
+
   /** Project a world point onto the canvas. Returns null when it is behind the camera. */
   private project(x: number, y: number, z: number): readonly [number, number] | null {
     if (z <= 0.05) return null;
@@ -98,40 +123,58 @@ export class GridRoom {
     // Longitudinal lines run the length of the corridor and do not move, which is what gives
     // the travelling rungs something to travel against.
     for (let i = -LANES; i <= LANES; i++) {
-      const x = (i / LANES) * HALF_W;
-      this.rail(ctx, x, FLOOR_Y, theme);
-      this.rail(ctx, x, -CEIL_Y, theme);
+      const u = i / LANES;
+      this.rail(ctx, u, FLOOR_Y, theme);
+      this.rail(ctx, u, -CEIL_Y, theme);
     }
   }
 
-  /** One cross-section of the corridor: floor, ceiling and the two walls joining them. */
+  /**
+   * One cross-section of the room: the floor arc, the ceiling arc, and the two short walls
+   * joining their ends. Sampled rather than drawn as a rectangle, because the surfaces are
+   * curved — see BOW.
+   */
   private rung(ctx: CanvasRenderingContext2D, z: number, alpha: number, theme: GridTheme): void {
     if (alpha <= 0.004) return;
-    const bl = this.project(-HALF_W, FLOOR_Y, z);
-    const br = this.project(HALF_W, FLOOR_Y, z);
-    const tr = this.project(HALF_W, -CEIL_Y, z);
-    const tl = this.project(-HALF_W, -CEIL_Y, z);
-    // Named rather than destructured from an array: `project` is nullable, and four explicit
-    // guards narrow all four without a cast.
-    if (!bl || !br || !tr || !tl) return;
+
+    const arc = (y: number, reverse: boolean): readonly (readonly [number, number])[] | null => {
+      const pts: (readonly [number, number])[] = [];
+      for (let i = 0; i <= ARC_STEPS; i++) {
+        const u = -1 + (2 * (reverse ? ARC_STEPS - i : i)) / ARC_STEPS;
+        const p = this.project(u * HALF_W, y, this.bowed(u, z));
+        // One point behind the camera makes the whole cross-section meaningless.
+        if (!p) return null;
+        pts.push(p);
+      }
+      return pts;
+    };
+
+    const floor = arc(FLOOR_Y, false);
+    const ceil = arc(-CEIL_Y, true);
+    if (!floor || !ceil) return;
 
     ctx.strokeStyle = mix(theme.far, theme.near, 1 - (z - NEAR) / (FAR - NEAR));
     ctx.globalAlpha = alpha;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(bl[0], bl[1]);
-    ctx.lineTo(br[0], br[1]);
-    ctx.lineTo(tr[0], tr[1]);
-    ctx.lineTo(tl[0], tl[1]);
+    for (const [i, p] of [...floor, ...ceil].entries()) {
+      if (i === 0) ctx.moveTo(p[0], p[1]);
+      else ctx.lineTo(p[0], p[1]);
+    }
     ctx.closePath();
     ctx.stroke();
     ctx.globalAlpha = 1;
   }
 
-  /** One longitudinal line, drawn as a gradient from the vanishing point to the near plane. */
-  private rail(ctx: CanvasRenderingContext2D, x: number, y: number, theme: GridTheme): void {
-    const near = this.project(x, y, NEAR);
-    const far = this.project(x, y, FAR);
+  /**
+   * One longitudinal line, drawn as a gradient from the vanishing point to the near plane.
+   *
+   * `u` is the lateral position, not a world x: the bow varies with depth, so a rail at a
+   * fixed `u` is not a straight line in the world and has to be sampled like the rungs.
+   */
+  private rail(ctx: CanvasRenderingContext2D, u: number, y: number, theme: GridTheme): void {
+    const near = this.project(u * HALF_W, y, this.bowed(u, NEAR));
+    const far = this.project(u * HALF_W, y, this.bowed(u, FAR));
     if (!near || !far) return;
 
     /*
@@ -148,8 +191,13 @@ export class GridRoom {
     ctx.strokeStyle = grad;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(far[0], far[1]);
-    ctx.lineTo(near[0], near[1]);
+    for (let i = 0; i <= ARC_STEPS; i++) {
+      const z = FAR + ((NEAR - FAR) * i) / ARC_STEPS;
+      const p = this.project(u * HALF_W, y, this.bowed(u, z));
+      if (!p) continue;
+      if (i === 0) ctx.moveTo(p[0], p[1]);
+      else ctx.lineTo(p[0], p[1]);
+    }
     ctx.stroke();
   }
 }
