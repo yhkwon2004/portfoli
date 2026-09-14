@@ -1,0 +1,358 @@
+@layer components {
+  /* ─────────────  08 WORKS: one project at a time, hung in the room  ─────────────
+   * The reference gives a work the whole frame — its screens floating at different depths
+   * against the wireframe wall, the caption small in the bottom-left corner — and moves the
+   * cluster with the pointer so the depth is something you feel rather than something you
+   * are told. That is what this is.
+   *
+   * The depth is real: `perspective` on the room, `preserve-3d` on the cluster, and a `z` per
+   * plate. Faking it with scale would put every plate on one plane, and the parallax — the
+   * whole point — would have nothing to act on.
+   */
+  .s-projects .worksroom {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    margin-top: 1.6vh;
+    perspective: 1500px;
+    perspective-origin: 50% 46%;
+  }
+
+  .plates {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    /*
+     * --px / --py are written onto the room by the pointer handler, not by React. Small
+     * angles on purpose: past about ten degrees the plates start showing their edges and the
+     * images skew badly enough to read as a broken layout rather than as a room.
+     */
+    transform: rotateY(calc(var(--px, 0) * 9deg)) rotateX(calc(var(--py, 0) * -6deg));
+    transition: transform 0.55s var(--ease-house);
+  }
+
+  .plate {
+    position: absolute;
+    left: calc(50% + var(--x) * 1%);
+    top: calc(46% + var(--y) * 1%);
+    width: calc(var(--w) * 1%);
+    aspect-ratio: 3 / 2;
+    display: block;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    background: var(--color-void-2);
+    overflow: hidden;
+    transform: translate(-50%, -50%) translateZ(calc(var(--z) * 1px))
+      rotateY(calc(var(--r) * 1deg)) rotate(calc(var(--t) * 1deg));
+    animation: plate-in 0.9s var(--ease-house) both;
+    animation-delay: calc(var(--i) * 0.08s);
+    box-shadow: 0 30px 90px -40px rgba(0, 0, 0, 0.9);
+  }
+  .plate img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The same film tint the walls use, so unrelated screenshots read as one set. */
+    filter: grayscale(0.32) brightness(0.88) contrast(1.06);
+    transition:
+      filter 0.5s var(--ease-house),
+      transform 0.9s var(--ease-house);
+  }
+  /* The chrome edge: one specular sweep across the top-left corner, as on a lit panel. */
+  .plate .pedge {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      152deg,
+      rgba(214, 226, 255, 0.22) 0%,
+      rgba(214, 226, 255, 0.05) 18%,
+      transparent 46%
+    );
+    mix-blend-mode: screen;
+  }
+
+  .plate-near {
+    cursor: pointer;
+    border-color: var(--color-line-hot);
+  }
+  .plate-near:hover img,
+  .plate-near:focus-visible img {
+    filter: grayscale(0) brightness(1) contrast(1);
+    transform: scale(1.03);
+  }
+  .plate-near:focus-visible {
+    outline: 1px solid var(--color-electric);
+    outline-offset: 4px;
+  }
+
+  @keyframes plate-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) translateZ(calc((var(--z) - 260) * 1px))
+        rotateY(calc(var(--r) * 1deg)) rotate(calc(var(--t) * 1deg));
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateZ(calc(var(--z) * 1px))
+        rotateY(calc(var(--r) * 1deg)) rotate(calc(var(--t) * 1deg));
+    }
+  }
+
+  /* ── the caption, bottom-left, over its own scrim ── */
+  .s-projects .wmeta {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+    max-width: min(46ch, 52%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.1rem 1.6rem 1.1rem 0;
+    /*
+     * Its own scrim rather than a card. A plate can drift under this corner, and a caption
+     * read straight off a photograph is the readability problem this chapter used to have.
+     */
+    background: radial-gradient(
+      120% 140% at 0% 100%,
+      rgba(5, 6, 13, 0.94) 0%,
+      rgba(5, 6, 13, 0.86) 45%,
+      rgba(5, 6, 13, 0) 100%
+    );
+    animation: wmeta-in 0.7s var(--ease-house) both 0.12s;
+  }
+  @keyframes wmeta-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .s-projects .wm-top {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+  }
+  .s-projects .wm-year {
+    color: var(--color-electric-ink);
+    font-weight: 600;
+  }
+  .s-projects .wm-flag {
+    color: var(--color-void);
+    background: color-mix(in srgb, var(--color-electric) 72%, var(--color-chrome));
+    padding: 0.2rem 0.5rem;
+    font-weight: 600;
+  }
+  .s-projects .wm-title {
+    font-family: var(--font-grot);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    font-size: clamp(1.5rem, 3.1vw, 2.6rem);
+    color: var(--color-chrome);
+    text-wrap: balance;
+  }
+  .s-projects .wm-title:lang(ko) {
+    font-family: var(--font-kr);
+  }
+  .s-projects .wm-sum {
+    font-size: clamp(0.72rem, 0.95vw, 0.86rem);
+    line-height: 1.62;
+    color: var(--color-ice);
+    font-weight: 300;
+  }
+  .s-projects .wm-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.36rem;
+    margin-top: 0.15rem;
+  }
+  .s-projects .wm-tags span {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+    padding: 0.24rem 0.5rem;
+    color: var(--color-chrome-2);
+    border: 1px solid var(--color-line);
+  }
+
+  /* ── the bar: step, position, and the whole set as a scale ── */
+  .s-projects .worksbar {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 22px);
+    margin-top: 1.4vh;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .s-projects .wstep {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-line);
+    color: var(--color-chrome-2);
+    font-size: 0.82rem;
+    transition:
+      color 0.3s,
+      border-color 0.3s,
+      background 0.3s;
+  }
+  .s-projects .wstep:hover {
+    color: var(--color-chrome);
+    border-color: var(--color-electric);
+    background: rgba(67, 97, 255, 0.1);
+  }
+  .s-projects .wm-pos {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    color: var(--color-electric-ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .s-projects .wscale {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 4px;
+    height: 26px;
+  }
+  .s-projects .wtick {
+    /* A ruler, not a segmented bar: 35 ticks at ~8px read as a scale you can point at. */
+    flex: 1 1 0;
+    min-width: 3px;
+    max-width: 8px;
+    height: 10px;
+    background: var(--color-chrome-4);
+    transition:
+      height 0.3s var(--ease-house),
+      background 0.3s;
+  }
+  .s-projects .wtick.star {
+    height: 15px;
+    background: var(--color-chrome-3);
+  }
+  .s-projects .wtick:hover,
+  .s-projects .wtick:focus-visible {
+    height: 22px;
+    background: var(--color-chrome);
+  }
+  .s-projects .wtick[aria-current="true"] {
+    height: 26px;
+    background: var(--color-electric);
+  }
+  .s-projects .wtick:focus-visible {
+    outline: 1px solid var(--color-electric);
+    outline-offset: 2px;
+  }
+  .s-projects .wm-hint {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    color: var(--color-dim);
+    white-space: nowrap;
+  }
+
+  /*
+   * Reduced motion: no reel, no parallax, no fly-in — and no depth either, because the depth
+   * only reads as depth while something is moving through it. One plate, flat and large, with
+   * the same caption and the same scale under it.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .plates {
+      transform: none;
+    }
+    .plate {
+      animation: none;
+    }
+    .plate:not(.plate-near) {
+      display: none;
+    }
+    .plate-near {
+      left: 50%;
+      /* Lifted and narrowed so the single plate clears the caption underneath it. */
+      top: 38%;
+      width: min(46%, 540px);
+      transform: translate(-50%, -50%);
+    }
+    .s-projects .wmeta {
+      animation: none;
+    }
+  }
+
+  /* The room is the first thing to go on a phone: four plates in 390px is four postage
+     stamps, which is the problem this chapter was built to solve. */
+  @media (max-width: 860px) {
+    /*
+     * The caption leads on a phone and the room follows it at a fixed height, rather than
+     * the room taking every spare pixel and drawing two stamps in the middle of it. Two
+     * plates, not four: at 390px the third and fourth are 60px wide.
+     */
+    .s-projects .worksroom {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+      margin-top: 1vh;
+      perspective: 900px;
+    }
+    /*
+     * The caption leads and the plates follow it, both in flow. Left absolute, the cluster
+     * covers the whole room — caption included — and the title is read off a photograph.
+     */
+    .s-projects .wmeta {
+      position: static;
+      order: -1;
+      max-width: none;
+      padding-right: 0;
+      background: none;
+    }
+    .plates {
+      position: relative;
+      inset: auto;
+      height: clamp(190px, 30vh, 290px);
+    }
+    .plate:nth-child(n + 3) {
+      display: none;
+    }
+    .plate:nth-child(1) {
+      left: 56%;
+      top: 48%;
+      width: 68%;
+    }
+    .plate:nth-child(2) {
+      left: 22%;
+      top: 58%;
+      width: 42%;
+    }
+    .s-projects .wm-hint {
+      display: none;
+    }
+    /*
+     * The scale takes its own row: 35 ticks cannot share 120px with the step controls, and
+     * the row has to stop short of the projector's own buttons in the same corner.
+     */
+    .s-projects .worksbar {
+      flex-wrap: wrap;
+      row-gap: 0.7rem;
+      padding-right: 104px;
+    }
+    .s-projects .wscale {
+      flex: 1 0 100%;
+      order: 2;
+      gap: 2px;
+    }
+    .s-projects .wtick {
+      min-width: 2px;
+    }
+  }
+}

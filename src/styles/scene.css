@@ -54,7 +54,7 @@
   /* The middle scenes keep gutters clear for the chapter rail (left) and telemetry (right). */
   .scene[data-gutter="true"] {
     padding-left: clamp(96px, 10vw, 150px);
-    padding-right: clamp(120px, 12vw, 196px);
+    padding-right: max(clamp(120px, 12vw, 196px), var(--tel-gutter));
   }
   /* Scenes that fill the frame start below the slate rather than centred on it. */
   .scene[data-top="true"] {
@@ -86,7 +86,7 @@
     font-size: 0.86rem;
     letter-spacing: 0.1em;
     line-height: 1;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     font-variant-numeric: tabular-nums;
   }
   .slate .rule {
@@ -113,7 +113,11 @@
     position: absolute;
     left: 50%;
     top: 46%;
-    z-index: 0;
+    /*
+     * Behind the veil, which is behind the reading. Both are negative inside `.scenes`,
+     * which is a stacking context of its own, so neither can escape past the stage.
+     */
+    z-index: -2;
     pointer-events: none;
     white-space: nowrap;
     font-family: var(--font-grot);
@@ -143,6 +147,31 @@
   .scene[data-live="true"] .ghost {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+    transition-delay: 0.3s;
+  }
+
+  /*
+   * Densest over the middle of the frame, where every scene puts its copy, and gone by the
+   * edges, where the ghost is doing its work. A radial rather than a flat wash so it reads
+   * as depth — the word receding into the room — instead of as a grey rectangle.
+   */
+  .veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      118% 86% at 50% 52%,
+      rgba(5, 6, 13, 0.9) 0%,
+      rgba(5, 6, 13, 0.78) 42%,
+      rgba(5, 6, 13, 0.34) 72%,
+      rgba(5, 6, 13, 0) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.9s var(--ease-house);
+  }
+  .scene[data-live="true"] .veil {
+    opacity: 1;
     transition-delay: 0.3s;
   }
 
@@ -214,7 +243,7 @@
     font-family: var(--font-mono);
     font-size: 0.62rem;
     letter-spacing: 0.3em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     text-transform: uppercase;
     font-weight: 400;
   }
@@ -316,7 +345,7 @@
     font-family: var(--font-kr);
   }
   .quote .mark {
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     font-size: 1.1em;
     line-height: 0;
   }
@@ -342,7 +371,7 @@
   }
   .links a:hover,
   .links button:hover {
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     border-color: var(--color-line-hot);
   }
 
@@ -396,9 +425,9 @@
   }
   .stat span {
     font-family: var(--font-mono);
-    font-size: 0.56rem;
+    font-size: 0.58rem;
     letter-spacing: 0.2em;
-    color: var(--color-chrome-4);
+    color: var(--color-dim);
     text-transform: uppercase;
     font-weight: 400;
   }
@@ -455,7 +484,7 @@
     font-family: var(--font-mono);
     font-weight: 500;
     font-size: clamp(0.82rem, 1.5vw, 1.12rem);
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
   }

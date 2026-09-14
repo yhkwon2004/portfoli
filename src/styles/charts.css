@@ -7,7 +7,13 @@
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 1fr);
     gap: clamp(12px, 1.8vw, 28px);
-    flex: 1;
+    /*
+     * Content sets the row height, not the viewport. Stretched to the frame, the three
+     * panels were 647px tall to hold ~450px of chart, and the shortest of them spent a
+     * third of itself empty. `stretch` still squares the row off at the tallest panel, so
+     * the three read as one object.
+     */
+    flex: 0 1 auto;
     min-height: 0;
     margin-top: 1.8vh;
     align-content: stretch;
@@ -50,11 +56,12 @@
     font-size: 0.54rem;
     letter-spacing: 0.14em;
     color: var(--color-steel);
-    opacity: 0.8;
     text-transform: uppercase;
   }
   .mplot {
     flex: 1;
+    max-height: clamp(200px, 34vh, 330px);
+    margin-block: auto;
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -154,6 +161,7 @@
     /* 2px row gap: the same surface gap, between adjacent bars. */
     gap: 2px;
     align-content: start;
+    flex: 1;
     min-height: 0;
     overflow: hidden;
   }

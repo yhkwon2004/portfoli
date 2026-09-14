@@ -53,9 +53,19 @@ export function Scene({
         Decorative: it restates the slate directly beneath it.
       */}
       {!noGhost && chapter && (
-        <span className="ghost" aria-hidden="true">
-          {chapter.name.en}
-        </span>
+        <>
+          <span className="ghost" aria-hidden="true">
+            {chapter.name.en}
+          </span>
+          {/*
+            The veil. A sampled pixel inside a ghost stroke reads rgb(47,58,79), and body
+            copy crossing one drops from 6.93:1 to 3.89:1 — under AA, and invisible to a
+            contrast audit because the ghost is a sibling of the text rather than its
+            background. This sits between the two: the word stays at full strength out at
+            the edges of the frame, and fades back where the sentences are.
+          */}
+          <span className="veil" aria-hidden="true" />
+        </>
       )}
 
       <div className="slate">

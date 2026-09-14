@@ -134,7 +134,7 @@ test.describe("the room and the frame", () => {
   test("framed panels carry registration marks", async ({ page }) => {
     // Scoped to the live scene: every chapter stays mounted, so both wall scenes have a
     // focus panel and an unscoped selector would count the off-screen one too.
-    await page.goto("/#projects");
+    await page.goto("/#awards");
     await settle(page);
     await expect(page.locator('.scene[data-live="true"] .focus .regmarks')).toHaveCount(1);
 

@@ -105,6 +105,13 @@ export const UI = {
     ko: "타일에 올리면 멈춥니다 · 클릭하면 전체 기록",
     en: "Hover to hold · click for the full record",
   } satisfies Bi,
+  prevWork: { ko: "이전 작업", en: "Previous work" } satisfies Bi,
+  nextWork: { ko: "다음 작업", en: "Next work" } satisfies Bi,
+  worksIndex: { ko: "작업 목록", en: "Works index" } satisfies Bi,
+  worksHint: {
+    ko: "눌러서 전체 기록 · 눈금으로 이동",
+    en: "Select for the full record · step with the scale",
+  } satisfies Bi,
 
   // ── 09 credentials ──
   certsEyebrow: { ko: "보유 자격", en: "Credentials" } satisfies Bi,

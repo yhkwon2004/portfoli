@@ -20,6 +20,7 @@ import { SwotScene } from "@/components/scenes/SwotScene";
 import { TimelineScene } from "@/components/scenes/TimelineScene";
 import { TitleScene } from "@/components/scenes/TitleScene";
 import { WallScene } from "@/components/scenes/WallScene";
+import { WorksScene } from "@/components/scenes/WorksScene";
 import { CHAPTERS, LAST, chapterAt } from "@/data/chapters";
 import { UI } from "@/data/ui";
 import { readLink, useDeepLink, useInitialLang, useStoredLang } from "@/hooks/useDeepLink";
@@ -181,13 +182,11 @@ export function Stage() {
             autoplay={animate}
             onOpen={open}
           />
-          <WallScene
+          <WorksScene
             index={chapterAt("projects")}
             live={isLive("projects")}
-            kind="projects"
             items={projects}
-            eyebrow={UI.projectsEyebrow}
-            autoplay={animate}
+            animate={animate}
             onOpen={open}
           />
           <CertsScene index={chapterAt("certs")} live={isLive("certs")} />

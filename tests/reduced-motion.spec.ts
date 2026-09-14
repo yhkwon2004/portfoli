@@ -85,3 +85,22 @@ test("the wireframe room is stopped too, not just the sand", async ({ page }) =>
   await page.waitForTimeout(700);
   expect(await pixels()).toBe(first);
 });
+
+test("the works stage stands still: one flat plate, and no reel", async ({ page }) => {
+  await page.goto("/#projects");
+  await page.waitForTimeout(1400);
+
+  // Depth only reads as depth while something moves through it, so under reduced motion the
+  // cluster collapses to the cover alone.
+  await expect(page.locator(".s-projects .plate:visible")).toHaveCount(1);
+  const flat = await page
+    .locator(".s-projects .plates")
+    .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform));
+  expect(flat.m13).toBe(0);
+  expect(flat.m23).toBe(0);
+
+  // And the reel does not advance on its own.
+  const at = await page.locator(".s-projects .wm-pos").textContent();
+  await page.waitForTimeout(4200);
+  expect(await page.locator(".s-projects .wm-pos").textContent()).toBe(at);
+});

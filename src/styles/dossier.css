@@ -79,7 +79,7 @@
     font-family: var(--font-mono);
     font-size: 0.6rem;
     letter-spacing: 0.22em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     text-transform: uppercase;
     padding: 0.4rem 0.7rem;
     border: 1px solid transparent;
@@ -155,7 +155,7 @@
     font-family: var(--font-mono);
     font-size: 0.8rem;
     letter-spacing: 0.18em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
   }
   .dossier h2 {
     font-family: var(--font-grot);
@@ -213,7 +213,7 @@
     font-weight: 700;
     font-size: 0.68rem;
     letter-spacing: 0.22em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     margin-bottom: 0.6rem;
   }
   .dossier .det p,

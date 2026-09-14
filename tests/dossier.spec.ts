@@ -102,14 +102,16 @@ test.describe("the dossier", () => {
 });
 
 test.describe("the walls", () => {
-  test("both walls render all 35 records", async ({ page }) => {
+  test("both chapters reach all 35 records", async ({ page }) => {
     await page.goto("/#awards");
     await settle(page);
     await expect(page.locator(".wall-awards .cell")).toHaveCount(35);
 
+    // Works dropped the tile grid for one project at a time; the scale along the bottom is
+    // what still reaches any of the 35 directly, so it is what has to be complete.
     await page.goto("/#projects");
     await settle(page);
-    await expect(page.locator(".wall-projects .cell")).toHaveCount(35);
+    await expect(page.locator(".s-projects .wtick")).toHaveCount(35);
   });
 
   test("arrow keys move focus around the tile grid", async ({ page }) => {
@@ -133,12 +135,14 @@ test.describe("the walls", () => {
     await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-awards/);
   });
 
-  test("the focus panel follows the tile under the pointer", async ({ page }) => {
+  test("the works stage follows the tick under the pointer", async ({ page }) => {
     await page.goto("/#projects");
     await settle(page);
 
-    await page.locator(".wall-projects .cell").nth(4).hover();
-    await expect(page.locator(".s-projects .fpos")).toContainText("05 / 35");
-    await expect(page.locator(".wall-projects .cell").nth(4)).toHaveClass(/\bon\b/);
+    await page.locator(".s-projects .wtick").nth(4).hover();
+    await expect(page.locator(".s-projects .wm-pos")).toContainText("05 / 35");
+    await expect(page.locator(".s-projects .wtick").nth(4)).toHaveAttribute("aria-current", "true");
+    // The plates are the work under the pointer, and there is exactly one near plate.
+    await expect(page.locator(".s-projects .plate-near")).toHaveCount(1);
   });
 });

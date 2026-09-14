@@ -53,16 +53,23 @@
     align-items: center;
   }
   .lang button {
-    font-size: 0.6rem;
+    font-size: 0.62rem;
     letter-spacing: 0.18em;
-    opacity: 0.42;
-    transition:
-      opacity 0.3s,
-      color 0.3s;
+    /* Dimmed by colour, not by opacity: at 0.42 this switch measured 1.34:1. */
+    color: var(--color-dim);
+    transition: color 0.3s;
   }
+  .lang button:hover {
+    color: var(--color-chrome-3);
+  }
+  /*
+   * The chosen language goes white rather than blue. Blue against this grey is a hue
+   * change of almost no luminance difference, so on a 10px label the state was easy to
+   * miss; white is unmistakable, and the accent stays on the underline below it.
+   */
   .lang button[aria-pressed="true"] {
-    opacity: 1;
-    color: var(--color-electric);
+    color: var(--color-chrome);
+    box-shadow: inset 0 -2px 0 -1px var(--color-electric);
   }
 
   /*
@@ -84,14 +91,16 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.55rem;
+    font-size: 0.58rem;
     letter-spacing: 0.2em;
-    color: var(--color-steel);
+    /*
+     * The rail is the site's primary navigation, and at `opacity: 0.4` over --color-steel
+     * it measured 1.95:1 — the worst reading in the audit. Inactive chapters now step down
+     * in colour to 5.54:1 and the current one goes white.
+     */
+    color: var(--color-dim);
     text-transform: uppercase;
-    opacity: 0.4;
-    transition:
-      opacity 0.35s,
-      color 0.35s;
+    transition: color 0.35s;
   }
   .chapters button .tick {
     width: 12px;
@@ -100,11 +109,14 @@
     transition: width 0.35s var(--ease-house);
   }
   .chapters button:hover {
-    opacity: 0.85;
+    color: var(--color-chrome-3);
   }
   .chapters button[aria-current="true"] {
-    opacity: 1;
-    color: var(--color-electric);
+    color: var(--color-chrome);
+  }
+  /* The accent stays on the rail — as the tick, where it is a mark and not type. */
+  .chapters button[aria-current="true"] .tick {
+    background: var(--color-electric);
   }
   .chapters button[aria-current="true"] .tick {
     width: 30px;
@@ -150,11 +162,12 @@
   }
   .nav-btns button:hover:not(:disabled) {
     border-color: var(--color-electric);
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     background: rgba(67, 97, 255, 0.08);
   }
   .nav-btns button:disabled {
-    opacity: 0.22;
+    color: var(--color-chrome-4);
+    border-color: rgba(155, 175, 225, 0.09);
     cursor: not-allowed;
   }
 
@@ -165,9 +178,9 @@
   .telemetry {
     position: absolute;
     z-index: 5;
-    right: clamp(14px, 2.4vw, 34px);
+    right: var(--tel-inset);
     top: calc(var(--bar) + 20vh);
-    width: 152px;
+    width: var(--tel-w);
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -186,7 +199,7 @@
   .tel-head {
     font-size: 0.52rem;
     letter-spacing: 0.26em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     text-transform: uppercase;
     padding-bottom: 0.4rem;
     border-bottom: 1px solid var(--color-line);
@@ -201,7 +214,7 @@
     letter-spacing: 0.08em;
   }
   .tel-grid dt {
-    color: var(--color-chrome-4);
+    color: var(--color-dim);
   }
   .tel-grid dd {
     margin: 0;
@@ -235,17 +248,18 @@
   .tel-reset {
     align-self: flex-start;
     margin-top: 0.2rem;
-    font-size: 0.5rem;
+    /* 8px of Korean at 3.5:1 was the smallest, faintest type on the site. */
+    font-size: 0.62rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-chrome-4);
+    color: var(--color-dim);
     border-bottom: 1px solid transparent;
     transition:
       color 0.3s,
       border-color 0.3s;
   }
   .tel-reset:hover {
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     border-color: var(--color-line-hot);
   }
 }

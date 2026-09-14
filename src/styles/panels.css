@@ -32,7 +32,7 @@
   .domain .dcount {
     font-family: var(--font-mono);
     font-size: 1.5rem;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     line-height: 1;
     white-space: nowrap;
     text-shadow: 0 0 22px rgba(224, 165, 63, 0.35);
@@ -149,10 +149,9 @@
   .matrixwrap .axis {
     position: absolute;
     font-family: var(--font-mono);
-    font-size: 0.55rem;
+    font-size: 0.58rem;
     letter-spacing: 0.22em;
-    color: var(--color-electric);
-    opacity: 0.6;
+    color: var(--color-electric-ink);
     white-space: nowrap;
   }
   .matrixwrap .ay {
@@ -183,9 +182,9 @@
   }
   .gq .gtag {
     font-family: var(--font-mono);
-    font-size: 0.53rem;
+    font-size: 0.62rem;
     letter-spacing: 0.2em;
-    color: color-mix(in srgb, var(--color-electric) calc(40% + var(--gs) * 12%), var(--color-steel));
+    color: color-mix(in srgb, var(--color-electric-ink) calc(40% + var(--gs) * 12%), var(--color-steel));
   }
   .gq .gbody {
     font-size: clamp(0.62rem, 0.8vw, 0.72rem);
@@ -227,9 +226,10 @@
   .quads {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto;
     gap: clamp(8px, 1.1vw, 16px);
-    flex: 1;
+    flex: 0 1 auto;
+    align-content: start;
     min-height: 0;
     margin-top: 2vh;
   }
@@ -241,7 +241,9 @@
     overflow: hidden;
     padding: 1rem 1.05rem;
     border: 1px solid color-mix(in srgb, var(--qc) 28%, transparent);
-    background: linear-gradient(158deg, color-mix(in srgb, var(--qc) 9%, transparent), transparent 64%);
+    background:
+      linear-gradient(158deg, color-mix(in srgb, var(--qc) 9%, transparent), transparent 64%),
+      var(--surface-read);
   }
   .quad-S {
     --qc: var(--color-quad-s);
@@ -323,8 +325,7 @@
   .val > b {
     font-family: var(--font-mono);
     font-size: 0.82rem;
-    color: var(--color-electric);
-    opacity: 0.8;
+    color: var(--color-electric-ink);
     line-height: 1.5;
     flex: 0 0 auto;
   }
@@ -344,10 +345,9 @@
   .val .vproof {
     display: block;
     margin-top: 0.3rem;
-    font-size: 0.58rem;
+    font-size: 0.6rem;
     letter-spacing: 0.08em;
-    color: var(--color-electric);
-    opacity: 0.62;
+    color: var(--color-electric-ink);
     line-height: 1.5;
   }
   .aim {
@@ -393,7 +393,7 @@
     font-family: var(--font-mono);
     font-size: 0.6rem;
     letter-spacing: 0.18em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     margin-bottom: 0.16rem;
   }
 
@@ -441,14 +441,13 @@
     font-family: var(--font-mono);
     font-size: 0.56rem;
     letter-spacing: 0.3em;
-    color: var(--color-electric);
-    opacity: 0.75;
+    color: var(--color-electric-ink);
   }
   .cert .yr {
     font-family: var(--font-mono);
     font-weight: 600;
     font-size: 2.2rem;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     line-height: 1;
     letter-spacing: 0.06em;
     text-shadow: 0 0 26px rgba(224, 165, 63, 0.35);

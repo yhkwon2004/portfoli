@@ -10,7 +10,7 @@
     font-family: var(--font-mono);
     font-weight: 400;
     font-size: clamp(2rem, 4.2vw, 3.2rem);
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     line-height: 1;
     letter-spacing: 0.05em;
     text-shadow: 0 0 34px rgba(224, 165, 63, 0.32);
@@ -30,14 +30,13 @@
     letter-spacing: 0.16em;
     padding: 0.3rem 0.6rem;
     border: 1px solid color-mix(in srgb, var(--rk) 40%, transparent);
-    color: var(--rk);
+    color: color-mix(in srgb, var(--rk) 55%, var(--color-chrome));
     white-space: nowrap;
   }
   .legend b i {
     font-family: var(--font-mono);
     font-style: normal;
     font-size: 0.72rem;
-    opacity: 0.85;
   }
 
   /* ─────────────────────────────  THE WALLS  ─────────────────────────────
@@ -135,7 +134,7 @@
     font-family: var(--font-mono);
     font-weight: 600;
     font-size: 0.74rem;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     letter-spacing: 0.09em;
     line-height: 1;
   }
@@ -155,7 +154,7 @@
     font-size: 0.6rem;
     font-weight: 600;
     letter-spacing: 0.14em;
-    color: var(--rk, var(--color-electric));
+    color: color-mix(in srgb, var(--rk, var(--color-electric)) 55%, var(--color-chrome));
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
@@ -167,7 +166,7 @@
     top: 0.32rem;
     right: 0.42rem;
     font-size: 0.72rem;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     text-shadow: 0 0 12px rgba(224, 165, 63, 0.9);
     z-index: 1;
   }
@@ -383,7 +382,7 @@
     letter-spacing: 0.2em;
     padding: 0.26rem 0.6rem;
     color: var(--color-void);
-    background: var(--rk, var(--color-electric));
+    background: color-mix(in srgb, var(--rk, var(--color-electric)) 72%, var(--color-chrome));
     font-weight: 600;
     white-space: nowrap;
   }
@@ -394,7 +393,7 @@
     font-family: var(--font-mono);
     font-size: 0.78rem;
     letter-spacing: 0.16em;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
   }
   .focus .ftitle {
     font-family: var(--font-grot);
@@ -485,11 +484,11 @@
   .focus .fpos {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--color-electric);
+    color: var(--color-electric-ink);
     letter-spacing: 0.14em;
   }
   .focus .fhint {
-    opacity: 0.6;
+    color: var(--color-dim);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -513,7 +512,6 @@
     font-size: 0.58rem;
     letter-spacing: 0.2em;
     color: var(--color-steel);
-    opacity: 0.7;
     text-transform: uppercase;
   }
   .picks .prow {
@@ -573,7 +571,7 @@
     font-size: 0.55rem;
     font-weight: 600;
     letter-spacing: 0.14em;
-    color: var(--rk, var(--color-electric));
+    color: color-mix(in srgb, var(--rk, var(--color-electric)) 55%, var(--color-chrome));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
