@@ -23,6 +23,7 @@ type Props = {
   chapter: number;
   onGo: (n: number) => void;
   onLang: (l: Lang) => void;
+  onContact: () => void;
   chaptersId: string;
 };
 
@@ -33,7 +34,7 @@ type Props = {
  * The chapter number and name are read out of CHAPTERS by index, so inserting a chapter
  * renumbers the rail, the slates and the timecode at once with nothing to edit by hand.
  */
-export function Hud({ chapter, onGo, onLang, chaptersId }: Props) {
+export function Hud({ chapter, onGo, onLang, onContact, chaptersId }: Props) {
   const lang = useLang();
   const progress = chapter / LAST;
 
@@ -45,7 +46,17 @@ export function Hud({ chapter, onGo, onLang, chaptersId }: Props) {
           <i className="mark" aria-hidden="true" />
           <span>{UI.rec}</span>
         </div>
-        <div className="lang">
+        <div className="topright">
+          {/*
+            The one curve in a square frame, after the reference's Contact / Recruit pill.
+            It sits in the chrome rather than in a chapter because a visitor who wants an
+            address wants it from wherever they are, not twelve cuts away.
+          */}
+          <button type="button" className="contact-pill" onClick={onContact}>
+            <i aria-hidden="true" />
+            <Txt v={UI.contactOpen} />
+          </button>
+          <div className="lang">
           {LANGS.map((l, n) => (
             <span key={l}>
               {n > 0 && <span aria-hidden="true"> / </span>}
@@ -61,6 +72,7 @@ export function Hud({ chapter, onGo, onLang, chaptersId }: Props) {
               </button>
             </span>
           ))}
+          </div>
         </div>
       </div>
 

@@ -47,6 +47,12 @@
     border-right: 5px solid transparent;
     border-bottom: 9px solid var(--color-chrome);
   }
+  /* The right-hand cluster of the header: the contact pill, then the language switch. */
+  .topright {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 20px);
+  }
   .lang {
     display: flex;
     gap: 0.45rem;

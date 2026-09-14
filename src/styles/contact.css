@@ -1,0 +1,213 @@
+@layer components {
+  /* ─────────────  CONTACT: the pill in the frame, and the card it opens  ─────────────
+   * The reference's header carries one thing that is not navigation: a rounded Contact /
+   * Recruit pill in the top-right corner, set against an otherwise square, hairline UI. The
+   * radius is the whole point — it is the only curve in the frame, which is what makes it
+   * read as the one button rather than as another label.
+   */
+  .contact-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.34rem 0.85rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    color: var(--color-chrome-2);
+    white-space: nowrap;
+    transition:
+      color 0.3s,
+      border-color 0.3s,
+      background 0.3s;
+  }
+  /* The recording light, reused: the pill is live while the reel runs. */
+  .contact-pill i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-electric);
+    flex: 0 0 auto;
+  }
+  .contact-pill:hover,
+  .contact-pill:focus-visible {
+    color: var(--color-chrome);
+    border-color: var(--color-electric);
+    background: rgba(67, 97, 255, 0.12);
+  }
+
+  /* ── the card ── */
+  .contact {
+    position: absolute;
+    inset: 0;
+    z-index: 11;
+    display: grid;
+    place-items: center;
+    background: rgba(3, 4, 10, 0.86);
+    backdrop-filter: blur(14px);
+    opacity: 0;
+    visibility: hidden;
+    /*
+     * The dossier's stepped-visibility pattern, and for the same reason: an element that is
+     * `visibility: hidden` cannot take focus, and `.focus()` on one is specified to do
+     * nothing — silently. Flip it immediately on the way in so the focus trap has something
+     * focusable in the same frame; delay it on the way out so the card is still painted
+     * while it fades.
+     */
+    transition:
+      opacity 0.4s var(--ease-house),
+      visibility 0s linear 0.4s;
+  }
+  .contact[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.4s var(--ease-house),
+      visibility 0s linear 0s;
+  }
+  /* A button rather than a div: clicking the backdrop closes, and that is an action. */
+  .contact-scrim {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  .contact-card {
+    position: relative;
+    width: min(560px, 92vw);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    border: 1px solid var(--color-line-hot);
+    background:
+      linear-gradient(158deg, rgba(67, 97, 255, 0.07), transparent 58%),
+      var(--color-void-2);
+    transform: translateY(10px);
+    transition: transform 0.5s var(--ease-house);
+  }
+  .contact[data-open="true"] .contact-card {
+    transform: none;
+  }
+
+  .contact-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  .contact-x {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-dim);
+    transition: color 0.3s;
+  }
+  .contact-x:hover {
+    color: var(--color-chrome);
+  }
+
+  .contact-name {
+    font-family: var(--font-grot);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+    line-height: 1.1;
+    color: var(--color-chrome);
+  }
+  .contact-name:lang(ko) {
+    font-family: var(--font-kr);
+  }
+  .contact-line {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--color-ice);
+    font-weight: 300;
+  }
+  .contact-aim {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--color-steel);
+    margin-top: 0.2rem;
+  }
+  .contact-aim b {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: var(--color-electric-ink);
+    text-transform: uppercase;
+  }
+
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.9rem 0 0;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--color-line);
+  }
+  .contact-list li {
+    display: grid;
+    grid-template-columns: 5.4rem 1fr auto;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .contact-key {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    color: var(--color-dim);
+  }
+  .contact-label {
+    font-size: 0.74rem;
+    color: var(--color-steel);
+  }
+  .contact-list a {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--color-chrome-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-line-hot);
+    padding-bottom: 2px;
+    transition:
+      color 0.3s,
+      border-color 0.3s;
+    overflow-wrap: anywhere;
+  }
+  .contact-list a:hover,
+  .contact-list a:focus-visible {
+    color: var(--color-chrome);
+    border-color: var(--color-electric);
+  }
+
+  .contact-note {
+    font-size: 0.68rem;
+    line-height: 1.6;
+    color: var(--color-dim);
+    margin-top: 0.9rem;
+  }
+
+  @media (max-width: 560px) {
+    /* The key column costs more than it says at this width. */
+    .contact-list li {
+      grid-template-columns: 1fr auto;
+    }
+    .contact-key {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-card {
+      transform: none;
+      transition: none;
+    }
+  }
+}

@@ -29,6 +29,15 @@ export const UI = {
   sceneAnnounce: { ko: "장", en: "Chapter" } satisfies Bi,
   featured: { ko: "★ 대표작", en: "★ Featured" } satisfies Bi,
 
+  // ── contact, from the pill in the frame ──
+  contactOpen: { ko: "연락 · 채용", en: "Contact · Recruit" } satisfies Bi,
+  contactEyebrow: { ko: "연락 · 채용", en: "Contact · Recruit" } satisfies Bi,
+  contactAim: { ko: "지원 목표 — ", en: "Aiming at — " } satisfies Bi,
+  contactNote: {
+    ko: "링크는 새 창에서 열립니다. 전체 이력은 12장을 순서대로 보시면 됩니다.",
+    en: "Links open in a new tab. The full record is the twelve chapters, in order.",
+  } satisfies Bi,
+
   // ── 01 title ──
   titleEyebrow: "A Portfolio in Falling Sand",
   titleHint: { ko: "스크롤 · 방향키로 재생", en: "Scroll or arrow keys to play" } satisfies Bi,

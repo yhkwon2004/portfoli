@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { AmbientSandCanvas } from "@/components/AmbientSandCanvas";
 import { GridRoomCanvas } from "@/components/GridRoomCanvas";
+import { ContactSheet } from "@/components/ContactSheet";
 import { Dossier } from "@/components/Dossier";
 import { Hourglass } from "@/components/Hourglass";
 import { Hud } from "@/components/Hud";
@@ -57,9 +58,18 @@ export function Stage() {
   const reduced = useReducedMotion();
   const animate = booted && !reduced;
 
-  // The sheet takes the wheel and the arrow keys while it is open.
+  /*
+   * Anything overlaying the frame takes the wheel and the arrow keys while it is open — the
+   * record sheet and the contact card alike. Without the contact card in here, Escape would
+   * close it and step the chapter in the same keystroke.
+   */
+  const [contactOpen, setContactOpen] = useState(false);
   const openRef = useLatestRef(openId);
-  const blocked = useCallback(() => openRef.current !== null, [openRef]);
+  const contactRef = useLatestRef(contactOpen);
+  const blocked = useCallback(
+    () => openRef.current !== null || contactRef.current,
+    [openRef, contactRef],
+  );
   const machine = useSceneMachine(blocked);
 
   const item: Item | null = openId ? itemById(openId) ?? null : null;
@@ -199,7 +209,13 @@ export function Stage() {
           />
         </div>
 
-        <Hud chapter={machine.chapter} onGo={machine.go} onLang={setLang} chaptersId={chaptersId} />
+        <Hud
+          chapter={machine.chapter}
+          onGo={machine.go}
+          onLang={setLang}
+          onContact={() => setContactOpen(true)}
+          chaptersId={chaptersId}
+        />
         <TelemetryBlock reading={reading} onReset={() => setFlowNonce((n) => n + 1)} />
 
         {/*
@@ -220,6 +236,7 @@ export function Stage() {
         <div className="bar bar-bot-edge" aria-hidden="true" />
 
         <Dossier item={item} set={set} onStep={step} onClose={close} />
+        <ContactSheet open={contactOpen} onClose={() => setContactOpen(false)} />
       </div>
     </LangProvider>
   );
