@@ -54,6 +54,7 @@ jobs:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
         with:
           # Automatically inject basePath in your Next.js configuration file and disable
@@ -75,6 +76,15 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        # `static_site_generator: next` above injects basePath into the Next config, which
+        # covers the router and the framework's own asset URLs — but not ours. Every image on
+        # the site is addressed by src/lib/assets.ts, which reads NEXT_PUBLIC_BASE_PATH at
+        # build time; without it every one of the 130 image URLs is absolute from the domain
+        # root and 404s under /portfoli. NEXT_PUBLIC_SITE_URL is the same story for the
+        # canonical link, the OG tags and the JSON-LD.
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
