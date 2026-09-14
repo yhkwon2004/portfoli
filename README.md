@@ -223,30 +223,29 @@ node scripts/images.mjs <마스터-디렉터리> --out public/assets
 
 ### GitHub Pages
 
-`.github/workflows/deploy.yml` 이 빌드부터 업로드까지 전부 합니다. 하위 경로(`/portfoli`)
-처리도 워크플로가 `NEXT_PUBLIC_BASE_PATH`로 넘겨줍니다.
+Pages는 켜져 있고, 주소는 https://yhkwon2004.github.io/portfoli/ 입니다.
 
-**딱 한 번, 저장소 소유자만 할 수 있는 일이 남아 있습니다:**
+배포 워크플로가 둘 있습니다. 하는 일이 겹치므로 어느 쪽을 남길지는 정리 대상입니다.
 
-> **Settings → Pages → Source 를 `GitHub Actions` 로 변경**
-> https://github.com/yhkwon2004/portfoli/settings/pages
+| 파일 | 트리거 | 비고 |
+|---|---|---|
+| `nextjs.yml` | 이 브랜치에 push | GitHub의 Next.js 샘플. **현재 배포되는 쪽** |
+| `deploy.yml` | `main` push · 수동 실행 | 직접 쓴 것. `main` 이 없어 지금은 수동 실행만 |
 
-워크플로에 `enablement: true`를 넣어 스스로 켜보게 했지만 GitHub가 거부합니다 —
-Pages *사이트 생성*은 Actions 토큰 권한 밖이고 소유자만 가능합니다. 실패 로그:
+둘 다 `concurrency: pages` 라 동시에 돌지는 않지만, 같은 사이트를 두 워크플로가 만드는
+상태는 오래 두면 어느 빌드가 올라갔는지 알기 어려워집니다.
 
+**하위 경로 주의.** Pages는 프로젝트 사이트를 `/portfoli` 아래에서 서빙합니다.
+`configure-pages` 의 `static_site_generator: next` 는 basePath를 Next 설정에만 주입하는데,
+이 사이트의 이미지 130장은 `src/lib/assets.ts` 가 `NEXT_PUBLIC_BASE_PATH` 를 읽어 주소를
+만듭니다. 그래서 두 워크플로 모두 빌드 단계에 아래를 넘겨야 합니다 — 빠지면 이미지가
+전부 404입니다.
+
+```yaml
+env:
+  NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+  NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
 ```
-Get Pages site failed.    Error: Not Found
-Create Pages site failed. Error: Resource not accessible by integration
-```
-
-켜고 나면 Actions 탭 → **Deploy to GitHub Pages** → **Run workflow** 로 즉시 배포됩니다.
-주소는 https://yhkwon2004.github.io/portfoli/ 입니다.
-
-### 자동 배포
-
-push 트리거는 `main` 을 봅니다. 이 저장소에는 아직 `main` 이 없고 기본 브랜치가 작업
-브랜치라, 지금은 수동 실행만 됩니다. `main` 을 만들어 기본 브랜치로 두면 이후에는 푸시할
-때마다 자동 배포됩니다.
 
 ### 그 밖
 
