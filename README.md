@@ -219,11 +219,39 @@ node scripts/images.mjs <마스터-디렉터리> --out public/assets
 
 ## 배포
 
-정적 export이므로 서버가 없습니다.
+정적 export이므로 서버가 없습니다. `out/`을 어디에 올려도 동작합니다.
 
-- **GitHub Pages** — `.github/workflows/deploy.yml`이 `main` 푸시에 자동 배포합니다.
-  Settings → Pages → Source를 **GitHub Actions**로 바꿔두세요.
-- **Vercel / 버킷** — 환경변수 없이 그대로.
+### GitHub Pages
+
+`.github/workflows/deploy.yml` 이 빌드부터 업로드까지 전부 합니다. 하위 경로(`/portfoli`)
+처리도 워크플로가 `NEXT_PUBLIC_BASE_PATH`로 넘겨줍니다.
+
+**딱 한 번, 저장소 소유자만 할 수 있는 일이 남아 있습니다:**
+
+> **Settings → Pages → Source 를 `GitHub Actions` 로 변경**
+> https://github.com/yhkwon2004/portfoli/settings/pages
+
+워크플로에 `enablement: true`를 넣어 스스로 켜보게 했지만 GitHub가 거부합니다 —
+Pages *사이트 생성*은 Actions 토큰 권한 밖이고 소유자만 가능합니다. 실패 로그:
+
+```
+Get Pages site failed.    Error: Not Found
+Create Pages site failed. Error: Resource not accessible by integration
+```
+
+켜고 나면 Actions 탭 → **Deploy to GitHub Pages** → **Run workflow** 로 즉시 배포됩니다.
+주소는 https://yhkwon2004.github.io/portfoli/ 입니다.
+
+### 자동 배포
+
+push 트리거는 `main` 을 봅니다. 이 저장소에는 아직 `main` 이 없고 기본 브랜치가 작업
+브랜치라, 지금은 수동 실행만 됩니다. `main` 을 만들어 기본 브랜치로 두면 이후에는 푸시할
+때마다 자동 배포됩니다.
+
+### 그 밖
+
+- **Vercel / 버킷** — 환경변수 없이 그대로. 루트에서 서빙됩니다.
+- `NEXT_PUBLIC_SITE_URL` 은 canonical·OG·JSON-LD 의 절대 URL에 쓰입니다.
 
 ---
 
