@@ -2,6 +2,10 @@
 
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { riseAt } from "@/components/motion/timing";
 import { PORTFOLIO } from "@/data/portfolio";
 import { rankOf } from "@/data/ranks";
 import { cover, picks, profile, stats, year } from "@/lib/select";
@@ -32,25 +36,36 @@ export function ProfileScene({
   return (
     <Scene index={index} live={live} className="s-profile" gutter top>
       <div className="col-l">
-        <Txt v={UI.profileEyebrow} as="p" className="eyebrow rise" style={{ "--i": 0 } as React.CSSProperties} />
-        <Txt v={PORTFOLIO.owner} as="h2" className="who rise" style={{ "--i": 1 } as React.CSSProperties} />
+        <Decode
+          v={UI.profileEyebrow}
+          as="p"
+          className="eyebrow rise"
+          style={{ "--i": 0 } as React.CSSProperties}
+          delay={riseAt(0)}
+        />
+        <Kinetic
+          v={PORTFOLIO.owner}
+          as="h2"
+          className="who"
+          style={{ "--kin-at": "0.4s", "--kin-step": "0.06s" } as React.CSSProperties}
+        />
         <Txt v={profile.t} as="p" className="tagline rise" style={{ "--i": 2 } as React.CSSProperties} />
       </div>
 
       <div className="col-r">
         <Txt v={profile.s} as="p" className="tagline rise" style={{ "--i": 3 } as React.CSSProperties} />
         <div className="tags rise" style={{ "--i": 4 } as React.CSSProperties}>
-          {profile.tags.map((t) => (
-            <span className="tag" key={t}>
+          {profile.tags.map((t, n) => (
+            <span className="tag" key={t} style={{ "--k": n } as React.CSSProperties}>
               {t}
             </span>
           ))}
         </div>
         <div className="stat-row rise" style={{ "--i": 5 } as React.CSSProperties}>
-          <Stat n={stats.awards} label={UI.statAwards} />
-          <Stat n={stats.projects} label={UI.statProjects} />
-          <Stat n={stats.certifications} label={UI.statCerts} />
-          <Stat n={stats.experience} label={UI.statRoles} />
+          <Stat n={stats.awards} label={UI.statAwards} k={0} />
+          <Stat n={stats.projects} label={UI.statProjects} k={1} />
+          <Stat n={stats.certifications} label={UI.statCerts} k={2} />
+          <Stat n={stats.experience} label={UI.statRoles} k={3} />
         </div>
       </div>
 
@@ -69,10 +84,13 @@ export function ProfileScene({
   );
 }
 
-function Stat({ n, label }: { n: number; label: typeof UI.statAwards }) {
+/** The stat row rises at `--i: 5`; each figure then counts up, a beat after the one before. */
+function Stat({ n, label, k }: { n: number; label: typeof UI.statAwards; k: number }) {
   return (
     <div className="stat">
-      <b>{n}</b>
+      <b>
+        <CountUp value={n} delay={riseAt(5) + 60 + k * 90} duration={1000} />
+      </b>
       <Txt v={label} as="span" />
     </div>
   );

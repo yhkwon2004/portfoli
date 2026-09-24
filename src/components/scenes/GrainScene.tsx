@@ -1,6 +1,9 @@
 "use client";
 
 import { Txt } from "@/components/Txt";
+import { Decode } from "@/components/motion/Decode";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { riseAt } from "@/components/motion/timing";
 import { GRAINS } from "@/data/grains";
 import { UI } from "@/data/ui";
 import { useLang } from "@/components/LangProvider";
@@ -21,8 +24,20 @@ export function GrainScene({ index, live }: { index: number; live: boolean }) {
     <Scene index={index} live={live} className="s-grain" gutter top>
       <div className="grainwrap">
         <div className="thesis">
-          <Txt v={UI.grainEyebrow} as="p" className="eyebrow rise" style={{ "--i": 0 } as React.CSSProperties} />
-          <Txt v={UI.grainCreed} as="p" className="creed rise" style={{ "--i": 1 } as React.CSSProperties} />
+          <Decode
+            v={UI.grainEyebrow}
+            as="p"
+            className="eyebrow rise"
+            style={{ "--i": 0 } as React.CSSProperties}
+            delay={riseAt(0)}
+          />
+          {/* The couplet sets itself word by word, the line break kept. */}
+          <Kinetic
+            v={UI.grainCreed}
+            as="p"
+            className="creed"
+            style={{ "--kin-at": "0.42s", "--kin-step": "0.055s" } as React.CSSProperties}
+          />
           <p className="tagline rise" style={{ "--i": 2 } as React.CSSProperties}>
             {thesis.map((run) => (run.em ? <b key={run.text}>{run.text}</b> : run.text))}
           </p>
@@ -42,8 +57,12 @@ export function GrainScene({ index, live }: { index: number; live: boolean }) {
             <article
               key={g.name.ko}
               className="gq rise"
-              style={{ "--i": n + 3, "--gs": g.size } as React.CSSProperties}
+              // The frame traces in the same weight order the grains fall in: heaviest first.
+              style={
+                { "--i": n + 3, "--gs": g.size, "--reg-at": `${0.5 + (5 - g.size) * 0.16}s` } as React.CSSProperties
+              }
             >
+              <span className="regmarks" aria-hidden="true" />
               <span className="pile" aria-hidden="true">
                 {Array.from({ length: g.dots }, (_, d) => (
                   <i key={d} style={{ "--d": d } as React.CSSProperties} />

@@ -52,6 +52,18 @@ export type GridTheme = {
   readonly near: string;
 };
 
+/**
+ * The dolly zoom. At the height of a cut the focal length drops while the camera surges — the
+ * Hitchcock move, where the walls stretch away around a fixed centre — and springs back as the
+ * surge decays. Forward widens the lens; backward tightens it.
+ */
+const DOLLY = 0.2;
+/** Radians of bank per world unit the camera still has to pan: it leans into the turn. */
+const BANK = 0.02;
+/** How far the pointer can turn the camera, in world units across and fractions of the frame down. */
+const LOOK_X = 0.35;
+const LOOK_Y = 0.028;
+
 export class GridRoom {
   private w = 0;
   private h = 0;
@@ -62,6 +74,11 @@ export class GridRoom {
   private targetPan = 0;
   /** 0 → still, 1 → full speed. Lifted on a cut, then decays. */
   private surge = 0;
+  /** Which way the last cut went. A backward cut runs the corridor in reverse. */
+  private dir = 1;
+  /** Where the viewer is looking, −1 … 1, already smoothed by the caller. */
+  private lookX = 0;
+  private lookY = 0;
 
   resize(w: number, h: number): void {
     this.w = w;
@@ -71,18 +88,39 @@ export class GridRoom {
   /**
    * Aim the room. Each chapter sits at a slightly different lateral offset, so cutting between
    * chapters slides the corridor sideways — the frame moves even when the scene is static.
+   *
+   * `dir` is the direction of the cut. Forward, the rungs rush at the camera; backward, they
+   * run away from it — the room is rewound, the same way the glass is turned over.
    */
-  aim(chapterFraction: number): void {
+  aim(chapterFraction: number, dir: 1 | -1 = 1): void {
     // ±0.8 world units across the whole reel, which is a visible but unshowy parallax.
     this.targetPan = (chapterFraction - 0.5) * 1.6;
     this.surge = 1;
+    this.dir = dir;
+  }
+
+  /** A push against the end of the reel: a short surge the wrong way, a recoil. */
+  recoil(dir: 1 | -1): void {
+    this.surge = Math.max(this.surge, 0.35);
+    this.dir = -dir;
+  }
+
+  /** The pointer's position, normalised and smoothed. Turns the camera, never moves it. */
+  look(x: number, y: number): void {
+    this.lookX = x;
+    this.lookY = y;
   }
 
   step(dt: number): void {
     this.surge = Math.max(0, this.surge - dt * 0.9);
     // Base drift plus the post-cut surge: the corridor lurches forward on a cut, then settles.
-    this.travel += dt * (0.55 + this.surge * 5.5);
+    this.travel += dt * (0.55 + this.surge * 5.5 * this.dir);
     this.pan += (this.targetPan - this.pan) * Math.min(1, dt * 1.6);
+  }
+
+  /** 0 at rest and at the very start of a cut, 1 at its height — the shape of the dolly. */
+  private get swell(): number {
+    return 4 * this.surge * (1 - this.surge);
   }
 
   /**
@@ -97,14 +135,30 @@ export class GridRoom {
   /** Project a world point onto the canvas. Returns null when it is behind the camera. */
   private project(x: number, y: number, z: number): readonly [number, number] | null {
     if (z <= 0.05) return null;
-    const s = (FOCAL * Math.min(this.w, this.h * 1.9)) / z;
-    return [this.w / 2 + (x - this.pan) * s, this.h * HORIZON + y * s];
+    const focal = FOCAL * (1 - DOLLY * this.swell * this.dir);
+    const s = (focal * Math.min(this.w, this.h * 1.9)) / z;
+    const horizon = HORIZON + this.lookY * LOOK_Y;
+    return [this.w / 2 + (x - this.pan - this.lookX * LOOK_X) * s, this.h * horizon + y * s];
   }
 
   draw(ctx: CanvasRenderingContext2D, theme: GridTheme): void {
     ctx.clearRect(0, 0, this.w, this.h);
     if (!this.w || !this.h) return;
 
+    // Bank into the pan: while the camera is still sliding toward its chapter's offset, the
+    // frame tilts a fraction of a degree in the direction of travel, and levels as it arrives.
+    ctx.save();
+    const roll = (this.targetPan - this.pan) * BANK;
+    if (Math.abs(roll) > 0.0005) {
+      ctx.translate(this.w / 2, this.h * HORIZON);
+      ctx.rotate(roll);
+      ctx.translate(-this.w / 2, -this.h * HORIZON);
+    }
+    this.drawRoom(ctx, theme);
+    ctx.restore();
+  }
+
+  private drawRoom(ctx: CanvasRenderingContext2D, theme: GridTheme): void {
     ctx.lineCap = "butt";
 
     // Rungs travel toward the camera and recycle, so `travel` only ever advances.

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef } from "react";
 import { Txt } from "@/components/Txt";
+import { Kinetic } from "@/components/motion/Kinetic";
 import { TARGET } from "@/data/aim";
 import { CONTACT } from "@/data/contact";
 import { PORTFOLIO } from "@/data/portfolio";
@@ -72,9 +73,11 @@ export function ContactSheet({ open, onClose }: Props) {
           </button>
         </header>
 
-        <h2 className="contact-name" id={titleId}>
-          <Txt v={PORTFOLIO.owner} />
-        </h2>
+        {/*
+          The name assembles itself each time the card opens — re-keyed on `open`, so the
+          letters rise again on every visit rather than only the first.
+        */}
+        <Kinetic key={String(open)} id={titleId} v={PORTFOLIO.owner} as="h2" className="contact-name" />
         <Txt v={PORTFOLIO.headline} as="p" className="contact-line" />
 
         {/*
@@ -89,8 +92,8 @@ export function ContactSheet({ open, onClose }: Props) {
         </p>
 
         <ul className="contact-list">
-          {CONTACT.map((c) => (
-            <li key={c.key}>
+          {CONTACT.map((c, n) => (
+            <li key={c.key} style={{ "--k": n } as React.CSSProperties}>
               <b className="contact-key">{c.key}</b>
               <Txt v={c.label} as="span" className="contact-label" />
               <a href={c.href} target="_blank" rel="noopener noreferrer">

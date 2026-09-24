@@ -130,10 +130,16 @@
     /* The 2px surface gap that separates the two segments. */
     gap: 2px;
     height: var(--h);
-    transition: height 1s var(--ease-house) calc(0.5s + var(--i) * 0.09s);
+    /* A soft spring: the column overshoots its value by a few percent and settles onto it. */
+    transition: height 1.2s var(--ease-spring-soft) calc(0.5s + var(--i) * 0.09s);
   }
-  .scene:not([data-live="true"]) .mstack {
+  .scene:not([data-shown="true"]) .mstack {
     height: 0;
+  }
+  /* Out: the columns drain back to the axis together, fast. */
+  .scene[data-state="out"] .mstack {
+    height: 0;
+    transition: height 0.34s var(--ease-exit);
   }
   .mseg {
     width: 100%;
@@ -204,9 +210,13 @@
     /* Rounded data-end, square at the baseline. */
     border-radius: 0 4px 4px 0;
   }
-  .scene[data-live="true"] .mbar .mfill {
+  .scene[data-shown="true"] .mbar .mfill {
     width: var(--w);
-    transition: width 0.95s var(--ease-house) calc(0.45s + var(--i) * 0.055s);
+    transition: width 1.15s var(--ease-spring-soft) calc(0.45s + var(--i) * 0.055s);
+  }
+  .scene[data-state="out"] .mbar .mfill {
+    width: 0;
+    transition: width 0.3s var(--ease-exit);
   }
 
   /* ── the honest counterweight: one headline number, as a stat tile not a chart ── */
@@ -227,7 +237,8 @@
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
   }
-  .mstat span {
+  /* The caption beside the figure — not the counters inside the <b>. */
+  .mstat > span {
     font-size: 0.6rem;
     line-height: 1.45;
     color: var(--color-steel);

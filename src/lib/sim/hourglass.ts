@@ -75,6 +75,10 @@ const EMIT_BURST = 9 * FPS_REF;
 const MAX_DROPS = 260;
 /** How much pile depth one landed grain adds. */
 const GRAIN_VOLUME = 0.55;
+/** The fixed simulation tick. Every constant above was tuned at 60 Hz, so the tick is 60 Hz. */
+const TICK = 1 / FPS_REF;
+/** At most this much time is caught up in one frame — three ticks, the rAF loop's own dt cap. */
+const MAX_CATCHUP = 0.05;
 
 /** A measured reading of the pour. See `HourglassSim.telemetry()`. */
 export type Telemetry = {
@@ -115,6 +119,8 @@ export class HourglassSim {
   private pourBoost = 0;
   /** Fractional carry so a per-second emission rate survives being sampled per frame. */
   private emitCarry = 0;
+  /** Simulated time not yet stepped — less than one TICK after every `step()`. */
+  private carry = 0;
 
   /** Point the pour at a new fill fraction and open the neck for a moment. */
   pourTo(fraction: number): void {
@@ -131,11 +137,31 @@ export class HourglassSim {
     this.heap.fill(depth);
   }
 
+  /**
+   * Advance the pour by `dt` seconds, in fixed 1/60 s ticks.
+   *
+   * Gravity and emission were already per-second, but the slump is not a rate: it is three
+   * passes per call, whatever the call's length. So at a low frame rate each call landed more
+   * grains between slumps, the cone came out steeper than its angle of repose, and past about
+   * 80% full its peak reached the neck — where a grain spawns inside the pile and lands on its
+   * first step, and the stream stops dead. The regression test caught exactly that when heavier
+   * frames lowered the headless browser's frame rate — the same stall the 56° repose once
+   * caused, by a different road — and under a 6× CPU throttle the untouched original stalls
+   * on three chapters too.
+   *
+   * Stepping in fixed ticks makes the pile the same at 25 Hz, 60 Hz and 144 Hz. The leftover
+   * fraction carries to the next frame; the carry is capped so a stalled tab cannot come back
+   * and try to simulate the time it was away.
+   */
   step(dt: number): void {
-    this.emit(dt);
-    this.fall(dt);
-    this.slump();
-    this.steerVolume(dt);
+    this.carry = Math.min(this.carry + dt, MAX_CATCHUP);
+    while (this.carry >= TICK) {
+      this.carry -= TICK;
+      this.emit(TICK);
+      this.fall(TICK);
+      this.slump();
+      this.steerVolume(TICK);
+    }
   }
 
   /** Always a trickle, so the glass is never a still image; hard right after a cut. */
@@ -322,14 +348,17 @@ export class HourglassSim {
     ctx.globalCompositeOperation = "lighter";
     if (this.level < 0.995) {
       // The neck is the one place the accent blue touches the glass — it reads as the light
-      // the wireframe room is casting through the pour.
-      const glow = ctx.createRadialGradient(100, NECK, 0, 100, NECK, 26);
-      glow.addColorStop(0, "rgba(150,180,255,.55)");
-      glow.addColorStop(0.45, "rgba(67,97,255,.22)");
+      // the wireframe room is casting through the pour. It swells with the surge: the glow is
+      // brightest and widest while the neck is running hard after a cut, and contracts back as
+      // the flow thins — a secondary motion driven by the same number SRG reads out.
+      const r = 26 * (1 + this.pourBoost * 0.65);
+      const glow = ctx.createRadialGradient(100, NECK, 0, 100, NECK, r);
+      glow.addColorStop(0, `rgba(150,180,255,${(0.55 + this.pourBoost * 0.3).toFixed(3)})`);
+      glow.addColorStop(0.45, `rgba(67,97,255,${(0.22 + this.pourBoost * 0.14).toFixed(3)})`);
       glow.addColorStop(1, "rgba(67,97,255,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.arc(100, NECK, 26, 0, Math.PI * 2);
+      ctx.arc(100, NECK, r, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.strokeStyle = "rgba(240,246,255,.92)";

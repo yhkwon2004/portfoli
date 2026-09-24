@@ -3,7 +3,12 @@
 import { useCallback, useRef } from "react";
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { riseAt } from "@/components/motion/timing";
 import { Scene } from "@/components/scenes/Scene";
+import { useFalloff } from "@/hooks/useFalloff";
 import { useReel } from "@/hooks/useReel";
 import { topicTags } from "@/data/ranks";
 import { cover, gallery } from "@/lib/select";
@@ -63,6 +68,9 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
   const roomRef = useRef<HTMLDivElement>(null);
   const scaleRef = useRef<HTMLDivElement>(null);
 
+  // The scale is a waveform under the pointer: ticks near it stand up, falling off either side.
+  useFalloff(scaleRef, { selector: ".wtick", radius: 90, active: animate });
+
   /*
    * Parallax is written straight onto the node rather than held in state. A pointer crossing
    * the room fires this sixty times a second, and sixty renders a second of a scene holding
@@ -109,9 +117,9 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
   return (
     <Scene index={index} live={live} className="s-projects" gutter top>
       <div className="wall-head rise" style={{ "--i": 0 } as React.CSSProperties}>
-        <span className="count">{items.length}</span>
+        <CountUp className="count" value={items.length} delay={riseAt(0)} duration={1100} />
         <div>
-          <Txt v={UI.projectsEyebrow} as="p" className="eyebrow" />
+          <Decode v={UI.projectsEyebrow} as="p" className="eyebrow" delay={riseAt(0) + 80} />
         </div>
       </div>
 
@@ -121,6 +129,9 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
         onPointerMove={onMove}
         onPointerLeave={onLeave}
         onPointerEnter={() => reel.pick(reel.index)}
+        // The reel's own direction, for everything in the room: plates fly in from the side
+        // the reel is turning toward, and the caption's letters rise or drop to match.
+        style={{ "--rd": reel.dir } as React.CSSProperties}
       >
         {/* Re-keyed per turn so the plates fly in again on every change of work. */}
         <div className="plates" key={reel.turn}>
@@ -162,16 +173,24 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
         {item && (
           <figcaption className="wmeta" key={`m${reel.turn}`}>
             <span className="wm-top">
-              <b className="wm-year">{item.year}</b>
+              <Decode v={item.year} as="b" className="wm-year" delay={120} />
               {item.featured && <span className="wm-flag">{text(UI.featured, lang)}</span>}
             </span>
-            <Txt v={item.t} as="h3" className="wm-title" />
+            {/* The caption is a title card: the work's name sets itself letter by letter. */}
+            <Kinetic
+              v={item.t}
+              as="h3"
+              className="wm-title"
+              style={{ "--kin-at": "0.14s", "--kin-step": "0.028s", "--kin-dur": "0.8s" } as React.CSSProperties}
+            />
             <Txt v={item.s} as="p" className="wm-sum" />
             <span className="wm-tags">
               {topicTags(item)
                 .slice(0, 5)
-                .map((t) => (
-                  <span key={t}>{t}</span>
+                .map((t, n) => (
+                  <span key={t} style={{ "--k": n } as React.CSSProperties}>
+                    {t}
+                  </span>
                 ))}
             </span>
           </figcaption>
@@ -217,6 +236,7 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
               key={w.id}
               type="button"
               data-n={n}
+              style={{ "--n": n } as React.CSSProperties}
               className={`wtick${w.featured ? " star" : ""}`}
               aria-current={n === reel.index}
               aria-label={`${w.year} ${text(w.t, lang)}`}

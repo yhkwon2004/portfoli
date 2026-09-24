@@ -2,6 +2,9 @@
 
 import { useId } from "react";
 import { Txt } from "@/components/Txt";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { riseAt } from "@/components/motion/timing";
 import { RAMP, SERIES, SOLO, SURFACE } from "@/data/charts";
 import {
   gradeDistribution,
@@ -40,9 +43,9 @@ export function MetricsScene({ index, live }: { index: number; live: boolean }) 
     <Scene index={index} live={live} className="s-metrics" gutter top>
       <div className="wall-head rise" style={{ "--i": 0 } as React.CSSProperties}>
         {/* The headline is the size of the evidence base, which is what makes the rest credible. */}
-        <span className="count">{stats.records}</span>
+        <CountUp className="count" value={stats.records} delay={riseAt(0)} duration={1200} />
         <div>
-          <Txt v={UI.metricsEyebrow} as="p" className="eyebrow" />
+          <Decode v={UI.metricsEyebrow} as="p" className="eyebrow" delay={riseAt(0) + 80} />
           <Txt v={UI.metricsHint} as="p" className="mnote" />
         </div>
       </div>
@@ -87,8 +90,12 @@ function OutputPanel({ lang }: { lang: "ko" | "en" }) {
         <div className="mcols" role="img" aria-describedby={tableId}>
           {outputByYear.map((b, n) => (
             <div className="mcol" key={b.year}>
-              {/* The total on the cap — one selective direct label, in a text token. */}
-              <span className="mtotal">{b.total}</span>
+              {/*
+                The total on the cap — one selective direct label, in a text token. It counts up
+                as its column grows (both start at 0.5s + n × 0.09s), so the figure and the bar
+                arrive together.
+              */}
+              <CountUp className="mtotal" value={b.total} delay={500 + n * 90} duration={1100} />
               <div
                 className="mstack"
                 style={
@@ -166,7 +173,7 @@ function GradePanel({ lang }: { lang: "ko" | "en" }) {
               <span className="mlabel" lang="ko">
                 {rank.key}
               </span>
-              <span className="mval">{count}</span>
+              <CountUp className="mval" value={count} delay={450 + n * 55} duration={1000} />
               <span className="mtrack">
                 <i
                   className="mfill"
@@ -219,7 +226,7 @@ function DepthPanel({ lang }: { lang: "ko" | "en" }) {
           {rows.map((r, n) => (
             <div className="mbar" key={r.tag} title={`${r.tag} — ${r.count}`}>
               <span className="mlabel">{r.tag}</span>
-              <span className="mval">{r.count}</span>
+              <CountUp className="mval" value={r.count} delay={450 + n * 55} duration={1000} />
               <span className="mtrack">
                 <i
                   className="mfill"
@@ -236,7 +243,8 @@ function DepthPanel({ lang }: { lang: "ko" | "en" }) {
       {/* A single headline number is a stat tile, not a one-bar chart. */}
       <p className="mstat">
         <b>
-          {tagsProvenOnce} / {totalTags}
+          <CountUp value={tagsProvenOnce} delay={900} duration={1300} /> /{" "}
+          <CountUp value={totalTags} delay={900} duration={1300} />
         </b>
         <Txt v={UI.metricThin} as="span" />
       </p>

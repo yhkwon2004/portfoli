@@ -34,6 +34,32 @@
       display: none;
     }
 
+    /*
+     * The footbar carries the timecode, PLAY, MOTION and the step buttons — too much for a
+     * phone's width. The two switches drop their words (kept for assistive technology, as the
+     * buttons' names) and the timecode closes up, so the step buttons stay on screen.
+     */
+    .footl {
+      gap: 8px;
+    }
+    .timecode {
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+    }
+    .playbtn,
+    .motionsw {
+      padding: 0 0.55rem;
+    }
+    .playbtn .lbl,
+    .motionsw .lbl {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
     /* The rail has no room to draw across; it becomes a wrapped list. */
     .rail {
       flex-wrap: wrap;
@@ -196,7 +222,8 @@
       transition-duration: 0.12s !important;
     }
     .sand-canvas,
-    .grain {
+    .grain,
+    .boot {
       display: none;
     }
     /* Without this the Ken Burns keyframe would leave the image parked at 1.13 scale. */
@@ -205,6 +232,28 @@
       animation: none !important;
       transform: none !important;
     }
+  }
+
+  /*
+   * The site's own MOTION switch, off. It has to mean exactly what the OS setting means —
+   * a visitor who finds the switch should get the same site as one whose system asked — so
+   * every rule in the block above is repeated here, scoped to the stage's own attribute.
+   * (The scripted half — the loops, the counters, the reticle — reads the same gate in JS.)
+   */
+  .stage[data-motion="off"],
+  .stage[data-motion="off"] *,
+  .stage[data-motion="off"] *::before,
+  .stage[data-motion="off"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.12s !important;
+  }
+  .stage[data-motion="off"] :is(.sand-canvas, .grain, .boot) {
+    display: none;
+  }
+  .stage[data-motion="off"] :is(.focus .fimg img, .dossier .hero img) {
+    animation: none !important;
+    transform: none !important;
   }
 
   /* Forced-colors (Windows high contrast): let the OS palette through rather than fight it. */
@@ -237,7 +286,10 @@
     .bar,
     .sand-canvas,
     .glass,
-    .wash {
+    .wash,
+    .boot,
+    .cutfx,
+    .reticle {
       display: none !important;
     }
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
 import { rankOf } from "@/data/ranks";
@@ -8,6 +8,7 @@ import { cover, year } from "@/lib/select";
 import { text } from "@/lib/i18n";
 import { useLang } from "@/components/LangProvider";
 import { UI } from "@/data/ui";
+import { useFalloff } from "@/hooks/useFalloff";
 import type { Item } from "@/lib/types";
 
 type Props = {
@@ -18,7 +19,14 @@ type Props = {
   onPick: (n: number) => void;
   onRelease: () => void;
   onOpen: (id: string) => void;
+  /** The motion gate: the falloff field and the gliding selector only run with motion on. */
+  animate?: boolean;
 };
+
+/** How far the pointer's field reaches across the wall, in px — about two tiles. */
+const FIELD_RADIUS = 210;
+/** Clearance between the selection box and the tile it frames. */
+const SEL_OUTSET = 4;
 
 /** The tile is ~90px wide at 7 columns, so the 560px tier is always the right file. */
 const TILE_SIZES = "(max-width: 760px) 25vw, (max-width: 1180px) 20vw, 13vw";
@@ -33,9 +41,39 @@ const TILE_SIZES = "(max-width: 760px) 25vw, (max-width: 1180px) 20vw, 13vw";
  * projector, reading the real column count off the rendered geometry rather than assuming 7
  * (it is 5 or 4 at narrower widths).
  */
-export function Wall({ items, kind, active, onPick, onRelease, onOpen }: Props) {
+export function Wall({ items, kind, active, onPick, onRelease, onOpen, animate = false }: Props) {
   const lang = useLang();
   const gridRef = useRef<HTMLDivElement>(null);
+  const selRef = useRef<HTMLSpanElement>(null);
+
+  useFalloff(gridRef, { selector: ".cell", radius: FIELD_RADIUS, active: animate });
+
+  /*
+   * The selection box: one frame that travels from tile to tile as the reel turns, instead of
+   * the highlight blinking off one and on at the next — a tracking box on a HUD following its
+   * target. Placed from layout offsets, so the tiles' own entrance and swell never throw it
+   * off; re-placed on resize, because the column count changes with the width.
+   */
+  useLayoutEffect(() => {
+    const grid = gridRef.current;
+    const sel = selRef.current;
+    if (!grid || !sel) return;
+    const place = () => {
+      const cell = grid.children[active];
+      if (!(cell instanceof HTMLElement) || !cell.classList.contains("cell")) return;
+      sel.style.left = `${cell.offsetLeft - SEL_OUTSET}px`;
+      sel.style.top = `${cell.offsetTop - SEL_OUTSET}px`;
+      sel.style.width = `${cell.offsetWidth + SEL_OUTSET * 2}px`;
+      sel.style.height = `${cell.offsetHeight + SEL_OUTSET * 2}px`;
+      const rk = cell.style.getPropertyValue("--rk");
+      if (rk) sel.style.setProperty("--rk", rk);
+      else sel.style.removeProperty("--rk");
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(grid);
+    return () => ro.disconnect();
+  }, [active]);
 
   /**
    * Columns, measured rather than assumed: the same component renders at 7, 5 and 4 columns,
@@ -139,6 +177,8 @@ export function Wall({ items, kind, active, onPick, onRelease, onOpen }: Props) 
           </button>
         );
       })}
+      {/* Last child, so `children[n]` above still indexes the tiles. */}
+      <span className="wall-sel" ref={selRef} aria-hidden="true" />
     </div>
   );
 }

@@ -32,23 +32,45 @@
      * is `visibility: hidden` cannot take focus — so a keyboard user would find the live
      * scene's controls unreachable for half a second after every cut.
      */
-    transition:
-      opacity 0.5s var(--ease-house),
-      visibility 0s linear 0.5s,
-      transform 0.9s var(--ease-house);
-    transform: scale(1.02);
+    transition: visibility 0s linear 0.5s;
   }
   .scene[data-live="true"] {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: none;
-    /* The delay lets the outgoing scene clear before the incoming one rises — on opacity and
-       transform only; visibility has to flip at once so the scene is focusable. */
-    transition:
-      opacity 0.5s var(--ease-house) 0.28s,
-      visibility 0s linear 0s,
-      transform 0.9s var(--ease-house) 0.28s;
+    /* Visibility flips at once so the scene is focusable; the picture arrives on the delay. */
+    transition: visibility 0s linear 0s;
+    animation: scene-in 0.95s var(--ease-house) 0.2s backwards;
+  }
+  /*
+   * The camera move. The corridor behind lurches forward on every cut, so the frames do the
+   * same: going forward, the outgoing chapter passes the camera — it grows as it fades — and
+   * the incoming one arrives from further down the room. Going back, the whole move runs in
+   * reverse: the old frame recedes, the new one comes in from behind the viewer. One pair of
+   * keyframes, mirrored by `--dir`.
+   *
+   * Keyframes rather than transitions for the entrance, because the entrance starts from a
+   * value that depends on the direction, and a transition's start value is computed from the
+   * style *before* the cut — when `--dir` still held the previous cut's direction.
+   */
+  .scene[data-state="out"] {
+    animation: scene-out 0.46s var(--ease-exit) forwards;
+  }
+  @keyframes scene-in {
+    from {
+      opacity: 0;
+      transform: scale(calc(1 - var(--dir) * 0.05)) translateY(calc(var(--dir) * 1.4vh));
+    }
+  }
+  @keyframes scene-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: scale(calc(1 + var(--dir) * 0.07)) translateY(calc(var(--dir) * -1.8vh));
+    }
   }
 
   /* The middle scenes keep gutters clear for the chapter rail (left) and telemetry (right). */
@@ -92,11 +114,17 @@
   .slate .rule {
     width: 0;
     height: 1px;
-    background: var(--color-line);
+    background: linear-gradient(90deg, var(--color-line-hot), var(--color-line));
     transition: width 0.9s var(--ease-house) 0.45s;
+    transform-origin: left;
   }
-  .scene[data-live="true"] .slate .rule {
+  .scene[data-shown="true"] .slate .rule {
     width: clamp(48px, 11vw, 180px);
+  }
+  /* The rule retracts toward the number on the way out, as a slate being pulled. */
+  .scene[data-state="out"] .slate .rule {
+    transform: scaleX(0);
+    transition: transform 0.32s var(--ease-exit);
   }
 
   /*
@@ -133,21 +161,77 @@
      * outline in the dispersion hues. Done as text-shadows on one element rather than three
      * stacked copies: a 30rem word repeated three times per scene, twelve scenes, is a lot of
      * glyph rasterisation for an effect that is three pixels wide.
+     *
+     * Held in a variable so the entrance can blow the offsets wide open and settle back to
+     * exactly this — the RGB split of a signal locking on.
      */
-    text-shadow:
+    --disp:
       -2px 0 0 color-mix(in srgb, var(--color-disp-cyan) 12%, transparent),
       2px 0 0 color-mix(in srgb, var(--color-disp-magenta) 10%, transparent),
       0 2px 0 color-mix(in srgb, var(--color-disp-amber) 7%, transparent);
+    text-shadow: var(--disp);
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1.06);
-    transition:
-      opacity 1.1s var(--ease-house),
-      transform 1.4s var(--ease-house);
+    transform: translate(-50%, -50%);
+    /*
+     * Multiplane parallax. The pointer loop writes --lx/--ly (−1…1) onto the live ghost only;
+     * the word sits deep in the room, so it slides against the pointer, the opposite way to
+     * the glass in front of it. `translate` rather than `transform`, so it composes with the
+     * centring and the exit instead of replacing them.
+     */
+    translate: calc(var(--lx) * -28px) calc(var(--ly) * -14px);
+    transition: translate 0.2s linear;
   }
-  .scene[data-live="true"] .ghost {
+  .scene[data-shown="true"] .ghost {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    transition-delay: 0.3s;
+  }
+  /* Out: the word keeps travelling the way the reel is moving, and dissolves as it goes. */
+  .scene[data-state="out"] .ghost {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(calc(var(--dir) * -9%));
+    transition:
+      opacity 0.42s var(--ease-exit),
+      transform 0.52s var(--ease-exit);
+  }
+  /*
+   * No idle drift. A slow continuous slide was tried here and cost more than it gave: the word
+   * is a layer thousands of pixels wide, and moving it by a fraction of a pixel every frame
+   * forces the whole frame to be recomposited, forever, on every chapter. The word already
+   * moves on every cut and with the pointer; the corridor and the sand keep the frame alive
+   * between. Motion that nobody can see is not worth motion that everybody pays for.
+   */
+  .ghost .gi {
+    display: inline-block;
+  }
+  .ghost .gl {
+    display: inline-block;
+  }
+  /*
+   * Each letter sweeps in from the side the reel is travelling from — skewed and stretched,
+   * which is how motion blur reads on a letterform — with its dispersion split wide, and locks
+   * into place with the split closing. The delay counts from the leading edge: left to right
+   * going forward, right to left coming back, picked with the (1 ± dir) / 2 switch.
+   */
+  .scene[data-state="live"] .ghost .gl {
+    animation: ghost-in 1.35s var(--ease-house) backwards;
+    animation-delay: calc(
+      0.16s + (var(--li) * (1 + var(--dir)) / 2 + var(--lr) * (1 - var(--dir)) / 2) * 0.055s
+    );
+  }
+  @keyframes ghost-in {
+    0% {
+      opacity: 0;
+      transform: translateX(calc(var(--dir) * 60%)) skewX(calc(var(--dir) * -20deg)) scaleX(1.3);
+      text-shadow:
+        calc(var(--dir) * -26px) 0 0 color-mix(in srgb, var(--color-disp-cyan) 34%, transparent),
+        calc(var(--dir) * 22px) 0 0 color-mix(in srgb, var(--color-disp-magenta) 30%, transparent),
+        0 10px 0 color-mix(in srgb, var(--color-disp-amber) 18%, transparent);
+    }
+    30% {
+      opacity: 1;
+    }
+    55% {
+      text-shadow: var(--disp);
+    }
   }
 
   /*
@@ -168,31 +252,52 @@
       rgba(5, 6, 13, 0) 100%
     );
     opacity: 0;
-    transition: opacity 0.9s var(--ease-house);
   }
-  .scene[data-live="true"] .veil {
+  .scene[data-shown="true"] .veil {
     opacity: 1;
-    transition-delay: 0.3s;
+    transition: opacity 0.9s var(--ease-house) 0.3s;
   }
 
   /*
    * The house entrance. Anything marked `.rise` comes up out of blur on a stagger keyed by its
-   * own `--i`, so a scene assembles in a readable order instead of appearing at once.
+   * own `--i`, so a scene assembles in a readable order instead of appearing at once — from
+   * below going forward, from above coming back, so the content travels the same way the
+   * reel does.
    */
   .rise {
     opacity: 0;
-    transform: translateY(18px);
-    filter: blur(7px);
   }
-  .scene[data-live="true"] .rise {
+  .scene[data-shown="true"] .rise {
     opacity: 1;
-    transform: none;
-    filter: none;
+  }
+  .scene[data-state="live"] .rise {
+    animation: rise-in 0.9s var(--ease-house) backwards;
+    animation-delay: calc(0.34s + var(--i, 0) * 0.075s);
+  }
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(calc(var(--dir) * 20px));
+      filter: blur(7px);
+    }
+  }
+  /*
+   * The exit is its own motion, not the entrance played backwards: faster, accelerating, and
+   * continuing in the direction of travel — content that came up from below leaves off the
+   * top. The stagger is a fifth of the entrance's, so the frame empties as one gesture while
+   * still visibly peeling away in order. A transition rather than keyframes here, because the
+   * exit starts from the resting state, which is known — and a transition starts from the
+   * element's current position, so an entrance cut off halfway leaves from where it was.
+   */
+  .scene[data-state="out"] .rise {
+    opacity: 0;
+    transform: translateY(calc(var(--dir) * -26px));
+    filter: blur(4px);
     transition:
-      opacity 0.8s var(--ease-house),
-      transform 0.9s var(--ease-house),
-      filter 0.8s var(--ease-house);
-    transition-delay: calc(0.34s + var(--i, 0) * 0.075s);
+      opacity 0.3s var(--ease-exit),
+      transform 0.38s var(--ease-exit),
+      filter 0.3s var(--ease-exit);
+    transition-delay: calc(var(--i, 0) * 0.016s);
   }
 
   /* ─────────────────────────  SHARED TYPOGRAPHY  ───────────────────────── */
@@ -204,19 +309,61 @@
     font-size: clamp(3.2rem, 10.5vw, 9rem);
     line-height: 0.88;
     letter-spacing: -0.045em;
-    /* Chrome: a vertical sweep from specular white through steel, clipped to the glyphs. */
-    background: linear-gradient(
-      176deg,
-      #ffffff 4%,
-      #dee5f2 26%,
-      #8b95aa 50%,
-      #f4f7fd 62%,
-      #6f7a92 88%
-    );
+    color: transparent;
+    /*
+     * The glow, as a filter on the heading rather than a text-shadow on the letters: each word
+     * is a clipped mask for the kinetic entrance, and a 70px shadow drawn inside one would be
+     * cut off square at the mask's edge. A filter on the parent is applied after the clipping,
+     * so the glow is computed from the letters that are actually showing.
+     */
+    filter: drop-shadow(0 0 34px rgba(120, 155, 255, 0.26));
+  }
+  /*
+   * Chrome, per letter: a vertical sweep from specular white through steel, clipped to the
+   * glyph. It has to live on the letter, not the heading — `background-clip: text` does not
+   * reach into a transformed child, so a gradient on the heading would leave every moving
+   * letter transparent. The sweep is 176°, nearly vertical, so one gradient per letter is
+   * indistinguishable from one across the word.
+   *
+   * The second layer is the glint: a narrow specular band parked off the glyph, which a
+   * keyframe drags across it every few seconds. Each letter's glint is delayed by its index,
+   * so the light visibly travels along the name rather than flashing on every letter at once.
+   */
+  .name .u {
+    /*
+     * `background-clip: text` can only paint the part of a glyph that lies inside the box's
+     * background area — and at a 0.88 line-height the descenders of g, y, p hang well below
+     * the letter's box, so they came out transparent, cut off square. Padding grows the painted
+     * area to cover the whole glyph; the matching negative margin keeps the layout unchanged.
+     */
+    padding: 0.24em 0.05em;
+    margin: -0.24em -0.05em;
+    background-image:
+      linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.95) 50%, transparent 60%),
+      linear-gradient(176deg, #ffffff 4%, #dee5f2 26%, #8b95aa 50%, #f4f7fd 62%, #6f7a92 88%);
+    background-size: 260% 100%, 100% 100%;
+    background-position: 100% 0, 0 0;
+    background-repeat: no-repeat;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0 0 70px rgba(120, 155, 255, 0.22);
+  }
+  .scene[data-state="live"] .name .u {
+    animation:
+      kin-up 1.15s var(--ease-house) backwards,
+      glint 7.5s var(--ease-io) infinite;
+    animation-delay:
+      calc(var(--kin-at, 0.5s) + var(--ci) * 0.075s),
+      calc(2.3s + var(--ci) * 0.085s);
+  }
+  @keyframes glint {
+    0% {
+      background-position: 100% 0, 0 0;
+    }
+    18%,
+    100% {
+      background-position: 0% 0, 0 0;
+    }
   }
   .name:lang(ko) {
     font-family: var(--font-kr);
@@ -331,6 +478,41 @@
       transform: scale(1.3);
     }
   }
+  /*
+   * The scroll cue: a 22px track with a dash of light running down it on a loop — the
+   * convention every reel-style site uses to say "this moves down", drawn in the house line.
+   */
+  .begin .cue {
+    position: relative;
+    width: 1px;
+    height: 22px;
+    margin-left: 0.4rem;
+    background: var(--color-line);
+    overflow: hidden;
+  }
+  .begin .cue::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 8px;
+    background: var(--color-electric);
+    box-shadow: 0 0 6px rgba(67, 97, 255, 0.9);
+    translate: 0 -8px;
+  }
+  .scene[data-shown="true"] .begin .cue::after {
+    animation: cue 1.9s var(--ease-io) 1.4s infinite;
+  }
+  @keyframes cue {
+    from {
+      translate: 0 -8px;
+    }
+    70%,
+    to {
+      translate: 0 22px;
+    }
+  }
 
   .quote {
     font-family: var(--font-grot);
@@ -345,9 +527,18 @@
     font-family: var(--font-kr);
   }
   .quote .mark {
+    display: inline-block;
     color: var(--color-electric-ink);
     font-size: 1.1em;
     line-height: 0;
+  }
+  /* The marks bracket the kinetic words: the opening one springs in first, the closing last. */
+  .scene[data-state="live"] .quote .mark {
+    animation: pop 0.7s var(--ease-spring) backwards;
+    animation-delay: 0.48s;
+  }
+  .scene[data-state="live"] .quote .mark-close {
+    animation-delay: calc(0.6s + var(--cn, 6) * 0.075s + 0.3s);
   }
   .links {
     display: flex;
@@ -408,6 +599,11 @@
     flex-wrap: wrap;
     gap: 0.4rem;
   }
+  /* Inside the rising row, each tag pops on its own spring, left to right. */
+  .scene[data-state="live"] .tags.rise .tag {
+    animation: pop 0.6s var(--ease-spring) backwards;
+    animation-delay: calc(0.72s + var(--k, 0) * 0.055s);
+  }
   .stat-row {
     display: flex;
     gap: clamp(18px, 3vw, 46px);
@@ -423,7 +619,8 @@
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
   }
-  .stat span {
+  /* The label, not the figure: the figure is a counter's span inside the <b>. */
+  .stat > span {
     font-family: var(--font-mono);
     font-size: 0.58rem;
     letter-spacing: 0.2em;
@@ -462,8 +659,14 @@
     transform-origin: left;
     transition: transform 2.1s var(--ease-io) 0.3s;
   }
-  .scene[data-live="true"] .rail::before {
+  .scene[data-shown="true"] .rail::before {
     transform: scaleX(1);
+  }
+  /* Out: the line is drawn back in the direction of travel, like tape being wound on. */
+  .scene[data-state="out"] .rail::before {
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s var(--ease-exit);
   }
   .node {
     position: relative;
@@ -515,33 +718,47 @@
     box-shadow: 0 0 12px rgba(67, 97, 255, 0.9);
     transform: scale(0);
   }
-  /* One by one: the pip lights, then the text rises under it. */
-  .scene[data-live="true"] .node {
-    animation: node-in 0.78s var(--ease-house) both;
+  .scene[data-shown="true"] .node .pip {
+    transform: scale(1);
+  }
+  /*
+   * One by one: the pip springs on, a ring leaves it like a sonar return, then the text
+   * rises under it — three beats per node, overlapping, so the rail reads as a sequence of
+   * arrivals rather than eight cards appearing.
+   */
+  .scene[data-state="live"] .node {
+    animation: node-in 0.78s var(--ease-house) backwards;
     animation-delay: calc(0.42s + var(--i) * 0.17s);
   }
-  .scene[data-live="true"] .node .pip {
-    animation: pip-in 0.5s var(--ease-settle) both;
+  .scene[data-state="live"] .node .pip {
+    animation: pop 0.6s var(--ease-spring) backwards;
     animation-delay: calc(0.34s + var(--i) * 0.17s);
+  }
+  .node .pip::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 1px solid var(--color-electric);
+    opacity: 0;
+  }
+  .scene[data-state="live"] .node .pip::after {
+    animation: ping 1s var(--ease-house) backwards;
+    animation-delay: calc(0.4s + var(--i) * 0.17s);
   }
   @keyframes node-in {
     from {
       opacity: 0;
-      transform: translateY(22px);
+      transform: translateY(calc(var(--dir) * 22px));
       filter: blur(6px);
     }
-    to {
-      opacity: 1;
-      transform: none;
-      filter: none;
-    }
   }
-  @keyframes pip-in {
-    from {
-      transform: scale(0);
-    }
-    to {
-      transform: scale(1);
-    }
+  /* Out: the nodes leave in order along the line, the way they arrived. */
+  .scene[data-state="out"] .node {
+    opacity: 0;
+    transform: translateY(calc(var(--dir) * -18px));
+    transition:
+      opacity 0.28s var(--ease-exit),
+      transform 0.34s var(--ease-exit);
+    transition-delay: calc(var(--i) * 0.02s);
   }
 }

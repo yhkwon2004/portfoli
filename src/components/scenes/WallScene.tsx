@@ -1,7 +1,9 @@
 "use client";
 
-import { Txt } from "@/components/Txt";
 import { FocusPanel } from "@/components/FocusPanel";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { riseAt } from "@/components/motion/timing";
 import { Wall } from "@/components/Wall";
 import { useReel } from "@/hooks/useReel";
 import { gradeDistribution, projects, year } from "@/lib/select";
@@ -34,21 +36,25 @@ export function WallScene({ index, live, kind, items, eyebrow, autoplay, onOpen 
   return (
     <Scene index={index} live={live} className={`s-${kind}`} gutter top>
       <div className="wall-head rise" style={{ "--i": 0 } as React.CSSProperties}>
-        <span className="count">{items.length}</span>
+        <CountUp className="count" value={items.length} delay={riseAt(0)} duration={1100} />
         <div>
-          <Txt v={eyebrow} as="p" className="eyebrow" />
-          {kind === "awards" && <p className="mnote">{yearSpan(items)}</p>}
+          <Decode v={eyebrow} as="p" className="eyebrow" delay={riseAt(0) + 80} />
+          {kind === "awards" && <Decode v={yearSpan(items)} as="p" className="mnote" delay={riseAt(0) + 200} />}
         </div>
+        {/*
+          The legend's figures are *not* counted up: they are the key the whole wall is read
+          against, and a key that is still changing while you read it is not a key.
+        */}
         <span className="legend">
           {kind === "awards"
-            ? gradeDistribution.map(({ rank, count }) => (
-                <b key={rank.key} style={{ "--rk": rank.color } as React.CSSProperties}>
+            ? gradeDistribution.map(({ rank, count }, n) => (
+                <b key={rank.key} style={{ "--rk": rank.color, "--k": n } as React.CSSProperties}>
                   {rank.key}
                   <i>{count}</i>
                 </b>
               ))
-            : topTopics().map((t) => (
-                <b key={t} style={{ "--rk": "#c9a06a" } as React.CSSProperties}>
+            : topTopics().map((t, n) => (
+                <b key={t} style={{ "--rk": "#c9a06a", "--k": n } as React.CSSProperties}>
                   {t}
                 </b>
               ))}
@@ -62,6 +68,7 @@ export function WallScene({ index, live, kind, items, eyebrow, autoplay, onOpen 
           total={items.length}
           contain={kind === "awards"}
           turn={reel.turn}
+          dir={reel.dir}
           onOpen={onOpen}
         />
         <Wall
@@ -71,6 +78,7 @@ export function WallScene({ index, live, kind, items, eyebrow, autoplay, onOpen 
           onPick={reel.pick}
           onRelease={reel.release}
           onOpen={onOpen}
+          animate={autoplay}
         />
       </div>
     </Scene>

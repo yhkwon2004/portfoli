@@ -29,6 +29,19 @@ export const UI = {
   sceneAnnounce: { ko: "장", en: "Chapter" } satisfies Bi,
   featured: { ko: "★ 대표작", en: "★ Featured" } satisfies Bi,
 
+  // ── the projector's own controls ──
+  play: { ko: "재생", en: "Play" } satisfies Bi,
+  pause: { ko: "일시정지", en: "Pause" } satisfies Bi,
+  playHint: {
+    ko: "장면을 12초씩 자동으로 넘깁니다 · 아무 조작이나 하면 멈춥니다",
+    en: "Advances a chapter every 12 seconds · any input stops it",
+  } satisfies Bi,
+  motion: { ko: "모션", en: "Motion" } satisfies Bi,
+  motionLocked: {
+    ko: "시스템 설정에서 동작 줄이기가 켜져 있어 모션이 꺼져 있습니다",
+    en: "Motion is off because your system asks for reduced motion",
+  } satisfies Bi,
+
   // ── contact, from the pill in the frame ──
   contactOpen: { ko: "연락 · 채용", en: "Contact · Recruit" } satisfies Bi,
   contactEyebrow: { ko: "연락 · 채용", en: "Contact · Recruit" } satisfies Bi,

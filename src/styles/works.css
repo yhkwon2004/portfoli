@@ -44,9 +44,25 @@
     overflow: hidden;
     transform: translate(-50%, -50%) translateZ(calc(var(--z) * 1px))
       rotateY(calc(var(--r) * 1deg)) rotate(calc(var(--t) * 1deg));
-    animation: plate-in 0.9s var(--ease-house) both;
-    animation-delay: calc(var(--i) * 0.08s);
+    /*
+     * Two motions, on two properties so they never collide: the fly-in on `transform`, and a
+     * slow bob on `translate` that runs for as long as the work is up. Each plate bobs on its
+     * own phase (a negative delay per plate), so the cluster drifts like objects hung on
+     * threads rather than one picture moving up and down.
+     */
+    animation:
+      plate-in 1.05s var(--ease-settle) both,
+      plate-bob 7s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i) * 0.09s), calc(var(--i) * -1.9s);
     box-shadow: 0 30px 90px -40px rgba(0, 0, 0, 0.9);
+  }
+  @keyframes plate-bob {
+    from {
+      translate: 0 -1.1%;
+    }
+    to {
+      translate: 0 1.1%;
+    }
   }
   .plate img {
     width: 100%;
@@ -86,11 +102,24 @@
     outline-offset: 4px;
   }
 
+  /*
+   * The fly-in: each plate arrives from deeper in the room and from the side the reel is
+   * turning toward (`--rd`), swung a further 26° on its hinge, and lands with a small
+   * overshoot (`--ease-settle`), the way a hung object comes to rest.
+   *
+   * No filter. A blur-and-flare on the way in read well and cost a great deal: four large
+   * plates in a 3D context, re-filtered every frame, every 3.2 seconds while the reel runs.
+   * The depth and the swing carry the move without it.
+   */
   @keyframes plate-in {
     from {
       opacity: 0;
-      transform: translate(-50%, -50%) translateZ(calc((var(--z) - 260) * 1px))
-        rotateY(calc(var(--r) * 1deg)) rotate(calc(var(--t) * 1deg));
+      transform: translate(-50%, -50%) translateX(calc(var(--rd, 1) * 22%))
+        translateZ(calc((var(--z) - 460) * 1px)) rotateY(calc((var(--r) + var(--rd, 1) * 26) * 1deg))
+        rotate(calc(var(--t) * 1deg));
+    }
+    45% {
+      opacity: 1;
     }
     to {
       opacity: 1;
@@ -120,7 +149,18 @@
       rgba(5, 6, 13, 0.86) 45%,
       rgba(5, 6, 13, 0) 100%
     );
-    animation: wmeta-in 0.7s var(--ease-house) both 0.12s;
+    animation: wmeta-in 0.7s var(--ease-house) both 0.06s;
+  }
+  /* Inside the caption: the summary follows the title, and the tags pop in behind it. */
+  .s-projects .wm-sum {
+    animation: f-up 0.6s var(--ease-house) 0.34s backwards;
+  }
+  .s-projects .wm-tags span {
+    animation: pop 0.5s var(--ease-spring) backwards;
+    animation-delay: calc(0.46s + var(--k, 0) * 0.045s);
+  }
+  .s-projects .wm-flag {
+    animation: pop 0.55s var(--ease-spring) 0.2s backwards;
   }
   @keyframes wmeta-in {
     from {
@@ -232,15 +272,33 @@
     flex: 1 1 0;
     min-width: 3px;
     max-width: 8px;
-    height: 10px;
-    background: var(--color-chrome-4);
+    /*
+     * Under the pointer the scale becomes a waveform: `--fx` (the falloff field, 1 at the
+     * pointer, 0 two ticks out) stands the ticks up, so the eye finds its place on the scale
+     * before the pointer has even settled on a tick.
+     */
+    height: calc(10px + var(--fx) * 12px);
+    background: color-mix(in srgb, var(--color-chrome) calc(var(--fx) * 60%), var(--color-chrome-4));
     transition:
       height 0.3s var(--ease-house),
       background 0.3s;
   }
   .s-projects .wtick.star {
-    height: 15px;
-    background: var(--color-chrome-3);
+    height: calc(15px + var(--fx) * 8px);
+    background: color-mix(in srgb, var(--color-chrome) calc(var(--fx) * 60%), var(--color-chrome-3));
+  }
+  /* The scale draws itself on, tick by tick, as the chapter arrives. */
+  .scene[data-state="live"] .s-projects .wtick {
+    animation: tick-in 0.5s var(--ease-spring) backwards;
+    animation-delay: calc(0.6s + var(--n, 0) * 0.018s);
+  }
+  @keyframes tick-in {
+    from {
+      scale: 1 0;
+    }
+  }
+  .s-projects .wtick {
+    transform-origin: bottom;
   }
   .s-projects .wtick:hover,
   .s-projects .wtick:focus-visible {
@@ -288,6 +346,25 @@
     .s-projects .wmeta {
       animation: none;
     }
+  }
+  /* The same flat stage for the site's own MOTION switch — see responsive.css. */
+  .stage[data-motion="off"] .plates {
+    transform: none;
+  }
+  .stage[data-motion="off"] .plate {
+    animation: none;
+  }
+  .stage[data-motion="off"] .plate:not(.plate-near) {
+    display: none;
+  }
+  .stage[data-motion="off"] .plate-near {
+    left: 50%;
+    top: 38%;
+    width: min(46%, 540px);
+    transform: translate(-50%, -50%);
+  }
+  .stage[data-motion="off"] .s-projects .wmeta {
+    animation: none;
   }
 
   /* The room is the first thing to go on a phone: four plates in 390px is four postage

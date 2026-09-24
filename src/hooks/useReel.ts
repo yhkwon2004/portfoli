@@ -11,6 +11,11 @@ export type Reel = {
   readonly index: number;
   /** Bumped on every change, so the sweep animation can be re-triggered per turn. */
   readonly turn: number;
+  /**
+   * Which way the last turn went: 1 onward, −1 back. Autoplay and a wrap from the last slide to
+   * the first both count as onward — the reel is still moving forward through the set.
+   */
+  readonly dir: 1 | -1;
   /** Take the reel to a slide and suspend autoplay for a moment (a pointer or focus landed). */
   readonly pick: (n: number) => void;
   /** Release the suspension (the pointer left the wall). */
@@ -32,6 +37,7 @@ export type Reel = {
 export function useReel(count: number, active: boolean, autoplay: boolean): Reel {
   const [index, setIndex] = useState(0);
   const [turn, setTurn] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
   const holdUntil = useRef(0);
 
   const to = useCallback(
@@ -41,6 +47,9 @@ export function useReel(count: number, active: boolean, autoplay: boolean): Reel
       setIndex((prev) => {
         if (prev === next) return prev;
         setTurn((t) => t + 1);
+        // Judged on the unwrapped target, so stepping back from the first slide to the last
+        // still reads as a step back.
+        setDir(n < prev ? -1 : 1);
         return next;
       });
     },
@@ -75,6 +84,7 @@ export function useReel(count: number, active: boolean, autoplay: boolean): Reel
     if (active) {
       setIndex(0);
       setTurn((t) => t + 1);
+      setDir(1);
     }
   }
 
@@ -87,11 +97,12 @@ export function useReel(count: number, active: boolean, autoplay: boolean): Reel
       if (Date.now() < holdUntil.current) return; // a pointer is parked on a tile
       setIndex((prev) => {
         setTurn((t) => t + 1);
+        setDir(1);
         return (prev + 1) % count;
       });
     }, SLIDE_MS);
     return () => window.clearInterval(id);
   }, [active, autoplay, count]);
 
-  return { index, turn, pick, release };
+  return { index, turn, dir, pick, release };
 }

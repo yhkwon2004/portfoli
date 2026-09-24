@@ -31,6 +31,19 @@
     background: var(--color-electric);
     flex: 0 0 auto;
   }
+  /* …and it breathes like one: a slow pulse, so the one live control in the frame reads as live. */
+  .booted .contact-pill i {
+    animation: rec-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes rec-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(67, 97, 255, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 4px rgba(67, 97, 255, 0);
+    }
+  }
   .contact-pill:hover,
   .contact-pill:focus-visible {
     color: var(--color-chrome);
@@ -194,6 +207,38 @@
     margin-top: 0.9rem;
   }
 
+  /*
+   * Opening the card is a small title sequence of its own: the frame traces and the marks
+   * snap out (motion.css), the name assembles letter by letter, and the channels list in one
+   * row at a time, each row's hairline drawing across under it.
+   */
+  .contact[data-open="true"] .contact-card {
+    --reg-at: 0.05s;
+  }
+  .contact[data-open="true"] .contact-name .u {
+    animation: kin-up 0.8s var(--ease-house) backwards;
+    animation-delay: calc(0.14s + var(--ci) * 0.05s);
+  }
+  .contact[data-open="true"] .contact-line,
+  .contact[data-open="true"] .contact-aim {
+    animation: rise-in 0.7s var(--ease-house) backwards;
+    animation-delay: 0.3s;
+  }
+  .contact[data-open="true"] .contact-aim {
+    animation-delay: 0.36s;
+  }
+  .contact[data-open="true"] .contact-list li {
+    animation: contact-row 0.6s var(--ease-house) backwards;
+    animation-delay: calc(0.42s + var(--k, 0) * 0.07s);
+  }
+  @keyframes contact-row {
+    from {
+      opacity: 0;
+      translate: -14px 0;
+      border-bottom-color: transparent;
+    }
+  }
+
   @media (max-width: 560px) {
     /* The key column costs more than it says at this width. */
     .contact-list li {
@@ -209,5 +254,9 @@
       transform: none;
       transition: none;
     }
+  }
+  .stage[data-motion="off"] .contact-card {
+    transform: none;
+    transition: none;
   }
 }
