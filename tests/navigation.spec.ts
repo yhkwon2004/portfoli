@@ -21,17 +21,18 @@ test.describe("the projector", () => {
     await page.goto("/");
     await settle(page);
 
+    // The AI works come straight after the title.
     await page.locator('.nav-btns button[aria-label="다음 장면"]').click();
     await settle(page);
-    await expect(liveScene(page)).toHaveClass(/s-profile/);
+    await expect(liveScene(page)).toHaveClass(/s-ai/);
 
     await page.keyboard.press("ArrowDown");
     await settle(page);
-    await expect(liveScene(page)).toHaveClass(/s-grain/);
+    await expect(liveScene(page)).toHaveClass(/s-profile/);
 
     await page.keyboard.press("ArrowUp");
     await settle(page);
-    await expect(liveScene(page)).toHaveClass(/s-profile/);
+    await expect(liveScene(page)).toHaveClass(/s-ai/);
   });
 
   test("Home and End jump to the bookends", async ({ page }) => {
@@ -56,7 +57,7 @@ test.describe("the projector", () => {
 
     const buttons = page.locator(".chapters button");
     const count = await buttons.count();
-    expect(count).toBe(12);
+    expect(count).toBe(13);
 
     for (let i = 0; i < count; i++) {
       await buttons.nth(i).click();
@@ -95,7 +96,7 @@ test.describe("deep links", () => {
   test("navigating writes the chapter back to the URL", async ({ page }) => {
     await page.goto("/");
     await settle(page);
-    await page.locator(".chapters button").nth(6).click();
+    await page.locator(".chapters button").nth(7).click();
     await settle(page);
 
     expect(page.url()).toContain("#awards");

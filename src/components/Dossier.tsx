@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { AiVisual } from "@/components/ai/AiVisual";
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
+import { aiWorkFor } from "@/data/ai";
 import { DETAIL_LABELS } from "@/data/labels";
 import { rankOf, topicTags } from "@/data/ranks";
 import { cover, gallery } from "@/lib/select";
@@ -39,8 +41,8 @@ const EASE_IO = "cubic-bezier(0.65, 0, 0.35, 1)";
  * The full record.
  *
  * Opened from a tile, a pick card, a capability chip or the focus panel. ← → step the same
- * set — all 35 awards or all 35 works — so you can read the whole run without closing and
- * re-opening the sheet 35 times.
+ * set — every award or every work — so you can read the whole run without closing and
+ * re-opening the sheet once per record.
  *
  * ── motion ──
  * The sheet opens *out of* the thing that was pressed: a container transform. It is laid out
@@ -180,7 +182,16 @@ export function Dossier({ item, set, origin, animate, onStep, onClose }: Props) 
   const rank = view ? rankOf(view) : null;
   const lead = view ? cover(view) : null;
   const rest = view ? gallery(view) : [];
-  const badge = view ? (rank ? rank.key : view.featured ? text(UI.featured, lang) : "") : "";
+  const ai = view && !lead ? aiWorkFor(view.id) : undefined;
+  const badge = view
+    ? rank
+      ? rank.key
+      : view.honor
+        ? text(view.honor.grade, lang)
+        : view.featured
+          ? text(UI.featured, lang)
+          : ""
+    : "";
 
   return (
     <div
@@ -235,14 +246,27 @@ export function Dossier({ item, set, origin, animate, onStep, onClose }: Props) 
               style={{ "--sd": shown.dir } as React.CSSProperties}
             >
               <div
-                className="hero"
+                className={`hero${ai ? " hero-ai" : ""}`}
                 style={{ "--rk": rank ? rank.color : "var(--color-sand)" } as React.CSSProperties}
               >
                 {lead && <Img master={lead.u} alt={lead.a} sizes={HERO_SIZES} priority />}
+                {/* No photograph: the work's diagram heads the sheet instead, and runs. */}
+                {ai && <AiVisual kind={ai.visual} play={open && animate} fit="meet" />}
                 <div className="cap">
                   <span className="tagrow">
                     <span className="drank">{badge}</span>
-                    <span className="dyear">{view.year}</span>
+                    {view.year && <span className="dyear">{view.year}</span>}
+                    {view.honor && (
+                      <span className="dhonor">
+                        <Txt v={view.honor.event} />
+                        {view.honor.track && (
+                          <>
+                            {" · "}
+                            <Txt v={view.honor.track} />
+                          </>
+                        )}
+                      </span>
+                    )}
                   </span>
                   <Txt v={view.t} as="h2" />
                   <span id={titleId} className="sr-only-live">

@@ -82,7 +82,7 @@ export function Hud({
           {/*
             The one curve in a square frame, after the reference's Contact / Recruit pill.
             It sits in the chrome rather than in a chapter because a visitor who wants an
-            address wants it from wherever they are, not twelve cuts away.
+            address wants it from wherever they are, not a dozen cuts away.
           */}
           <button type="button" className="contact-pill" onClick={onContact}>
             <i aria-hidden="true" />

@@ -8,10 +8,13 @@ import type { Bi } from "@/lib/types";
  *
  *   · 35 awards, graded 대상 4 · 국가장학 1 · 최우수상 10 · 우수상 12 · 장려상 6 ·
  *     3위 1 · 입선 1  (every award carries a grade; none are ungraded)
- *   · 90 distinct tags across the evidence set, of which 69 appear on exactly one record
- *   · only 5 axes are backed by 4 or more works (AI 5 · Mobility 5 · Upcycling 5 ·
+ *   · 97 distinct tags across the evidence set, of which 73 appear on exactly one record
+ *   · only 5 axes are backed by 4 or more works (AI 8 · Mobility 6 · Upcycling 5 ·
  *     Hardware 4 · Healthcare 4)
- *   · output per year: 2023 → 13 · 2024 → 23 · 2025 → 26 · 2026 → 8 so far
+ *   · output per year: 2023 → 13 · 2024 → 23 · 2025 → 26 · 2026 → 8 so far — the three AI
+ *     works carry no year yet, so they are in no year's bar
+ *   · the AI works' two honours (HUSS AI 경진대회 전국 2위, 미래자동차 경진대회 장려상) are the
+ *     author's own account; neither has a certificate scan on the award wall
  *
  * Two figures in the inherited draft did not survive a recount against the data and were
  * corrected here: 장려상 was written as 7 (it is 6), and a "2023년 7건 → 2025년 18건" volume
@@ -44,6 +47,7 @@ export const SWOT = [
     key: "S",
     name: { ko: "강점", en: "Strengths" },
     items: [
+      "AI 대표작 3건 — HUSS AI 경진대회 전국 2위 · 미래자동차 경진대회 장려상 · 실시간 포즈 생성",
       "수상 35건 · 대상 4 · 최우수상 10 · 우수상 12 — 2023년부터 3년 연속",
       "H/W→F/W→제어 수직 통합: Altium PCB · ESP32 펌웨어 · CATIA/Inventor 3D를 한 프로젝트에서",
       "제작에서 사업화까지 완결 — 기빙플러스 입점, 전북현대모터스FC 협력 업사이클",
@@ -54,8 +58,8 @@ export const SWOT = [
     key: "W",
     name: { ko: "약점", en: "Weaknesses" },
     items: [
-      "기술 태그 90개 중 69개가 단 1건 — 폭은 넓지만 깊이가 문서상 드러나지 않음",
-      "4건 이상으로 증명되는 축은 AI · Upcycling · Mobility · Hardware · Healthcare 5개뿐",
+      "기술 태그 97개 중 73개가 단 1건 — 폭은 넓지만 깊이가 문서상 드러나지 않음",
+      "4건 이상으로 증명되는 축은 AI · Mobility · Upcycling · Hardware · Healthcare 5개뿐",
       "대회 · 캠프 산출물 비중이 높아 장기 운영 · 유지보수 이력이 적음",
       "양산 관점(신뢰성 시험 · DFM · 규격 인증) 이력이 기록에 없음",
     ],

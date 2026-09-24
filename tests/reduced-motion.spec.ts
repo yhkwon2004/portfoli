@@ -18,7 +18,7 @@ test.describe("reduced motion", () => {
     await expect(page.locator("h1.name")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await settle(page);
-    await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-profile/);
+    await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-ai/);
   });
 
   test("the ambient sand loop is stopped, not merely hidden", async ({ page }) => {
@@ -86,6 +86,28 @@ test("the wireframe room is stopped too, not just the sand", async ({ page }) =>
   expect(await pixels()).toBe(first);
 });
 
+test("the AI diagrams rest on their finished frame, and the triptych stays put", async ({ page }) => {
+  await page.goto("/#ai");
+  await page.waitForTimeout(1200);
+
+  const open = page.locator('.s-ai .aip[data-on="true"]');
+  await expect(open).toHaveCount(1);
+  await expect(open.locator(".aip-tab")).toHaveAttribute("data-n", "0");
+  // No loop: nothing writes the clock, and no beat is singled out.
+  await expect(open.locator(".av-tc")).toHaveText("");
+  await expect(open).not.toHaveAttribute("data-phase", /./);
+  // The finished frame is the one the server rendered: the gap is flagged, the case laid out.
+  await expect(open.locator(".av-readout")).toHaveText("CHECKED 5/6 · 1 MISSING");
+
+  // Nothing moves on by itself…
+  await page.waitForTimeout(3000);
+  await expect(open.locator(".aip-tab")).toHaveAttribute("data-n", "0");
+
+  // …but the panels still open by hand: that is navigation, not decoration.
+  await page.locator('.s-ai .aip-tab[data-n="2"]').click();
+  await expect(page.locator('.s-ai .aip[data-on="true"] .aip-tab')).toHaveAttribute("data-n", "2");
+});
+
 test("the works stage stands still: one flat plate, and no reel", async ({ page }) => {
   await page.goto("/#projects");
   await page.waitForTimeout(1400);
@@ -145,7 +167,7 @@ test.describe("reduced motion: the scripted layer stands down", () => {
     );
 
     expect(seen.counts.length).toBeGreaterThan(0);
-    for (const c of seen.counts) expect(c).toBe("84");
+    for (const c of seen.counts) expect(c).toBe("87");
     expect(seen.scrambling).toBe(false);
   });
 

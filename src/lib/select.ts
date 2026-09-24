@@ -1,10 +1,11 @@
 import { PORTFOLIO } from "@/data/portfolio";
+import { AI_WORKS, type AiWork } from "@/data/ai";
 import { DOMAINS } from "@/data/domains";
 import { RANKS, rankOf, rankWeight } from "@/data/ranks";
 import type { Bi, Img, Item, ItemType } from "@/lib/types";
 
 /**
- * Every collection and figure the site displays, derived once from the 84 records.
+ * Every collection and figure the site displays, derived once from the records.
  *
  * Nothing downstream counts anything itself, and nothing hard-codes a total. "35 awards"
  * on the profile scene is `awards.length`; the grade legend is a group-by; the capability
@@ -19,9 +20,18 @@ const byType = (type: ItemType): readonly Item[] => PORTFOLIO.items.filter((i) =
 
 const newestFirst = (a: Item, b: Item): number => (b.year || "").localeCompare(a.year || "");
 
-/** Featured works sort ahead of the rest, then newest first — inside each group. */
-const featuredThenNewest = (a: Item, b: Item): number =>
-  a.featured === b.featured ? newestFirst(a, b) : a.featured ? -1 : 1;
+/**
+ * Featured works first, in the author's own order, then everything else newest first.
+ *
+ * Inside the featured group the order is `rank`, not the date. It used to be the date, which
+ * put whichever featured work happened to be most recent at the head of every list; ranking
+ * by hand is what lets the three AI works lead the reel, the picks and every capability chip
+ * that points at a work — they carry no year at all, so by date they would sort last.
+ */
+const featuredFirst = (a: Item, b: Item): number => {
+  if (a.featured !== b.featured) return a.featured ? -1 : 1;
+  return (a.featured ? a.rank - b.rank : 0) || newestFirst(a, b);
+};
 
 export const profile: Item = PORTFOLIO.items.find((i) => i.type === "profile") ?? missing("profile");
 export const education = byType("education");
@@ -32,7 +42,19 @@ export const certifications = byType("certification");
 export const awards: readonly Item[] = [...byType("award")].sort(newestFirst);
 
 /** The project wall. Featured first so the reel opens on the strongest work. */
-export const projects: readonly Item[] = [...byType("project")].sort(featuredThenNewest);
+export const projects: readonly Item[] = [...byType("project")].sort(featuredFirst);
+
+/** Works that earned a result at a competition, in wall order. */
+export const honoured: readonly Item[] = projects.filter((p) => p.honor);
+
+/**
+ * The AI chapter's three works, each paired with its record. Resolved here, once, so a
+ * renamed id fails the build's first render loudly instead of quietly dropping a panel.
+ */
+export const aiWorks: readonly { readonly work: AiWork; readonly item: Item }[] = AI_WORKS.map((work) => ({
+  work,
+  item: PORTFOLIO.items.find((i) => i.id === work.id) ?? missing(`record for AI work ${work.id}`),
+}));
 
 /** Both walls are stepped through as a set inside the dossier. */
 export const SETS = { award: awards, project: projects } as const;
@@ -74,7 +96,7 @@ export const tagCount = (tag: string): number => worksWithTag(tag).length;
 
 /** The single work that best demonstrates a tag: featured first, then most recent. */
 export const strongestFor = (tag: string): Item | undefined =>
-  [...worksWithTag(tag)].sort(featuredThenNewest)[0];
+  [...worksWithTag(tag)].sort(featuredFirst)[0];
 
 export type TagView = {
   readonly tag: string;

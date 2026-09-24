@@ -147,11 +147,11 @@ test.describe("counters", () => {
     const values = samples.map(Number).filter((n) => !Number.isNaN(n));
     expect(values.length).toBeGreaterThan(10);
     // It rolled: something below the final figure was on screen…
-    expect(Math.min(...values)).toBeLessThan(84);
+    expect(Math.min(...values)).toBeLessThan(87);
     // …it never went backwards…
     for (let i = 1; i < values.length; i++) expect(values[i]).toBeGreaterThanOrEqual(values[i - 1] ?? 0);
     // …and it finished on the record count, not near it.
-    expect(values.at(-1)).toBe(84);
+    expect(values.at(-1)).toBe(87);
   });
 });
 
@@ -250,9 +250,10 @@ test.describe("the projector's controls", () => {
     await expect(live(page)).toHaveClass(/s-profile/);
     await page.waitForTimeout(2_600);
     await expect(live(page)).toHaveClass(/s-grain/);
-    // Still playing, and the timecode is past the new chapter's mark.
+    // Still playing, and the timecode is past the new chapter's mark (grain is chapter 4, so
+    // its reel starts at 3 × 12 = 36 s).
     await expect(page.locator(".playbtn")).toHaveAttribute("aria-pressed", "true");
-    expect(await page.locator(".timecode").textContent()).toMatch(/^00:00:2[4-9]:/);
+    expect(await page.locator(".timecode").textContent()).toMatch(/^00:00:3[6-9]:/);
   });
 
   test("the MOTION switch stops the loops, and is remembered", async ({ page }) => {
@@ -301,8 +302,10 @@ test.describe("the projector's controls", () => {
  * The slump that holds the pile at its angle of repose used to run a fixed number of passes
  * per frame, so at a low frame rate more grains landed between slumps, the cone grew too
  * steep, and its peak reached the neck — the same stall the 56° repose once caused. Under a
- * 6× CPU throttle the original code read FLOW 000 at chapters 7, 9 and 10. The simulation now
- * steps in fixed ticks, so the pile is the same at any frame rate.
+ * 6× CPU throttle the original code read FLOW 000 at chapters 7, 9 and 10 of twelve — fills
+ * of about 0.64, 0.82 and 0.91. With the AI chapter added those fills are chapters 8, 10 and
+ * 11 of thirteen. The simulation now steps in fixed ticks, so the pile is the same at any
+ * frame rate.
  */
 test("the pour never stalls on a slow machine either", async ({ page }) => {
   test.setTimeout(60_000);
@@ -313,7 +316,7 @@ test("the pour never stalls on a slow machine either", async ({ page }) => {
   await page.waitForTimeout(2500);
   const flow = async () => Number(await page.locator(".telemetry .tel-grid dd").first().textContent());
 
-  for (const chapter of [7, 9, 10]) {
+  for (const chapter of [8, 10, 11]) {
     await page.locator(".chapters button").nth(chapter).click();
     await page.waitForTimeout(4500);
     expect(await flow(), `chapter ${chapter} stalled under a slow frame rate`).toBeGreaterThan(0);

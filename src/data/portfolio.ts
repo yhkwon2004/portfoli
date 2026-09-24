@@ -1,5 +1,6 @@
 /**
- * The portfolio content: 84 records, verbatim from the author's source data.
+ * The portfolio content, verbatim from the author's source data — plus the three AI works
+ * the author added directly (project-ai-*), whose wording is theirs.
  *
  * Generated from the original `data.js` of yhkwon2004/portfolio-hourglass, which in turn
  * was extracted from `lib/seed-content.ts` of yhkwon2004/-My-Portfolio_web. Every figure
@@ -7,7 +8,7 @@
  * counted off this array at render time. Nothing is hard-coded downstream, so editing a
  * record here is the only step needed to change what the site claims.
  *
- * `satisfies Portfolio` is load-bearing: it type-checks all 84 records against the model
+ * `satisfies Portfolio` is load-bearing: it type-checks every record against the model
  * in src/lib/types.ts at build time, so a typo in a detail heading or an image role fails
  * `npm run typecheck` instead of silently rendering an unlabelled card.
  */
@@ -40,11 +41,11 @@ export const PORTFOLIO = {
       },
       "year": "",
       "tags": [
+        "AI",
         "Problem Solving",
         "Mobility",
         "H/W",
-        "F/W",
-        "AI"
+        "F/W"
       ],
       "featured": true,
       "rank": 1,
@@ -1268,6 +1269,137 @@ export const PORTFOLIO = {
       ]
     },
     {
+      "id": "project-ai-evidence",
+      "type": "project",
+      "t": {
+        "ko": "학교폭력 증거 정리 AI 서비스",
+        "en": "AI evidence organiser for school-violence cases"
+      },
+      "s": {
+        "ko": "학교폭력이라는 민감한 문제를 참교육과 함께 다루며, 사건 자료를 시각적으로 · 순서대로 정리하고 빠진 증거를 짚어 주는 증거 누락 방지 · 정리 서비스입니다.",
+        "en": "Built with Chamgyoyuk around the sensitive problem of school violence: a service that lays a case out visually and in order, and flags the evidence that is missing."
+      },
+      "year": "",
+      "tags": [
+        "AI",
+        "Data Viz",
+        "Timeline",
+        "Evidence"
+      ],
+      "featured": true,
+      "rank": 1,
+      "imgs": [],
+      "honor": {
+        "event": {
+          "ko": "HUSS AI 경진대회",
+          "en": "HUSS AI Competition"
+        },
+        "grade": {
+          "ko": "전국 2위",
+          "en": "2nd nationwide"
+        }
+      },
+      "details": {
+        "한줄소개": "학교폭력 사건 자료를 시각적으로, 순서대로 정리하고 빠진 증거를 짚어 주는 AI 서비스",
+        "문제정의": "학교폭력 사건은 민감한 만큼 자료를 빠짐없이, 정확한 순서로 남겨야 합니다. 흩어진 자료만으로는 사건의 흐름을 세우기 어렵고, 중요한 증거가 누락되기 쉽습니다.",
+        "핵심기능": [
+          "사건 자료를 한눈에 보이도록 시각적으로 정리",
+          "사건을 시간 순서대로 재구성",
+          "빠진 증거를 짚어 주는 증거 누락 점검"
+        ],
+        "협업": "학교폭력이라는 민감한 주제를 참교육과 함께 다뤘습니다."
+      }
+    },
+    {
+      "id": "project-ai-airsim",
+      "type": "project",
+      "t": {
+        "ko": "AirSim 자율주행 시뮬레이터",
+        "en": "AirSim autonomous-driving simulator"
+      },
+      "s": {
+        "ko": "가상환경에서의 딥러닝 학습으로 조향과 주차 신호 인식을 다룬 AirSim 기반 자율주행 시뮬레이터입니다.",
+        "en": "An AirSim-based autonomous-driving simulator that learns steering and parking-sign recognition by deep learning in a virtual environment."
+      },
+      "year": "",
+      "tags": [
+        "AI",
+        "Deep Learning",
+        "AirSim",
+        "Computer Vision",
+        "Simulation",
+        "Mobility"
+      ],
+      "featured": true,
+      "rank": 2,
+      "imgs": [],
+      "honor": {
+        "event": {
+          "ko": "미래자동차 경진대회",
+          "en": "Future Vehicle Competition"
+        },
+        "track": {
+          "ko": "조향 및 주차 신호인식",
+          "en": "Steering & parking-sign recognition"
+        },
+        "grade": {
+          "ko": "장려상",
+          "en": "Merit Award"
+        }
+      },
+      "details": {
+        "한줄소개": "가상환경에서 딥러닝으로 학습시킨 AirSim 자율주행 시뮬레이터",
+        "프로젝트개요": "AirSim 가상환경에서 딥러닝 모델을 학습시켜 자율주행의 조향과 주차 신호 인식을 다룬 시뮬레이터입니다. 미래자동차 경진대회 조향 및 주차 신호인식 부문에서 장려상을 받았습니다.",
+        "핵심기능": [
+          "AirSim 가상 주행 환경 구성",
+          "딥러닝 학습 기반 조향",
+          "주차 신호 인식"
+        ],
+        "기술스택": [
+          "AirSim",
+          "딥러닝"
+        ]
+      }
+    },
+    {
+      "id": "project-ai-pose",
+      "type": "project",
+      "t": {
+        "ko": "실시간 포즈 · 구도 생성 서비스",
+        "en": "Real-time pose & composition generator"
+      },
+      "s": {
+        "ko": "사진 촬영과 MZ세대식 포즈 · 구도로 스트레스 받는 사람들을 위해, 배경의 구도와 촬영 기법을 학습시켜 실시간으로 배경을 인식하고 포즈를 생성하는 서비스입니다.",
+        "en": "For people stressed by photo shoots and the poses and framing Gen Z expects: a service trained on background composition and camera technique that reads the scene in real time and generates a pose for it."
+      },
+      "year": "",
+      "tags": [
+        "AI",
+        "Computer Vision",
+        "Segmentation",
+        "Unreal Engine",
+        "Pose Generation"
+      ],
+      "featured": true,
+      "rank": 3,
+      "imgs": [],
+      "details": {
+        "한줄소개": "배경을 읽고 그 자리에 맞는 포즈와 구도를 실시간으로 만들어 주는 AI 촬영 가이드",
+        "문제정의": "사진 촬영에서, 특히 MZ세대식 포즈와 구도 때문에 스트레스를 받는 사람들을 위한 서비스입니다.",
+        "프로젝트개요": "배경에서의 구도와 촬영 기법을 학습시키고, 세그멘테이션으로 배경 영역을 설정한 뒤 언리얼 엔진 기반 마네킹으로 포즈를 생성해 보여 줍니다. 배경 인식과 포즈 생성은 실시간으로 이뤄집니다.",
+        "핵심기능": [
+          "배경의 구도와 촬영 기법 학습",
+          "세그멘테이션으로 배경 영역 설정",
+          "언리얼 엔진 기반 마네킹 생성",
+          "실시간 배경 인식과 포즈 생성"
+        ],
+        "기술스택": [
+          "세그멘테이션",
+          "Unreal Engine"
+        ]
+      }
+    },
+    {
       "id": "project-autonomous",
       "type": "project",
       "t": {
@@ -1287,7 +1419,7 @@ export const PORTFOLIO = {
         "Simulation"
       ],
       "featured": true,
-      "rank": 1,
+      "rank": 4,
       "imgs": [
         {
           "u": "/assets/notion-projects/carla-cover.png",
@@ -1373,7 +1505,7 @@ export const PORTFOLIO = {
         "Teamwork"
       ],
       "featured": true,
-      "rank": 2,
+      "rank": 5,
       "imgs": [
         {
           "u": "/assets/notion-projects/handmade-car-cover.png",
@@ -1473,7 +1605,7 @@ export const PORTFOLIO = {
         "Research"
       ],
       "featured": true,
-      "rank": 3,
+      "rank": 6,
       "imgs": [
         {
           "u": "/assets/generated/growth-corridor.png",
@@ -1554,7 +1686,7 @@ export const PORTFOLIO = {
         "Product"
       ],
       "featured": true,
-      "rank": 4,
+      "rank": 7,
       "imgs": [
         {
           "u": "/assets/evidence/project-upcycle-1.jpg",
@@ -1957,7 +2089,7 @@ export const PORTFOLIO = {
         "Fintech"
       ],
       "featured": true,
-      "rank": 5,
+      "rank": 8,
       "imgs": [
         {
           "u": "/assets/notion-projects/kakao-fin-cover.png",

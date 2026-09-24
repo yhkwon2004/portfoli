@@ -7,6 +7,9 @@ import type { Bi } from "@/lib/types";
  * how many real pieces of work carry each one — so every number on that screen is a count
  * of evidence, and a tag that appears in no work simply vanishes from the map rather than
  * padding it. Change the grouping here and the scene re-derives itself.
+ *
+ * AI leads: the order here is the order the capability map reads in, and the reel now opens
+ * on the AI works, so the map opens on the axis they prove.
  */
 export type Domain = {
   readonly name: Bi;
@@ -15,10 +18,18 @@ export type Domain = {
 
 export const DOMAINS = [
   {
+    name: { ko: "AI · 데이터", en: "AI & Data" },
+    tags: [
+      "AI", "Deep Learning", "Computer Vision", "Segmentation", "Pose Generation",
+      "Object Detection", "Detection", "Vision", "TTS", "Python", "Data Viz", "Timeline", "Evidence",
+      "Big Data", "Data", "Dashboard", "Streamlit", "Plotly", "Research", "Experiment",
+    ],
+  },
+  {
     name: { ko: "자율주행 · 모빌리티", en: "Autonomy & Mobility" },
     tags: [
       "ROS2", "Nav2", "Gazebo", "CARLA", "Pixhawk", "Mission Planner", "Autonomous",
-      "Mobility", "Vehicle", "EV", "Drone", "Arduino", "Control", "Simulation", "Safety",
+      "Mobility", "Vehicle", "EV", "Drone", "Arduino", "Control", "Simulation", "AirSim", "Safety",
     ],
   },
   {
@@ -29,18 +40,11 @@ export const DOMAINS = [
     ],
   },
   {
-    name: { ko: "AI · 데이터", en: "AI & Data" },
-    tags: [
-      "AI", "TTS", "Object Detection", "Computer Vision", "Detection", "Vision", "Python",
-      "Data Viz", "Big Data", "Data", "Dashboard", "Streamlit", "Plotly", "Research", "Experiment",
-    ],
-  },
-  {
     name: { ko: "소프트웨어 · 웹 · 앱", en: "Software, Web & App" },
     tags: [
       "Next.js 15", "TypeScript", "Supabase", "FastAPI", "MariaDB", "Swift", "App", "Java",
       "Socket", "OOP", "C#", "Windows Forms", ".NET", "AWS", "Slack Bot", "Kakao Map API",
-      "Linux", "GitHub", "UX", "Game UX", "Interactive",
+      "Linux", "GitHub", "UX", "Game UX", "Interactive", "Unreal Engine",
     ],
   },
   {

@@ -14,6 +14,7 @@ import { Boot } from "@/components/motion/Boot";
 import { CutFx } from "@/components/motion/CutFx";
 import { PointerFx } from "@/components/motion/PointerFx";
 import { CutProvider, type CutState } from "@/components/motion/context";
+import { AiScene, type AiAsk } from "@/components/scenes/AiScene";
 import { AimScene } from "@/components/scenes/AimScene";
 import { CertsScene } from "@/components/scenes/CertsScene";
 import { CreditsScene } from "@/components/scenes/CreditsScene";
@@ -64,7 +65,7 @@ const STOPPED: Playback = { on: false, since: 0 };
  * reel playing itself. Pushing them into separate providers would spread one interaction
  * across four files and buy nothing.
  *
- * All twelve scenes are always mounted, so the static export contains the full text of the
+ * Every scene is always mounted, so the static export contains the full text of the
  * portfolio — which is what makes this version indexable where the original, a CSR page that
  * built its DOM from a script, was a blank document to a crawler.
  */
@@ -81,6 +82,8 @@ export function Stage() {
   /** The visitor's own motion switch. The OS preference still wins when it asks for less. */
   const [motionOff, setMotionOff] = useState(false);
   const [play, setPlay] = useState<Playback>(STOPPED);
+  /** Which AI work the title card's shortcut asked the AI chapter to open on. */
+  const [aiAsk, setAiAsk] = useState<AiAsk>({ n: 0, k: 0 });
   const chaptersId = useId();
 
   const osReduced = useReducedMotion();
@@ -316,7 +319,21 @@ export function Stage() {
           />
 
           <div className="scenes">
-            <TitleScene index={chapterAt("title")} live={isLive("title")} />
+            <TitleScene
+              index={chapterAt("title")}
+              live={isLive("title")}
+              onAi={(n) => {
+                setAiAsk((a) => ({ n, k: a.k + 1 }));
+                goByHand(chapterAt("ai"));
+              }}
+            />
+            <AiScene
+              index={chapterAt("ai")}
+              live={isLive("ai")}
+              animate={animate}
+              ask={aiAsk}
+              onOpen={open}
+            />
             <ProfileScene index={chapterAt("profile")} live={isLive("profile")} onOpen={open} />
             <GrainScene index={chapterAt("grain")} live={isLive("grain")} />
             <TimelineScene index={chapterAt("timeline")} live={isLive("timeline")} />

@@ -3,12 +3,12 @@ import { expect, test, type Page } from "@playwright/test";
 const settle = (page: Page) => page.waitForTimeout(1400);
 
 /**
- * 08 — Works, rebuilt as plates hanging in the room.
+ * Works, rebuilt as plates hanging in the room.
  *
  * The chapter used to be a 7×5 grid of 90px tiles. What replaced it only earns the change if
  * three things are true: one work holds the frame at a time, the plates are at real depth
- * rather than scaled copies on one plane, and every one of the thirty-five is still reachable
- * directly. Those are the three tests.
+ * rather than scaled copies on one plane, and every work is still reachable directly. Those
+ * are the three tests.
  */
 test.describe("the works stage", () => {
   test("gives the frame to one work, with its record beside it", async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe("the works stage", () => {
 
     const stage = page.locator(".s-projects");
     await expect(stage.locator(".wm-title")).toBeVisible();
-    await expect(stage.locator(".wm-pos")).toContainText("/ 35");
+    await expect(stage.locator(".wm-pos")).toContainText("/ 38");
     // One work means one focusable plate, whatever else is floating behind it.
     await expect(stage.locator(".plate-near")).toHaveCount(1);
     await expect(stage.locator(".plate")).not.toHaveCount(0);
@@ -59,16 +59,16 @@ test.describe("the works stage", () => {
     expect(right).not.toBe(left);
   });
 
-  test("every one of the thirty-five is still one click away", async ({ page }) => {
+  test("every work is still one click away", async ({ page }) => {
     await page.goto("/#projects");
     await settle(page);
 
     const ticks = page.locator(".s-projects .wtick");
-    await expect(ticks).toHaveCount(35);
+    await expect(ticks).toHaveCount(38);
 
     await ticks.nth(20).hover();
     await settle(page);
-    await expect(page.locator(".s-projects .wm-pos")).toContainText("21 / 35");
+    await expect(page.locator(".s-projects .wm-pos")).toContainText("21 / 38");
 
     // And the tick opens the full record, the same as a tile used to.
     await ticks.nth(20).click();
@@ -80,15 +80,15 @@ test.describe("the works stage", () => {
     await settle(page);
 
     const pos = page.locator(".s-projects .wm-pos");
-    await expect(pos).toContainText("01 / 35");
+    await expect(pos).toContainText("01 / 38");
 
     await page.locator('.s-projects button[aria-label="다음 작업"]').click();
     await settle(page);
-    await expect(pos).toContainText("02 / 35");
+    await expect(pos).toContainText("02 / 38");
 
     await page.locator('.s-projects button[aria-label="이전 작업"]').click();
     await settle(page);
-    await expect(pos).toContainText("01 / 35");
+    await expect(pos).toContainText("01 / 38");
 
     await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-projects/);
   });
@@ -103,8 +103,35 @@ test.describe("the works stage", () => {
     await expect(ticks.nth(1)).toBeFocused();
 
     await page.keyboard.press("End");
-    await expect(ticks.nth(34)).toBeFocused();
+    await expect(ticks.nth(37)).toBeFocused();
 
     await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-projects/);
+  });
+
+  test("an AI work has no photograph, so its diagram is the plate — and runs", async ({ page }) => {
+    await page.goto("/#projects");
+    await settle(page);
+
+    // The reel opens on the first AI work.
+    const near = page.locator(".s-projects .plate-near");
+    await expect(near).toHaveClass(/plate-ai/);
+    await expect(near.locator("svg.aiv")).toHaveCount(1);
+    await expect(page.locator(".s-projects .wm-honor")).toContainText("전국 2위");
+
+    // The diagram is being written frame by frame: its clock readout moves.
+    const clock = near.locator(".av-tc");
+    const a = await clock.textContent();
+    await page.waitForTimeout(600);
+    expect(await clock.textContent()).not.toBe(a);
+  });
+
+  test("an AI work holds the reel for its whole diagram, not the usual beat", async ({ page }) => {
+    await page.goto("/#projects");
+    await settle(page);
+    const pos = page.locator(".s-projects .wm-pos");
+    await expect(pos).toContainText("01 / 38");
+    // A photo work would have moved on at 3.2s; the diagram runs for nine.
+    await page.waitForTimeout(4200);
+    await expect(pos).toContainText("01 / 38");
   });
 });

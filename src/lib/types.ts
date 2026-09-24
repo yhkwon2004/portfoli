@@ -3,8 +3,8 @@
  *
  * Everything the site renders comes from one array of `Item`s — awards, projects,
  * schooling, roles, certificates and the profile blurb are all the same shape, told
- * apart by `type`. That is what lets one wall component render both the 35 awards and
- * the 35 projects, and one dossier render any record at all.
+ * apart by `type`. That is what lets one dossier render any record at all, and one set of
+ * selectors count every figure the site shows.
  */
 
 /** The two languages every string ships in. */
@@ -81,6 +81,22 @@ export type Details = {
   readonly [K in DetailKey]?: DetailValue;
 };
 
+/**
+ * A result a piece of work earned at a competition, carried on the work itself.
+ *
+ * Distinct from an `award` record on purpose: every award record is a scanned certificate on
+ * the 7 × 5 award wall, and an honour that is only known from the author's own account has no
+ * scan to hang there. Keeping it on the work also keeps the claim next to the thing it is for.
+ */
+export type Honor = {
+  /** The competition. */
+  readonly event: Bi;
+  /** The result — "전국 2위", "장려상". */
+  readonly grade: Bi;
+  /** The category within the competition, where the author named one. */
+  readonly track?: Bi;
+};
+
 export type Item = {
   readonly id: string;
   readonly type: ItemType;
@@ -96,6 +112,7 @@ export type Item = {
   /** Author's manual ordering hint; 99 means "unranked". */
   readonly rank: number;
   readonly imgs: readonly Img[];
+  readonly honor?: Honor;
   readonly details?: Details;
   readonly links?: readonly Link[];
 };

@@ -1,5 +1,5 @@
 import { PORTFOLIO } from "@/data/portfolio";
-import { awards, certifications, education, experience, profile, projects, stats } from "@/lib/select";
+import { awards, certifications, education, experience, honoured, profile, projects, stats } from "@/lib/select";
 
 /**
  * Where the site lives. Used for canonical URLs, the OG card and the JSON-LD `@id`, all of
@@ -56,13 +56,17 @@ export function personJsonLd(): Record<string, unknown> {
       dateCreated: c.year || undefined,
     })),
     // Awards are plain strings in schema.org; the count is what carries here, and the full
-    // record for each one is on the page itself.
-    award: awards.map((a) => a.t.ko),
+    // record for each one is on the page itself. The honours a work won without a certificate
+    // on the wall follow the certificates, named with the work they were won for.
+    award: [
+      ...awards.map((a) => a.t.ko),
+      ...honoured.flatMap((p) => (p.honor ? [`${p.honor.event.ko} ${p.honor.grade.ko} — ${p.t.ko}`] : [])),
+    ],
   };
 }
 
 /**
- * A `CollectionPage` listing the works, so the 35 projects are individually addressable.
+ * A `CollectionPage` listing the works, so every project is individually addressable.
  * Each entry points at its own deep link — the URLs this port introduced.
  */
 export function worksJsonLd(): Record<string, unknown> {

@@ -67,7 +67,8 @@ test.describe("telemetry", () => {
     const fill = async () => Number(await page.locator(".telemetry .tel-grid dd").nth(1).textContent());
 
     // Sample across the reel, including the late chapters where the glass is nearly full.
-    for (const chapter of [1, 4, 7, 9, 10]) {
+    // 8, 10 and 11 are the late fills (0.67 · 0.83 · 0.92) that stalled before.
+    for (const chapter of [1, 4, 8, 10, 11]) {
       await page.locator(".chapters button").nth(chapter).click();
       await settle(page);
       // Let the surge decay so this measures the resting stream, not the post-cut burst.

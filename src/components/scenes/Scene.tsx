@@ -23,9 +23,9 @@ type Props = {
  * One chapter's frame.
  *
  * Every scene is mounted at all times — that is what lets a cut be a cross-fade rather than a
- * mount, and it is why a crawler sees all twelve chapters of content in the static HTML. The
- * off-screen ones are `inert` and `aria-hidden`, so eleven hidden scenes' worth of buttons
- * stay out of the tab order and out of a screen reader's way.
+ * mount, and it is why a crawler sees every chapter's content in the static HTML. The
+ * off-screen ones are `inert` and `aria-hidden`, so the hidden scenes' buttons stay out of
+ * the tab order and out of a screen reader's way.
  *
  * A scene is in one of three states, and the stylesheet choreographs each:
  *
@@ -81,7 +81,8 @@ export function Scene({
                     className="gl"
                     style={{ "--li": n, "--lr": all.length - 1 - n } as React.CSSProperties}
                   >
-                    {ch}
+                    {/* A space would collapse at the end of an inline-block; hold it open. */}
+                    {ch === " " ? "\u00a0" : ch}
                   </span>
                 ))}
               </span>
