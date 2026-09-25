@@ -22,6 +22,7 @@ npm run dev          # http://localhost:3000
 | `npm run check:css` | 잘못된 색상 리터럴 검사 — 아래 *색상 검사* 참고 |
 | `npm run media` | 3D 장면에서 영상 · 포스터 · 스틸 재렌더 → `public/media/` |
 | `npm run og` | OG 카드 재생성 (`public/og.png`) — 실제 사이트를 촬영 |
+| `npm run figma` | Figma용 편집 가능한 SVG 프레임 · 디자인 시스템 보드 · 토큰 → `design/figma/` ([안내](design/figma/README.md)) |
 | `npm run images` | 사진 티어 재생성 — 아래 *이미지 파이프라인* 참고 |
 
 ---
