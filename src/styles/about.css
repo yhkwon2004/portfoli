@@ -1,0 +1,81 @@
+@layer components {
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: start;
+  }
+  .about-lede {
+    font-size: clamp(1.7rem, 3.4vw, 3.2rem);
+    font-weight: 500;
+    line-height: 1.32;
+    letter-spacing: -0.035em;
+    color: var(--color-fg);
+  }
+  .about-lede:lang(ko) {
+    letter-spacing: -0.05em;
+    line-height: 1.45;
+  }
+  .about-side {
+    display: grid;
+    gap: 2rem;
+    padding-top: 0.6rem;
+  }
+  .about-tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .about-fields {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+  }
+  .about-field-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: var(--color-fg-2);
+    margin-bottom: 0.45rem;
+  }
+  .about-field-top b {
+    color: var(--color-fg);
+    font-weight: 500;
+  }
+  .about-fields i {
+    display: block;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--color-line);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-fields i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--gradient);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.4s var(--ease-out);
+    transition-delay: calc(var(--d, 0) * 1ms + 200ms);
+  }
+  .about-fields li[data-inview] i::after {
+    transform: scaleX(var(--w));
+  }
+  .about-edu {
+    line-height: 1.9;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 860px) {
+    .about-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}

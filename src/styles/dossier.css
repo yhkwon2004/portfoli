@@ -1,342 +1,290 @@
 @layer components {
-  /* ─────────────────────────────  DOSSIER  ─────────────────────────────
-   * The full record for any item. Opened from a tile, a pick card, a capability chip or
-   * the focus panel; steps through whichever set the item came from.
-   */
   .dossier {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    z-index: 10;
+    z-index: 130;
     display: grid;
-    place-items: center;
-    background: rgba(3, 4, 10, 0.86);
+    place-items: end center;
+    background: rgba(3, 4, 7, 0.72);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     opacity: 0;
     visibility: hidden;
-    /*
-     * `visibility` is stepped, not faded — and the *delay* is what does the work here.
-     *
-     * Transitioning it over the same 0.4s as the opacity (the obvious way to write this)
-     * keeps the dialog computed-`hidden` for the whole fade-in. An element that is
-     * `visibility: hidden` cannot receive focus: `.focus()` on it is specified to do nothing,
-     * silently. So the focus trap would run, find the close button, call focus on it, and
-     * leave focus sitting on the wall tile behind the backdrop — with no error anywhere.
-     *
-     * Closing: flip after the fade (0.4s delay), so the sheet is still painted while it fades.
-     * Opening: flip immediately (no delay), so it is focusable in the same frame.
-     */
     transition:
-      opacity 0.4s var(--ease-house),
-      visibility 0s linear 0.4s;
+      opacity 0.45s var(--ease-out),
+      visibility 0s linear 0.45s;
   }
   .dossier[data-open="true"] {
     opacity: 1;
     visibility: visible;
     transition:
-      opacity 0.4s var(--ease-house),
-      visibility 0s linear 0s;
+      opacity 0.45s var(--ease-out),
+      visibility 0s;
   }
-  .dossier .sheet {
-    position: relative;
-    width: min(1140px, 93vw);
-    max-height: min(86vh, 860px);
-    overflow: auto;
+  .dos-sheet {
+    width: min(1180px, 100%);
+    height: min(94vh, 100%);
+    overflow-y: auto;
     overscroll-behavior: contain;
-    border: 1px solid var(--color-line);
-    background: linear-gradient(170deg, var(--color-void-3), var(--color-void));
-    transform: scale(0.92) translateY(18px);
-    opacity: 0;
-    transition:
-      transform 0.5s var(--ease-house),
-      opacity 0.4s var(--ease-house);
+    border-radius: 28px 28px 0 0;
+    border: 1px solid var(--color-line-2);
+    border-bottom: 0;
+    background:
+      radial-gradient(70% 40% at 80% 0%, rgba(157, 140, 255, 0.1), transparent 60%),
+      var(--color-bg-2);
+    transform: translateY(40px);
+    transition: transform 0.7s var(--ease-out);
   }
-  .dossier[data-open="true"] .sheet {
+  .dossier[data-open="true"] .dos-sheet {
     transform: none;
-    opacity: 1;
   }
-  /*
-   * The container transform's flying frame (Dossier.tsx drives its box with the Web
-   * Animations API). A hairline with a glow, so in flight it reads as the tile's own edge
-   * being carried out to the size of the sheet.
-   */
-  .dossier .zoomrect {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 0;
-    z-index: 3;
-    pointer-events: none;
-    opacity: 0;
-    border: 1px solid var(--color-electric);
-    box-shadow:
-      0 0 24px rgba(67, 97, 255, 0.55),
-      inset 0 0 24px rgba(67, 97, 255, 0.2);
-  }
-
-  /*
-   * Inside the sheet, each record assembles itself: the hero plate wipes in from the side the
-   * step came from (`--sd`: 1 for →, −1 for ←) while its image settles out of a slight
-   * scale, the caption rises, and the body follows block by block. It is re-keyed per record,
-   * so this plays on the opening and on every step.
-   */
-  .dossier[data-open="true"] .sheet-body .hero {
-    animation: dz-wipe 0.8s var(--ease-io) backwards;
-  }
-  .dossier[data-open="true"] .sheet-body .hero img {
-    animation:
-      dz-settle 1.3s var(--ease-house) backwards,
-      ken 16s ease-in-out 1.3s infinite alternate;
-  }
-  .dossier[data-open="true"] .sheet-body .cap > * {
-    animation: dz-slide 0.75s var(--ease-house) backwards;
-  }
-  .dossier[data-open="true"] .sheet-body .cap > :nth-child(1) {
-    animation-delay: 0.22s;
-  }
-  .dossier[data-open="true"] .sheet-body .cap > :nth-child(2) {
-    animation-delay: 0.3s;
-  }
-  .dossier[data-open="true"] .sheet-body .pad > * {
-    animation: dz-slide 0.75s var(--ease-house) backwards;
-    animation-delay: 0.36s;
-  }
-  .dossier[data-open="true"] .sheet-body .pad > :nth-child(2) {
-    animation-delay: 0.42s;
-  }
-  .dossier[data-open="true"] .sheet-body .pad > :nth-child(n + 3) {
-    animation-delay: 0.48s;
-  }
-  /* The detail cards and the gallery cascade inside their own blocks. */
-  .dossier[data-open="true"] .sheet-body .det section {
-    animation: dz-slide 0.7s var(--ease-house) backwards;
-    animation-delay: calc(0.5s + var(--k, 0) * 0.06s);
-  }
-  .dossier[data-open="true"] .sheet-body .tags .tag {
-    animation: pop 0.55s var(--ease-spring) backwards;
-    animation-delay: calc(0.45s + var(--k, 0) * 0.035s);
-  }
-  .dossier[data-open="true"] .sheet-body .gal img {
-    animation: dz-slide 0.7s var(--ease-house) backwards;
-    animation-delay: 0.62s;
-  }
-  .dossier[data-open="true"] .sheet-body .gal img:nth-child(2) {
-    animation-delay: 0.68s;
-  }
-  .dossier[data-open="true"] .sheet-body .gal img:nth-child(3) {
-    animation-delay: 0.74s;
-  }
-  .dossier[data-open="true"] .sheet-body .gal img:nth-child(n + 4) {
-    animation-delay: 0.8s;
-  }
-  @keyframes dz-wipe {
-    from {
-      clip-path: inset(0 calc((1 - var(--sd, 1)) * 50%) 0 calc((1 + var(--sd, 1)) * 50%));
-    }
-    to {
-      clip-path: inset(0 0 0 0);
-    }
-  }
-  @keyframes dz-settle {
-    from {
-      scale: 1.14;
-      filter: grayscale(0.35) brightness(1.4) contrast(1.1) blur(6px);
-    }
-  }
-  @keyframes dz-slide {
-    from {
-      opacity: 0;
-      translate: calc(var(--sd, 1) * 26px) 0;
-    }
-  }
-
-  .dossier .sheet::-webkit-scrollbar {
-    width: 5px;
-  }
-  .dossier .sheet::-webkit-scrollbar-thumb {
-    background: var(--color-line);
-  }
-
-  /* Sticky control bar: close, and step the set without leaving the sheet. */
-  .dossier .bar-top {
+  .dos-bar {
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 5;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    padding: 0.55rem 0.8rem;
-    background: linear-gradient(180deg, rgba(8, 8, 11, 0.94), rgba(8, 8, 11, 0.55));
-    backdrop-filter: blur(8px);
+    padding: 14px clamp(16px, 3vw, 32px);
+    background: linear-gradient(180deg, rgba(10, 12, 18, 0.96), rgba(10, 12, 18, 0.7));
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-line);
   }
-  .dossier .bar-top button {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.22em;
-    color: var(--color-electric-ink);
-    text-transform: uppercase;
-    padding: 0.4rem 0.7rem;
-    border: 1px solid transparent;
-    transition: border-color 0.3s;
+  .dos-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 38px;
+    padding: 0 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-2);
+    font-size: 0.85rem;
   }
-  .dossier .bar-top button:hover:not(:disabled) {
-    border-color: var(--color-line);
+  .dos-close:hover {
+    background: rgba(255, 255, 255, 0.06);
   }
-  .dossier .bar-top button:disabled {
-    opacity: 0.28;
-    cursor: not-allowed;
-  }
-  .dossier .dpos {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    color: var(--color-steel);
-  }
-  .dossier .steps {
+  .dos-steps {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
   }
-
-  /* A plate across the top: the cover image with the identity laid over it. */
-  .dossier .hero {
+  .dos-pos {
+    font-size: 0.78rem;
+    color: var(--color-fg-3);
+    margin-right: 0.4rem;
+  }
+  .dos-steps button {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--color-line-2);
+  }
+  .dos-steps button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .dos-steps button:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+  .dos-body {
+    padding: clamp(16px, 3vw, 32px);
+    display: grid;
+    gap: clamp(24px, 4vh, 40px);
+    animation: dos-in 0.6s var(--ease-out);
+  }
+  @keyframes dos-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  .dos-media {
     position: relative;
-    height: clamp(150px, 26vh, 270px);
+    aspect-ratio: 16 / 8;
+    border-radius: var(--radius);
     overflow: hidden;
-    background: var(--color-void-2);
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
   }
-  .dossier .hero img {
+  .dossier[data-open="true"] .dos-media {
+    view-transition-name: rec-media;
+  }
+  .dos-media img,
+  .dos-media video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(0.35) brightness(0.62) contrast(1.1);
-    animation: ken 16s ease-in-out infinite alternate;
   }
-  .dossier .hero::after {
-    content: "";
+  .dos-media.is-cert {
+    aspect-ratio: auto;
+    height: min(62vh, 640px);
+    background: #e9ecf2;
+  }
+  .dos-media.is-cert img {
+    object-fit: contain;
+  }
+  .dos-concept {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(0deg, var(--color-void-3) 4%, rgba(15, 18, 32, 0.5) 45%, rgba(15, 18, 32, 0.18));
+    left: 14px;
+    bottom: 12px;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(5, 6, 10, 0.75);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 0.66rem;
   }
-  .dossier .hero .cap {
-    position: absolute;
-    inset: auto 0 0 0;
-    z-index: 1;
-    padding: clamp(16px, 2.6vw, 32px) clamp(20px, 3.4vw, 46px) clamp(12px, 1.6vw, 20px);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  .dos-head {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 58rem;
   }
-  .dossier .hero .tagrow {
+  .dos-meta {
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
     flex-wrap: wrap;
-  }
-  .dossier .drank {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.14em;
-    font-weight: 500;
-    padding: 0.24rem 0.56rem;
-    color: var(--color-void);
-    background: var(--rk, var(--color-electric));
-  }
-  .dossier .drank:empty {
-    display: none;
-  }
-  .dossier .dyear {
-    font-family: var(--font-mono);
+    align-items: center;
+    gap: 0.6rem 0.9rem;
     font-size: 0.8rem;
-    letter-spacing: 0.18em;
-    color: var(--color-electric-ink);
+    color: var(--color-fg-3);
   }
-  .dossier h2 {
-    font-family: var(--font-grot);
-    font-weight: 700;
-    font-size: clamp(1.3rem, 2.9vw, 2.3rem);
-    line-height: 1.25;
-    letter-spacing: 0.01em;
+  .dos-honor {
+    color: var(--color-fg-2);
   }
-
-  .dossier .pad {
-    padding: clamp(18px, 2.8vw, 38px) clamp(20px, 3.4vw, 46px) clamp(24px, 3.4vw, 44px);
+  .dos-head h2 {
+    font-size: clamp(1.9rem, 4vw, 3.4rem);
+    letter-spacing: -0.05em;
+    line-height: 1.12;
+  }
+  .dos-lede {
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    line-height: 1.75;
+    color: var(--color-fg-2);
+  }
+  .dos-tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .dos-details {
     display: grid;
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
   }
-  .dossier .lede {
-    color: var(--color-steel);
-    line-height: 1.8;
-    font-size: clamp(0.86rem, 1.2vw, 1rem);
-    max-width: 74ch;
-    font-weight: 300;
-  }
-  .dossier .gal {
+  .dos-card {
+    padding: 1.2rem 1.3rem;
+    border-radius: var(--radius-sm);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
-    gap: 9px;
+    gap: 0.7rem;
+    align-content: start;
   }
-  .dossier .gal img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border: 1px solid var(--color-line);
-    filter: grayscale(0.45) brightness(0.82) contrast(1.06);
-    transition:
-      filter 0.35s,
-      transform 0.5s var(--ease-house);
+  .dos-card p,
+  .dos-card li {
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: var(--color-fg-2);
   }
-  .dossier .gal img:hover {
-    filter: none;
-    transform: scale(1.02);
-  }
-  /* Two columns of field cards on a wide sheet — the details are the substance here. */
-  .dossier .det {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-    gap: 1px;
-    background: var(--color-line);
-    border: 1px solid var(--color-line);
-  }
-  .dossier .det section {
-    background: var(--color-void-2);
-    padding: 1.1rem 1.15rem;
-  }
-  .dossier .det h3 {
-    font-family: var(--font-kr);
-    font-weight: 700;
-    font-size: 0.68rem;
-    letter-spacing: 0.22em;
-    color: var(--color-electric-ink);
-    margin-bottom: 0.6rem;
-  }
-  .dossier .det p,
-  .dossier .det li {
-    font-size: 0.84rem;
-    line-height: 1.78;
-    color: var(--color-steel);
-    font-weight: 300;
-  }
-  .dossier .det ul {
+  .dos-card ul {
     list-style: none;
     display: grid;
-    gap: 0.42rem;
-    padding: 0;
+    gap: 0.35rem;
   }
-  .dossier .det li {
-    padding-left: 0.95rem;
+  .dos-card li {
     position: relative;
+    padding-left: 1rem;
   }
-  .dossier .det li::before {
+  .dos-card li::before {
     content: "";
     position: absolute;
     left: 0;
-    top: 0.72em;
-    width: 4px;
-    height: 4px;
+    top: 0.7em;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: var(--color-electric);
+    background: var(--color-cyan);
+  }
+  .dos-section {
+    display: grid;
+    gap: 1rem;
+  }
+  .dos-diagram {
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 560 / 300;
+    max-height: 480px;
+  }
+  .dos-diagram .aiv {
+    width: 100%;
+    height: 100%;
+  }
+  .dos-steps-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .dos-steps-list li {
+    display: grid;
+    gap: 0.4rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-line);
+    font-size: 0.9rem;
+    color: var(--color-fg-2);
+  }
+  .dos-steps-list b {
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--color-cyan);
+  }
+  .dos-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .dos-gallery img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-line);
+    background: var(--color-bg-3);
+  }
+  .dos-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .dos-links a {
+    display: inline-flex;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-2);
+    font-size: 0.88rem;
+  }
+  .dos-links a:hover {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+  }
+  @media (max-width: 700px) {
+    .dos-steps-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .dos-media {
+      aspect-ratio: 16 / 11;
+    }
+  }
+
+  /* The picture's flight from card to sheet: a touch longer than the default, on the house curve. */
+  ::view-transition-group(rec-media) {
+    animation-duration: 0.62s;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.4s;
   }
 }

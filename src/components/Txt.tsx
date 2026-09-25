@@ -4,7 +4,7 @@ import { resolve } from "@/lib/i18n";
 import { useLang } from "@/components/LangProvider";
 import type { Bi } from "@/lib/types";
 
-type Tag = "span" | "p" | "h1" | "h2" | "h3" | "b" | "i" | "div" | "li" | "figcaption";
+type Tag = "span" | "p" | "h1" | "h2" | "h3" | "h4" | "b" | "i" | "div" | "li" | "figcaption";
 
 type Props = {
   v: Bi;

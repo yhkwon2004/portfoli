@@ -1,170 +1,248 @@
 @layer components {
-  /* ─────────────────────────────  MOTION PRIMITIVES  ─────────────────────────────
-   * The vocabulary every chapter is built from. Nothing in this file knows about a chapter:
-   * each primitive is keyed off `--i` / `--ci` (an index the markup stamps), `--dir` (the
-   * direction of the last cut, from the stage) and one of three states the scene carries —
-   *
-   *   data-state="live"   entering or on screen: entrance keyframes run here
-   *   data-state="out"    the chapter that was just cut away from: exits run here
-   *   data-shown="true"   either of the two — the resting, visible styles
-   *
-   * Splitting "visible" from "entering" is what gives the site exits at all. Before, every
-   * visible style hung off `data-live`, so the instant a cut landed the outgoing chapter's
-   * contents snapped back to their hidden state and there was nothing left to leave.
+  /* ─────────────────────────────  REVEALS  ─────────────────────────────
+   * Anything marked [data-reveal] waits hidden until a single IntersectionObserver
+   * (src/components/motion/Reveal.tsx) stamps data-inview on it. The kind is the attribute's
+   * value; the stagger is --d (ms), set inline. Transitions, not keyframes: an element that
+   * scrolls into view mid-transition simply carries on, and nothing replays on the way back up.
    */
+  [data-reveal] {
+    transition:
+      opacity 1s var(--ease-out),
+      transform 1.1s var(--ease-out),
+      filter 1s var(--ease-out),
+      clip-path 1.2s var(--ease-out);
+    transition-delay: calc(var(--d, 0) * 1ms);
+  }
+  [data-reveal="up"] {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  [data-reveal="fade"] {
+    opacity: 0;
+  }
+  [data-reveal="blur"] {
+    opacity: 0;
+    filter: blur(14px);
+    transform: scale(1.04);
+  }
+  [data-reveal="scale"] {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  [data-reveal="clip"] {
+    clip-path: inset(100% 0 0 0 round var(--radius));
+  }
+  [data-reveal][data-inview] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  /* Only the clip kind is clipped once shown — a clip on every kind would shave rounded
+     corners off whatever sits in them, and cut every box-shadow flat. */
+  [data-reveal="clip"][data-inview] {
+    clip-path: inset(0 0 0 0 round var(--radius));
+  }
 
-  /* ── kinetic type: units rise through a per-word mask ──
-   * The mask is a clip-path, not overflow: it can be tight on the one edge the letters travel
-   * through and generous on the other three, so accents, the Korean ascenders and the chrome
-   * glow are not shaved off. Which edge is tight follows `--dir` — going back, the letters
-   * drop in from above, so the top edge is the one that has to cut them.
-   */
-  .kin .w {
+  /* ── split text: each unit rises through its word's mask ── */
+  .split .w {
     display: inline-block;
     white-space: nowrap;
-    clip-path: inset(
-      calc(-0.34em - var(--dir, 1) * 0.1em) -0.3em calc(-0.34em + var(--dir, 1) * 0.1em) -0.3em
-    );
+    /* generous on three sides so descenders and hangul aren't shaved; tight only below */
+    clip-path: inset(-0.3em -0.2em -0.12em -0.2em);
   }
-  .kin .u {
+  .split .u {
     display: inline-block;
+    transform: translateY(115%) rotate(4deg);
+    opacity: 0;
+    transition:
+      transform 1.1s var(--ease-out),
+      opacity 0.7s var(--ease-out);
+    transition-delay: calc(var(--d, 0) * 1ms + var(--i) * var(--step, 22ms));
   }
-  .scene[data-state="live"] .kin .u,
-  .kin[data-play="true"] .u {
-    animation: kin-up var(--kin-dur, 0.86s) var(--ease-house) backwards;
-    animation-delay: calc(var(--kin-at, 0.36s) + var(--ci, 0) * var(--kin-step, 0.032s));
+  .split[data-inview] .u {
+    transform: none;
+    opacity: 1;
   }
-  @keyframes kin-up {
-    from {
-      opacity: 0;
-      transform: translateY(calc(var(--dir, 1) * 150%)) rotate(calc(var(--dir, 1) * 7deg));
-    }
-    38% {
-      opacity: 1;
+
+  /* ── scrubbed paragraph: every word brightens as the reader's scroll passes it ── */
+  .scrub .sw {
+    opacity: clamp(0.14, calc((var(--p, 1) * 1.35 - var(--w)) * 9), 1);
+    transition: opacity 0.15s linear;
+  }
+
+  /* ── marquee ── */
+  .marquee {
+    --gap: 2.4rem;
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    gap: var(--gap);
+    padding-right: var(--gap);
+    min-width: 100%;
+    animation: marquee var(--dur, 38s) linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  .marquee[data-dir="-1"] .marquee-track {
+    animation-direction: reverse;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-100%);
     }
   }
 
-  /* ── decode: the scramble twin sits exactly over the real, transparent text ── */
-  .dc {
-    position: relative;
-  }
-  .dc-fx {
-    position: absolute;
+  /* ── cursor: a dot that is the pointer, and a ring that follows it on a spring ── */
+  .cursor,
+  .cursor-ring {
+    position: fixed;
     left: 0;
     top: 0;
-    white-space: pre;
+    z-index: 150;
     pointer-events: none;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
   }
-  .dc[data-dc] > .dc-t {
+  .cursor {
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    background: #fff;
+  }
+  .cursor-ring {
+    width: 38px;
+    height: 38px;
+    margin: -19px 0 0 -19px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    display: grid;
+    place-items: center;
+    transition:
+      opacity 0.3s,
+      width 0.45s var(--ease-spring),
+      height 0.45s var(--ease-spring),
+      margin 0.45s var(--ease-spring),
+      background 0.3s,
+      border-color 0.3s;
+  }
+  .cursor-ring span {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: #041016;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  html[data-cursor="on"] .cursor,
+  html[data-cursor="on"] .cursor-ring {
+    opacity: 1;
+  }
+  .cursor-ring[data-state="hover"] {
+    width: 58px;
+    height: 58px;
+    margin: -29px 0 0 -29px;
+    border-color: rgba(87, 230, 255, 0.9);
+    background: rgba(87, 230, 255, 0.08);
+  }
+  .cursor-ring[data-state="label"] {
+    width: 86px;
+    height: 86px;
+    margin: -43px 0 0 -43px;
+    border-color: transparent;
+    background: var(--gradient);
+  }
+  .cursor-ring[data-state="label"] span {
+    opacity: 1;
+  }
+  @media (pointer: fine) {
+    html[data-cursor="on"] body,
+    html[data-cursor="on"] a,
+    html[data-cursor="on"] button {
+      cursor: none;
+    }
+  }
+
+  /* ── magnetic: the element leans toward the pointer; the offset is written by script ── */
+  [data-magnetic] {
+    transition: translate 0.6s var(--ease-spring);
+    translate: var(--mgx, 0) var(--mgy, 0);
+  }
+
+  /* ── the opening: a counter, a wipe, and the page ── */
+  .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 180;
+    display: grid;
+    place-items: end start;
+    padding: var(--gutter);
+    background: var(--color-bg);
+    transition:
+      clip-path 1s var(--ease-in-out),
+      visibility 0s linear 1s;
+    clip-path: inset(0 0 0 0);
+  }
+  .loader[data-done="true"] {
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+  }
+  .loader b {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: clamp(3rem, 12vw, 9rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
   }
-  /* The unresolved glyphs run hot and settle to the label's own colour as they lock. */
-  .dc[data-dc] > .dc-fx {
-    color: color-mix(in srgb, currentColor 45%, var(--color-electric-ink));
+  .loader p {
+    margin-top: 0.8rem;
   }
-
-  /* ── registration marks: the four crosses spring out to the corners ── */
-  .scene[data-state="live"] .regmarks,
-  .contact[data-open="true"] .regmarks {
-    animation: reg-snap 0.9s var(--ease-spring) backwards;
-    animation-delay: var(--reg-at, calc(0.36s + var(--i, 0) * 0.075s));
-  }
-  @keyframes reg-snap {
-    from {
-      inset: 18%;
-      opacity: 0;
-    }
-    24% {
-      opacity: 1;
-    }
-  }
-
-  /*
-   * ── the trace: a pen of light runs once around the frame ──
-   * A trim-path animation on a rectangle: four one-pixel gradients on the marks' pseudo-
-   * element, each growing from the corner where the last one finished — top left→right,
-   * right down, bottom right→left, left up — then the whole stroke fades back into the
-   * ordinary hairline. Drawn on the marks' own pseudo-element so a panel gains it for free
-   * with the marks it already carries.
-   */
-  .regmarks::before {
-    --tr: var(--color-electric);
-    content: "";
+  .loader .bar {
     position: absolute;
-    inset: calc(var(--mark) / 2);
-    opacity: 0;
-    background:
-      linear-gradient(var(--tr), var(--tr)) left top / 100% 1px no-repeat,
-      linear-gradient(var(--tr), var(--tr)) right top / 1px 100% no-repeat,
-      linear-gradient(var(--tr), var(--tr)) right bottom / 100% 1px no-repeat,
-      linear-gradient(var(--tr), var(--tr)) left bottom / 1px 100% no-repeat;
-    filter: drop-shadow(0 0 3px rgba(67, 97, 255, 0.95));
-  }
-  .scene[data-state="live"] .regmarks::before,
-  .contact[data-open="true"] .regmarks::before {
-    animation: trace 1.25s linear backwards;
-    animation-delay: calc(var(--reg-at, calc(0.36s + var(--i, 0) * 0.075s)) + 0.12s);
-  }
-  @keyframes trace {
-    0% {
-      opacity: 1;
-      background-size: 0 1px, 1px 0, 0 1px, 1px 0;
-    }
-    22% {
-      background-size: 100% 1px, 1px 0, 0 1px, 1px 0;
-    }
-    44% {
-      background-size: 100% 1px, 1px 100%, 0 1px, 1px 0;
-    }
-    66% {
-      background-size: 100% 1px, 1px 100%, 100% 1px, 1px 0;
-    }
-    86% {
-      opacity: 1;
-      background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
-    }
-    100% {
-      opacity: 0;
-      background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
-    }
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    transform-origin: 0 50%;
+    transform: scaleX(var(--lp, 0));
+    background: var(--gradient);
   }
 
   /*
-   * ── pop: scale from a point with a real spring ──
-   * On the individual `scale` property, not `transform`, so it composes with whatever
-   * transform the element already has — a hover lift, a tilt — instead of fighting it.
+   * ── motion off ──
+   * The OS setting and the site's own switch mean the same thing: nothing moves by itself.
+   * Reveals still happen — as an immediate change, not a transition — so content is never
+   * stranded invisible; the loops (grain, marquee, the aurora) stop rather than hide.
    */
-  @keyframes pop {
-    from {
-      scale: 0.3;
-      opacity: 0;
-    }
-    35% {
-      opacity: 1;
-    }
+  html[data-motion="off"] [data-reveal],
+  html[data-motion="off"] .split .u,
+  html[data-motion="off"] .tile-dots i {
+    transition: none !important;
   }
-
-  /* ── draw: a stroke writes itself on (SVG, with pathLength="1") ── */
-  @keyframes draw {
-    from {
-      stroke-dasharray: 1;
-      stroke-dashoffset: 1;
-    }
-    to {
-      stroke-dasharray: 1;
-      stroke-dashoffset: 0;
-    }
+  html[data-motion="off"] :is(.grain, .marquee-track, .aurora i) {
+    animation: none !important;
   }
-
-  /* ── ping: a ring leaves a point and dissolves — contact, arrival, a stamp landing ── */
-  @keyframes ping {
-    from {
-      scale: 0.4;
-      opacity: 0.9;
-    }
-    to {
-      scale: 3.6;
-      opacity: 0;
+  html[data-motion="off"] [data-magnetic] {
+    translate: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      transition-delay: 0ms !important;
     }
   }
 }

@@ -1,262 +1,159 @@
 @layer components {
-  /* ─────────────  CONTACT: the pill in the frame, and the card it opens  ─────────────
-   * The reference's header carries one thing that is not navigation: a rounded Contact /
-   * Recruit pill in the top-right corner, set against an otherwise square, hairline UI. The
-   * radius is the whole point — it is the only curve in the frame, which is what makes it
-   * read as the one button rather than as another label.
-   */
-  .contact-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    padding: 0.34rem 0.85rem;
-    border: 1px solid var(--color-line);
-    border-radius: 999px;
-    color: var(--color-chrome-2);
-    white-space: nowrap;
-    transition:
-      color 0.3s,
-      border-color 0.3s,
-      background 0.3s;
-  }
-  /* The recording light, reused: the pill is live while the reel runs. */
-  .contact-pill i {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--color-electric);
-    flex: 0 0 auto;
-  }
-  /* …and it breathes like one: a slow pulse, so the one live control in the frame reads as live. */
-  .booted .contact-pill i {
-    animation: rec-pulse 2.4s ease-in-out infinite;
-  }
-  @keyframes rec-pulse {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 rgba(67, 97, 255, 0.7);
-    }
-    50% {
-      box-shadow: 0 0 0 4px rgba(67, 97, 255, 0);
-    }
-  }
-  .contact-pill:hover,
-  .contact-pill:focus-visible {
-    color: var(--color-chrome);
-    border-color: var(--color-electric);
-    background: rgba(67, 97, 255, 0.12);
-  }
-
-  /* ── the card ── */
   .contact {
-    position: absolute;
-    inset: 0;
-    z-index: 11;
-    display: grid;
-    place-items: center;
-    background: rgba(3, 4, 10, 0.86);
-    backdrop-filter: blur(14px);
-    opacity: 0;
-    visibility: hidden;
-    /*
-     * The dossier's stepped-visibility pattern, and for the same reason: an element that is
-     * `visibility: hidden` cannot take focus, and `.focus()` on one is specified to do
-     * nothing — silently. Flip it immediately on the way in so the focus trap has something
-     * focusable in the same frame; delay it on the way out so the card is still painted
-     * while it fades.
-     */
-    transition:
-      opacity 0.4s var(--ease-house),
-      visibility 0s linear 0.4s;
-  }
-  .contact[data-open="true"] {
-    opacity: 1;
-    visibility: visible;
-    transition:
-      opacity 0.4s var(--ease-house),
-      visibility 0s linear 0s;
-  }
-  /* A button rather than a div: clicking the backdrop closes, and that is an action. */
-  .contact-scrim {
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-  }
-
-  .contact-card {
     position: relative;
-    width: min(560px, 92vw);
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    padding: clamp(1.4rem, 3vw, 2.2rem);
-    border: 1px solid var(--color-line-hot);
-    background:
-      linear-gradient(158deg, rgba(67, 97, 255, 0.07), transparent 58%),
-      var(--color-void-2);
-    transform: translateY(10px);
-    transition: transform 0.5s var(--ease-house);
+    padding-top: clamp(110px, 16vh, 200px);
+    overflow: hidden;
   }
-  .contact[data-open="true"] .contact-card {
+  .contact-glow {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: 110vw;
+    aspect-ratio: 2;
+    translate: -50% 0;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(157, 140, 255, 0.14), rgba(87, 230, 255, 0.05) 45%, transparent 70%);
+    pointer-events: none;
+  }
+  .contact-title {
+    margin: 1.2rem 0 clamp(40px, 7vh, 80px);
+    font-size: clamp(3.2rem, 11vw, 11rem);
+    line-height: 0.92;
+    letter-spacing: -0.065em;
+    font-weight: 600;
+  }
+  .contact-title:lang(ko) {
+    line-height: 1.02;
+    letter-spacing: -0.075em;
+  }
+  .ct-line {
+    display: block;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 80px);
+    align-items: start;
+  }
+  .channels {
+    list-style: none;
+    border-top: 1px solid var(--color-line-2);
+  }
+  .channels a {
+    position: relative;
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr) auto 28px;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 0.4rem;
+    border-bottom: 1px solid var(--color-line-2);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .channels a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--gradient-soft);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .channels a:hover::before {
     transform: none;
   }
-
-  .contact-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.4rem;
+  .ch-key {
+    font-size: 0.74rem;
+    color: var(--color-cyan);
   }
-  .contact-x {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-dim);
-    transition: color 0.3s;
+  .ch-val {
+    font-size: clamp(1.2rem, 2.4vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
   }
-  .contact-x:hover {
-    color: var(--color-chrome);
+  .ch-label {
+    font-size: 0.85rem;
+    color: var(--color-fg-3);
   }
-
-  .contact-name {
-    font-family: var(--font-grot);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    font-size: clamp(1.6rem, 3.4vw, 2.3rem);
-    line-height: 1.1;
-    color: var(--color-chrome);
+  .channels svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.5s var(--ease-spring);
   }
-  .contact-name:lang(ko) {
-    font-family: var(--font-kr);
-  }
-  .contact-line {
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: var(--color-ice);
-    font-weight: 300;
+  .channels a:hover svg {
+    transform: translate(3px, -3px);
   }
   .contact-aim {
-    font-size: 0.78rem;
-    line-height: 1.6;
-    color: var(--color-steel);
-    margin-top: 0.2rem;
-  }
-  .contact-aim b {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.14em;
-    color: var(--color-electric-ink);
-    text-transform: uppercase;
-  }
-
-  .contact-list {
-    list-style: none;
-    padding: 0;
-    margin: 0.9rem 0 0;
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid var(--color-line);
-  }
-  .contact-list li {
+    padding: 1.6rem;
     display: grid;
-    grid-template-columns: 5.4rem 1fr auto;
-    align-items: baseline;
     gap: 0.8rem;
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--color-line);
   }
-  .contact-key {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.2em;
-    color: var(--color-dim);
+  .aim-org {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    white-space: pre-line;
+    line-height: 1.2;
   }
-  .contact-label {
-    font-size: 0.74rem;
-    color: var(--color-steel);
+  .aim-body {
+    color: var(--color-fg-2);
+    line-height: 1.7;
+    font-size: 0.95rem;
   }
-  .contact-list a {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+  .aim-note {
+    text-transform: none;
     letter-spacing: 0.02em;
-    color: var(--color-chrome-2);
-    text-decoration: none;
-    border-bottom: 1px solid var(--color-line-hot);
-    padding-bottom: 2px;
-    transition:
-      color 0.3s,
-      border-color 0.3s;
-    overflow-wrap: anywhere;
   }
-  .contact-list a:hover,
-  .contact-list a:focus-visible {
-    color: var(--color-chrome);
-    border-color: var(--color-electric);
+  .quote {
+    margin: clamp(72px, 12vh, 140px) auto;
+    max-width: 60rem;
+    text-align: center;
   }
-
-  .contact-note {
-    font-size: 0.68rem;
-    line-height: 1.6;
-    color: var(--color-dim);
-    margin-top: 0.9rem;
+  .quote p {
+    font-size: clamp(1.6rem, 3.6vw, 3.2rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.3;
   }
-
-  /*
-   * Opening the card is a small title sequence of its own: the frame traces and the marks
-   * snap out (motion.css), the name assembles letter by letter, and the channels list in one
-   * row at a time, each row's hairline drawing across under it.
-   */
-  .contact[data-open="true"] .contact-card {
-    --reg-at: 0.05s;
+  .quote p > span {
+    color: var(--color-cyan);
+    font-family: var(--font-serif);
+    font-size: 1.3em;
   }
-  .contact[data-open="true"] .contact-name .u {
-    animation: kin-up 0.8s var(--ease-house) backwards;
-    animation-delay: calc(0.14s + var(--ci) * 0.05s);
+  .contact-ticker {
+    padding: 1.4rem 0;
+    border-block: 1px solid var(--color-line);
   }
-  .contact[data-open="true"] .contact-line,
-  .contact[data-open="true"] .contact-aim {
-    animation: rise-in 0.7s var(--ease-house) backwards;
-    animation-delay: 0.3s;
+  .contact-ticker .marquee-item {
+    font-size: clamp(2.2rem, 6vw, 5rem);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    color: var(--color-fg);
   }
-  .contact[data-open="true"] .contact-aim {
-    animation-delay: 0.36s;
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 2rem 2.4rem;
+    font-size: 0.76rem;
+    color: var(--color-fg-4);
   }
-  .contact[data-open="true"] .contact-list li {
-    animation: contact-row 0.6s var(--ease-house) backwards;
-    animation-delay: calc(0.42s + var(--k, 0) * 0.07s);
+  .footer-top {
+    color: var(--color-fg-2);
   }
-  @keyframes contact-row {
-    from {
-      opacity: 0;
-      translate: -14px 0;
-      border-bottom-color: transparent;
+  .footer-top:hover {
+    color: var(--color-cyan);
+  }
+  @media (max-width: 860px) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 1fr);
     }
-  }
-
-  @media (max-width: 560px) {
-    /* The key column costs more than it says at this width. */
-    .contact-list li {
-      grid-template-columns: 1fr auto;
+    .channels a {
+      grid-template-columns: 3.6rem minmax(0, 1fr) 24px;
     }
-    .contact-key {
-      grid-column: 1 / -1;
+    .ch-label {
+      display: none;
     }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .contact-card {
-      transform: none;
-      transition: none;
-    }
-  }
-  .stage[data-motion="off"] .contact-card {
-    transform: none;
-    transition: none;
   }
 }

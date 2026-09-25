@@ -17,10 +17,17 @@ const config = [
     },
   },
   {
-    // The canvas simulations are hot loops that run 60x a second on typed arrays. Reusing
-    // one mutable object per grain and writing to it in place is the point, not an oversight.
-    files: ["src/hooks/use*Sand.ts", "src/hooks/useHourglass.ts", "src/lib/sim/**"],
-    rules: { "no-param-reassign": "off" },
+    // The 3D scenes are three.js scene graphs driven from react-three-fiber's `useFrame`: a
+    // mutable graph built once and written to in place sixty times a second — positions,
+    // uniforms, the camera — is how R3F is meant to be used, and re-rendering React per frame
+    // instead would be the actual bug. The React Compiler's immutability and ref rules assume
+    // the opposite model, so they are off for this directory only.
+    files: ["src/components/three/**"],
+    rules: {
+      "react-hooks/immutability": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/use-memo": "off",
+    },
   },
 ];
 

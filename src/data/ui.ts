@@ -1,173 +1,144 @@
-import { CHAPTERS } from "@/data/chapters";
 import { stats } from "@/lib/select";
 import type { Bi } from "@/lib/types";
 
 /**
- * Every string the chrome says, in one place.
+ * Every string the interface says, in one place — the copy deck.
  *
- * In the original these were inlined into the markup as paired `<span class="ko">` /
- * `<span class="en">` elements — which meant both languages were always in the DOM, and
- * changing a label meant finding it among 1,500 lines of template. Collecting them here
- * costs one indirection and buys a copy deck the author can read end to end.
- *
- * A figure in the copy is interpolated from the records, never typed: "84건의 기록" and "12장"
- * were both typed once, and both went stale the day the AI works and their chapter arrived.
+ * This is the site's own voice (headings, labels, calls to action). The author's words — the
+ * records, their summaries, the details — live in src/data/portfolio.ts and are never
+ * paraphrased here. A figure in this copy is interpolated from the records, never typed.
  */
-
-/** A run of text where one span carries emphasis. */
-export type Emphasised = readonly { readonly text: string; readonly em?: boolean }[];
-
 export const UI = {
   // ── chrome ──
-  rec: "HOURGLASS",
-  /** The instrument block beside the glass. Latin on purpose — it is machine voice. */
-  telemetryTitle: "SAND SYSTEM",
-  telemetryReset: { ko: "흐름 재설정", en: "Reset flow" } satisfies Bi,
-  dialogLabel: { ko: "상세 기록", en: "Record detail" } satisfies Bi,
+  brand: "YONGHYUN KWON",
+  skip: { ko: "본문으로 건너뛰기", en: "Skip to content" } satisfies Bi,
+  menu: { ko: "메뉴", en: "Menu" } satisfies Bi,
   close: { ko: "닫기", en: "Close" } satisfies Bi,
-  prevScene: { ko: "이전 장면", en: "Previous scene" } satisfies Bi,
-  nextScene: { ko: "다음 장면", en: "Next scene" } satisfies Bi,
-  prevRecord: { ko: "이전 기록", en: "Previous record" } satisfies Bi,
-  nextRecord: { ko: "다음 기록", en: "Next record" } satisfies Bi,
-  chapterNav: { ko: "장면 목록", en: "Chapters" } satisfies Bi,
-  skipToChapters: { ko: "장면 목록으로 건너뛰기", en: "Skip to chapters" } satisfies Bi,
-  sceneAnnounce: { ko: "장", en: "Chapter" } satisfies Bi,
-  featured: { ko: "★ 대표작", en: "★ Featured" } satisfies Bi,
-
-  // ── the projector's own controls ──
-  play: { ko: "재생", en: "Play" } satisfies Bi,
-  pause: { ko: "일시정지", en: "Pause" } satisfies Bi,
-  playHint: {
-    ko: "장면을 12초씩 자동으로 넘깁니다 · 아무 조작이나 하면 멈춥니다",
-    en: "Advances a chapter every 12 seconds · any input stops it",
-  } satisfies Bi,
-  motion: { ko: "모션", en: "Motion" } satisfies Bi,
+  motionOn: { ko: "모션 켜짐", en: "Motion on" } satisfies Bi,
+  motionOff: { ko: "모션 꺼짐", en: "Motion off" } satisfies Bi,
   motionLocked: {
     ko: "시스템 설정에서 동작 줄이기가 켜져 있어 모션이 꺼져 있습니다",
     en: "Motion is off because your system asks for reduced motion",
   } satisfies Bi,
-
-  // ── contact, from the pill in the frame ──
-  contactOpen: { ko: "연락 · 채용", en: "Contact · Recruit" } satisfies Bi,
-  contactEyebrow: { ko: "연락 · 채용", en: "Contact · Recruit" } satisfies Bi,
-  contactAim: { ko: "지원 목표 — ", en: "Aiming at — " } satisfies Bi,
-  contactNote: {
-    ko: `링크는 새 창에서 열립니다. 전체 이력은 ${CHAPTERS.length}장을 순서대로 보시면 됩니다.`,
-    en: `Links open in a new tab. The full record is the ${CHAPTERS.length} chapters, in order.`,
+  contact: { ko: "연락하기", en: "Get in touch" } satisfies Bi,
+  loading: { ko: "모델을 불러오는 중", en: "Loading the model" } satisfies Bi,
+  backToTop: { ko: "맨 위로", en: "Back to top" } satisfies Bi,
+  concept: {
+    ko: "3D 콘셉트 시각화 — 실제 서비스 화면이 아닙니다",
+    en: "3D concept visualisation — not a product screenshot",
   } satisfies Bi,
 
-  // ── title ──
-  titleEyebrow: "A Portfolio in Falling Sand",
-  titleHint: { ko: "스크롤 · 방향키로 재생", en: "Scroll or arrow keys to play" } satisfies Bi,
+  // ── nav ──
+  nav: {
+    ai: { ko: "AI 대표작", en: "AI Work" },
+    works: { ko: "작업", en: "Works" },
+    skills: { ko: "역량", en: "Skills" },
+    awards: { ko: "수상", en: "Awards" },
+    journey: { ko: "여정", en: "Journey" },
+    contact: { ko: "연락", en: "Contact" },
+  } satisfies Record<string, Bi>,
 
-  titleAiLead: { ko: "AI 대표작부터", en: "AI works first" } satisfies Bi,
-
-  // ── AI works ──
-  aiEyebrow: { ko: "AI 대표작 · 먼저 보는 세 작품", en: "Flagship AI · the three to see first" } satisfies Bi,
-  aiTitle: { ko: "현장 문제를 AI로 풀다", en: "Field problems, answered with AI" } satisfies Bi,
-  aiOpen: { ko: "전체 기록 보기", en: "Open the full record" } satisfies Bi,
-  aiExpand: { ko: "펼치기", en: "Expand" } satisfies Bi,
-  aiHint: {
-    ko: "패널을 눌러 펼치기 · 올려두면 멈춥니다",
-    en: "Select a panel to open it · hover to hold",
+  // ── hero ──
+  heroKicker: "PORTFOLIO — AI ENGINEERING",
+  heroLine1: { ko: "현장의 문제를,", en: "Field problems," } satisfies Bi,
+  heroLine2: { ko: "동작하는 AI로.", en: "answered with working AI." } satisfies Bi,
+  heroCta: { ko: "AI 대표작 보기", en: "See the AI work" } satisfies Bi,
+  heroCta2: { ko: "전체 작업", en: "All works" } satisfies Bi,
+  heroScroll: { ko: "스크롤", en: "Scroll" } satisfies Bi,
+  heroBeat: {
+    ko: "뉴런이 레이어가 되듯 — 문제에서 모델로, 모델에서 제품으로.",
+    en: "As neurons become layers — problem to model, model to product.",
   } satisfies Bi,
-  aiTabs: { ko: "AI 대표작 목록", en: "Flagship AI works" } satisfies Bi,
-  aiSteps: { ko: "작동 순서", en: "How it runs" } satisfies Bi,
-
-  // ── profile ──
-  profileEyebrow: { ko: "인물 소개", en: "The Subject" } satisfies Bi,
+  statAi: { ko: "AI 대표작", en: "AI flagships" } satisfies Bi,
   statAwards: { ko: "수상", en: "Awards" } satisfies Bi,
   statProjects: { ko: "프로젝트", en: "Projects" } satisfies Bi,
-  statCerts: { ko: "자격", en: "Certificates" } satisfies Bi,
-  statRoles: { ko: "경력", en: "Roles" } satisfies Bi,
-  picksTitle: { ko: "대표 성과", en: "Selected work & honours" } satisfies Bi,
-  picksHint: { ko: "눌러서 상세 보기", en: "Select for the full record" } satisfies Bi,
+  statTags: { ko: "기술 태그", en: "Skill tags" } satisfies Bi,
 
-  // ── principle ──
-  grainEyebrow: { ko: "일하는 원칙", en: "Operating principle" } satisfies Bi,
-  grainCreed: {
-    ko: "모래알은 굵기와 자리에 따라\n내려가는 순서가 다르다",
-    en: "Grains fall in an order set by\ntheir size and where they sit",
+  // ── about ──
+  aboutIdx: { ko: "소개", en: "About" } satisfies Bi,
+  aboutTitleA: { ko: "만들어서", en: "A developer" } satisfies Bi,
+  aboutTitleB: { ko: "증명하는 개발자", en: "who proves it by building" } satisfies Bi,
+
+  // ── AI work ──
+  aiIdx: { ko: "AI 대표작", en: "Selected AI work" } satisfies Bi,
+  aiTitleA: { ko: "AI로 푼", en: "Three problems," } satisfies Bi,
+  aiTitleB: { ko: "세 가지 현장 문제", en: "answered with AI" } satisfies Bi,
+  aiNote: {
+    ko: "스크롤하면 각 작품의 작동 방식이 3D로 한 단계씩 재생됩니다.",
+    en: "Scroll, and each work plays out how it works, step by step, in 3D.",
   } satisfies Bi,
-  grainThesis: {
-    ko: [
-      { text: "좁은 목을 먼저 지나는 건 언제나 굵고 위에 있는 알갱이입니다. 개발도 같습니다 — 손이 아니라 " },
-      { text: "시급성과 중요도", em: true },
-      { text: "가 순서를 정합니다. 무엇을 먼저 떨어뜨릴지 정하는 것이 속도를 만듭니다." },
-    ],
-    en: [
-      { text: "What clears the neck first is always the grain that is heavy and sitting high. Development is the same — " },
-      { text: "urgency and weight", em: true },
-      { text: " set the order, not what happens to be at hand. Choosing what drops first is what makes speed." },
-    ],
-  } satisfies Record<"ko" | "en", Emphasised>,
-  axisWeight: { ko: "중요도 ↑", en: "Weight ↑" } satisfies Bi,
-  axisUrgency: { ko: "시급성 →", en: "Urgency →" } satisfies Bi,
+  aiOpen: { ko: "케이스 스터디", en: "Case study" } satisfies Bi,
+  aiSteps: { ko: "작동 순서", en: "How it runs" } satisfies Bi,
 
-  // ── chronicle ──
-  timelineEyebrow: { ko: "학력 · 경력", en: "Education & Experience" } satisfies Bi,
-
-  // ── capability ──
-  skillsEyebrow: { ko: "역량 · 근거 기반", en: "Capability · evidence-backed" } satisfies Bi,
-  skillsHint: {
-    ko: "숫자 = 그 역량을 증명하는 작업 수 · 눌러서 확인",
-    en: "The number is how many works prove it · select to open",
+  // ── skills ──
+  skillsIdx: { ko: "역량", en: "Capabilities" } satisfies Bi,
+  skillsTitleA: { ko: "근거로 세는", en: "Counted," } satisfies Bi,
+  skillsTitleB: { ko: "역량 지도", en: "not claimed" } satisfies Bi,
+  skillsNote: {
+    ko: "숫자는 그 기술을 실제로 쓴 작업의 수입니다. 자기 평가 점수는 없습니다.",
+    en: "Each number is how many works actually use the skill. There are no self-rated scores.",
   } satisfies Bi,
   works: { ko: "건", en: "works" } satisfies Bi,
-
-  // ── metrics ──
-  metricsEyebrow: { ko: "지표 · 데이터에서 집계", en: "Metrics · counted from the record" } satisfies Bi,
-  metricsHint: {
-    ko: `아래 수치는 모두 ${stats.records}건의 기록에서 직접 센 값입니다`,
-    en: `Every figure below is counted directly off the ${stats.records} records`,
+  leadWork: { ko: "대표 작업", en: "Lead work" } satisfies Bi,
+  proofLabel: { ko: "증명 작업", en: "works backing it" } satisfies Bi,
+  gradesTitle: { ko: "수상 등급 분포", en: "Awards by grade" } satisfies Bi,
+  depthTitle: { ko: "증명 깊이", en: "Depth of evidence" } satisfies Bi,
+  depthNote: {
+    ko: `기술 태그 ${stats.tags}개 중 ${stats.thinTags}개는 단 1건의 작업으로만 증명됩니다 — 폭은 넓고, 깊이는 아직 쌓는 중입니다.`,
+    en: `${stats.thinTags} of ${stats.tags} skill tags rest on a single work — the range is wide, the depth still being built.`,
   } satisfies Bi,
-  metricOutput: { ko: "연도별 산출", en: "Output per year" } satisfies Bi,
-  metricOutputNote: { ko: "수상 · 프로젝트 합계", en: "Awards and projects combined" } satisfies Bi,
-  metricGrades: { ko: "수상 등급 분포", en: "Awards by grade" } satisfies Bi,
-  metricGradesNote: { ko: `${stats.awards}건 전체`, en: `All ${stats.awards} awards` } satisfies Bi,
-  metricDepth: { ko: "역량 증명 깊이", en: "Depth of evidence" } satisfies Bi,
-  // The row count is interpolated from DEPTH_ROWS in MetricsScene, so the caption cannot
-  // drift from the number of bars actually drawn.
-  metricDepthNote: {
-    ko: "태그별 증명 건수 — 상위 {n}개",
-    en: "Works backing each tag — top {n}",
-  } satisfies Bi,
-  metricThin: {
-    ko: "단 1건으로만 증명되는 태그",
-    en: "tags proven by a single work",
-  } satisfies Bi,
-
-  // ── awards ──
-  awardsEyebrow: { ko: "수상 기록", en: "Awards" } satisfies Bi,
+  outputTitle: { ko: "연도별 산출", en: "Output per year" } satisfies Bi,
 
   // ── works ──
-  projectsEyebrow: { ko: "프로젝트 · ★ 대표작", en: "Works · ★ Featured" } satisfies Bi,
-  focusHint: {
-    ko: "타일에 올리면 멈춥니다 · 클릭하면 전체 기록",
-    en: "Hover to hold · click for the full record",
-  } satisfies Bi,
-  prevWork: { ko: "이전 작업", en: "Previous work" } satisfies Bi,
-  nextWork: { ko: "다음 작업", en: "Next work" } satisfies Bi,
-  worksIndex: { ko: "작업 목록", en: "Works index" } satisfies Bi,
-  worksHint: {
-    ko: "눌러서 전체 기록 · 눈금으로 이동",
-    en: "Select for the full record · step with the scale",
-  } satisfies Bi,
+  worksIdx: { ko: "전체 작업", en: "All works" } satisfies Bi,
+  worksTitleA: { ko: "만든 것", en: "Everything" } satisfies Bi,
+  worksTitleB: { ko: "전부", en: "built" } satisfies Bi,
+  filterAll: { ko: "전체", en: "All" } satisfies Bi,
+  filterLabel: { ko: "분야로 거르기", en: "Filter by field" } satisfies Bi,
+  featured: { ko: "대표작", en: "Featured" } satisfies Bi,
+  open: { ko: "열기", en: "Open" } satisfies Bi,
+  shown: { ko: "개 표시", en: "shown" } satisfies Bi,
 
-  // ── credentials ──
-  certsEyebrow: { ko: "보유 자격", en: "Credentials" } satisfies Bi,
-
-  // ── analysis ──
-  swotEyebrow: {
-    ko: "자기 분석 · 지원 목표 기준",
-    en: "Self-analysis · against the stated target",
+  // ── awards ──
+  awardsIdx: { ko: "수상", en: "Awards" } satisfies Bi,
+  awardsTitleA: { ko: `${stats.awardYears}년 동안`, en: `${stats.awardYears} years,` } satisfies Bi,
+  awardsTitleB: { ko: `${stats.awards}번의 수상`, en: `${stats.awards} awards` } satisfies Bi,
+  awardsNote: {
+    ko: "스크롤하면 상장이 옆으로 흐릅니다. 누르면 원본 스캔이 열립니다.",
+    en: "Scroll to run the certificates sideways. Select one for the original scan.",
   } satisfies Bi,
 
-  // ── direction ──
-  aimEyebrow: { ko: "일하는 기준", en: "How I work" } satisfies Bi,
-  aimTargetLabel: { ko: "지원 목표", en: "Target" } satisfies Bi,
+  // ── journey ──
+  journeyIdx: { ko: "여정", en: "Journey" } satisfies Bi,
+  journeyTitleA: { ko: "배우고,", en: "Learned," } satisfies Bi,
+  journeyTitleB: { ko: "가르치고, 이끈 곳", en: "taught, led" } satisfies Bi,
+  education: { ko: "학력", en: "Education" } satisfies Bi,
+  experience: { ko: "경력 · 활동", en: "Experience" } satisfies Bi,
+  credentials: { ko: "자격", en: "Credentials" } satisfies Bi,
 
-  // ── credits ──
-  creditsEyebrow: "Fin.",
-  replay: { ko: "처음부터 다시", en: "Replay" } satisfies Bi,
+  // ── principles ──
+  principlesIdx: { ko: "일하는 방식", en: "How I work" } satisfies Bi,
+  principlesTitleA: { ko: "세 가지", en: "Three" } satisfies Bi,
+  principlesTitleB: { ko: "원칙", en: "principles" } satisfies Bi,
+  proof: { ko: "근거", en: "Proof" } satisfies Bi,
+
+  // ── contact ──
+  contactIdx: { ko: "연락", en: "Contact" } satisfies Bi,
+  contactTitleA: { ko: "다음 문제를", en: "Let's build" } satisfies Bi,
+  contactTitleB: { ko: "함께 풀어요", en: "the next one" } satisfies Bi,
+  contactAim: { ko: "지원 목표", en: "Aiming at" } satisfies Bi,
+  contactNote: {
+    ko: "링크는 새 창에서 열립니다.",
+    en: "Links open in a new tab.",
+  } satisfies Bi,
+  builtWith: { ko: "Next.js · Three.js로 직접 설계하고 만들었습니다", en: "Designed and built with Next.js · Three.js" } satisfies Bi,
+
+  // ── dossier ──
+  dialogLabel: { ko: "상세 기록", en: "Record detail" } satisfies Bi,
+  prevRecord: { ko: "이전 기록", en: "Previous record" } satisfies Bi,
+  nextRecord: { ko: "다음 기록", en: "Next record" } satisfies Bi,
+  howItWorks: { ko: "작동 원리", en: "How it works" } satisfies Bi,
+  renders: { ko: "콘셉트 렌더", en: "Concept renders" } satisfies Bi,
+  gallery: { ko: "기록 사진", en: "Gallery" } satisfies Bi,
+  links: { ko: "링크", en: "Links" } satisfies Bi,
 } as const;

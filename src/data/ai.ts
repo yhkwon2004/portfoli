@@ -75,3 +75,23 @@ export const AI_WORKS = [
 export const AI_LOOP_MS = 9000;
 
 export const aiWorkFor = (id: string): AiWork | undefined => AI_WORKS.find((w) => w.id === id);
+
+/**
+ * The media rendered for each AI work (scripts/render-media.mjs, from the same 3D scenes the
+ * page runs live): a looping WebM, a poster frame, and three stills — one per act of the
+ * scene. Public paths; resolve through `asset()` for the deployment base path.
+ *
+ * They are concept visualisations, drawn for this site. None of them is a screenshot of the
+ * work itself, and every surface that shows one says so.
+ */
+export type AiMedia = {
+  readonly video: string;
+  readonly poster: string;
+  readonly stills: readonly string[];
+};
+
+export const aiMedia = (kind: AiVisualKind): AiMedia => ({
+  video: `/media/ai/${kind}.webm`,
+  poster: `/media/ai/${kind}-poster.webp`,
+  stills: [1, 2, 3].map((n) => `/media/ai/${kind}-${n}.webp`),
+});

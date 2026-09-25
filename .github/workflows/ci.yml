@@ -40,9 +40,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Reports untranslated copy and the unreviewed 분석 screen, and recounts every figure the
-      # prose quotes. Non-blocking by design: these are facts for the author to act on, not
-      # reasons to fail a build. A figure that contradicts the data *does* fail (exit 1).
+      # Reports untranslated copy and undated works, checks every image and rendered medium
+      # the data points at exists, and that no count is typed into the copy by hand. The
+      # reports are facts for the author, not build failures; a missing file or a hand-typed
+      # figure *does* fail (exit 1).
       - name: Content audit
         run: npm run audit
 

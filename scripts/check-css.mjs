@@ -1,8 +1,8 @@
 /**
- * Guard against malformed colour literals in the stylesheets and simulations.
+ * Guard against malformed colour literals in the stylesheets and the 3D scenes.
  *
  * A hex that is not 3, 4, 6 or 8 digits is silently dropped by CSS and quietly ignored by
- * canvas — the gradient stop simply does not appear, and nothing anywhere reports it. Two of
+ * three.js — the gradient stop simply does not appear, and nothing anywhere reports it. Two of
  * these slipped in during the reskin (`#3b4considered`, `#6f7near`) and neither the type
  * checker, the linter nor the build said a word. This is the thing that would have.
  *
@@ -17,7 +17,7 @@ import { join, extname } from "node:path";
  * pattern reliably separates `#certs` from a typo'd `#6f7near` — both open with hex digits.
  * Narrowing the search is more honest than a clever regex that is wrong either way.
  */
-const ROOTS = ["src/styles", "src/lib/sim", "src/data"];
+const ROOTS = ["src/styles", "src/components/three", "src/data"];
 const EXT = new Set([".css", ".ts", ".tsx"]);
 /** A `#` followed by hex-ish word characters — deliberately loose, so bad ones are caught. */
 const HEXISH = /#[0-9a-zA-Z]+/g;

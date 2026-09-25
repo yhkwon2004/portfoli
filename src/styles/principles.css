@@ -1,0 +1,78 @@
+@layer components {
+  .deck {
+    list-style: none;
+    display: grid;
+    gap: 22vh;
+    padding-bottom: 10vh;
+  }
+  /* Each card sticks a step lower than the one before, so the next slides up over it. */
+  .deck-card {
+    position: sticky;
+    top: calc(var(--nav-h) + 40px + var(--n) * 26px);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(20px, 4vw, 64px);
+    padding: clamp(28px, 4vw, 56px);
+    min-height: 48vh;
+    overflow: hidden;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01) 40%),
+      var(--color-bg-2);
+    box-shadow: 0 -30px 80px -30px rgba(0, 0, 0, 0.9);
+  }
+  .deck-no {
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 0.9;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .deck-body {
+    display: grid;
+    align-content: center;
+    gap: 1.1rem;
+    max-width: 44rem;
+  }
+  .deck-body h3 {
+    font-size: clamp(1.8rem, 3.6vw, 3.2rem);
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+  }
+  .deck-text {
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--color-fg-2);
+  }
+  .deck-proof {
+    display: grid;
+    gap: 0.4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-fg-3);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+  .deck-glow {
+    position: absolute;
+    right: -10%;
+    bottom: -40%;
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(87, 230, 255, 0.12), transparent 65%);
+    pointer-events: none;
+  }
+  .deck-card:nth-child(2) .deck-glow {
+    background: radial-gradient(circle, rgba(157, 140, 255, 0.16), transparent 65%);
+  }
+  .deck-card:nth-child(3) .deck-glow {
+    background: radial-gradient(circle, rgba(212, 255, 95, 0.08), transparent 65%);
+  }
+  @media (max-width: 700px) {
+    .deck-card {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 0;
+    }
+  }
+}

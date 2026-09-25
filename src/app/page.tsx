@@ -1,5 +1,5 @@
-import { Stage } from "@/components/Stage";
+import { Site } from "@/components/site/Site";
 
 export default function Page() {
-  return <Stage />;
+  return <Site />;
 }

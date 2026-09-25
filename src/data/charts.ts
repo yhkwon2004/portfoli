@@ -1,51 +1,32 @@
 /**
  * The chart palette — validated, not eyeballed.
  *
- * Every value below was checked with the dataviz skill's `validate_palette.js` against this
- * site's chart surface (`--color-void-3`, #0f1220). Reproduce with:
+ * Every value was run through the dataviz skill's `validate_palette.js` against the surface the
+ * bento tiles sit on (#0d1017, dark mode):
  *
- *   node scripts/validate_palette.js "#eef3ff,#c2d0ea,#94a4c6,#66759c,#414e70" \
- *        --ordinal --mode dark --surface "#0f1220"        → ALL CHECKS PASS
- *   node scripts/validate_palette.js "#4361ff,#1fa8a0" --mode dark --surface "#0f1220"
- *                                                        → ALL CHECKS PASS
+ *   "#e3fbff,#9eeeff,#57d9f2,#2fa6c2,#1f6f86" --ordinal   → ALL CHECKS PASS
+ *     (one hue, monotone lightness, every step ≥ 0.06 apart, the dark end 3.33:1)
+ *   "#0f9fbd,#8b73f5" (categorical)                        → ALL CHECKS PASS
+ *     (both inside the L 0.48–0.67 band; CVD ΔE 10.7 deutan, 9.1 tritan; normal-vision 18+)
  *
- * ── what changed with the reskin ──────────────────────────────────────────────────────
- * The previous gold palette could not clear the categorical *lightness band*: a single-hue
- * two-shade encoding puts one slot far outside 0.48–0.67 by construction, and the deviation
- * had to be documented and justified. The chrome palette has no such problem, because it
- * brings a second hue the old one did not have. The accent blue and a teal from the same
- * dispersion family both sit inside the band at full chroma, so the two-series stack is now
- * fully compliant on all six checks rather than compliant-with-an-exception:
- *
- *   CVD separation 22.7 (target 8) · normal-vision floor 25.9 (floor 15) · contrast ≥3:1
- *
- * Teal was picked over the other passing candidates for its tritan margin (10.5 against
- * 6–9 elsewhere). Tritan is the weakest channel for a blue-versus-blue-green pair, so it is
- * the one worth optimising; the green that scored highest overall belongs to no part of this
- * site and would read as a third brand colour wandering into a chart.
- *
- * The secondary encoding the skill asks for is present regardless: a legend, a 2px surface gap
- * between the segments, direct value labels, and a real <table> of the same numbers for screen
- * readers.
- *
- * Text never wears a series colour: axis ticks, values and legends use --color-steel and
- * --color-ice, both of which clear WCAG AA for text on this surface.
+ * The two series are the site's own two hues — the cyan and violet of the gradient — stepped
+ * down into the lightness band; the brighter versions the rest of the UI uses sat above it.
+ * Grades are ordinal, so they take one hue in light → dark steps: the brightest is the highest
+ * honour. A legend, a 2px surface gap between segments, direct value labels and a real <table>
+ * back every colour, and text never wears a series colour.
  */
 
-/** Single-hue chrome ramp, light → dark. Passes monotone L, ΔL ≥ 0.06, light-end contrast. */
-export const RAMP = ["#eef3ff", "#c2d0ea", "#94a4c6", "#66759c", "#414e70"] as const;
+/** Single-hue cyan ramp, light → dark: the highest grade is the lightest. */
+export const RAMP = ["#e3fbff", "#9eeeff", "#57d9f2", "#2fa6c2", "#1f6f86"] as const;
 
-/**
- * The two-series stack. The accent the whole site already uses, against a teal from its
- * dispersion family — so the chart introduces no colour the rest of the page has not.
- */
+/** The two-series stack: awards in cyan, projects in violet — the site's own two hues. */
 export const SERIES = {
-  awards: "#4361ff",
-  projects: "#1fa8a0",
+  awards: "#0f9fbd",
+  projects: "#8b73f5",
 } as const;
 
 /** Single-series bars. The accent, since there is no second identity to tell apart. */
-export const SOLO = "#4361ff";
+export const SOLO = "#0f9fbd";
 
 /**
  * The chart surface — the colour every ratio above was measured against.
@@ -55,4 +36,4 @@ export const SOLO = "#4361ff";
  * the value that was validated is the value that gets painted, and two copies of a hex in two
  * files is exactly how that stops being true.
  */
-export const SURFACE = "#0f1220";
+export const SURFACE = "#0d1017";

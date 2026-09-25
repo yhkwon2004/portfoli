@@ -199,4 +199,16 @@ export const stats = {
   certifications: certifications.length,
   experience: experience.length,
   records: PORTFOLIO.items.length,
+  ai: aiWorks.length,
+  /** Calendar years the awards span, first to last inclusive. */
+  awardYears: (() => {
+    const ys = awards.map((a) => Number(year(a))).filter(Boolean);
+    return ys.length ? Math.max(...ys) - Math.min(...ys) + 1 : 0;
+  })(),
+  tags: totalTags,
+  thinTags: tagsProvenOnce,
 } as const;
+
+/** Which domains a work belongs to — every domain that lists at least one of its tags. */
+export const domainsOf = (item: Item): readonly number[] =>
+  DOMAINS.flatMap((d, n) => (item.tags.some((t) => (d.tags as readonly string[]).includes(t)) ? [n] : []));

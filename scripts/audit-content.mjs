@@ -5,10 +5,9 @@
  * the records actually say:
  *
  *   · which English fields were never translated (33 of 35 project records, at time of writing)
- *   · whether the SWOT screen has been reviewed by the author
  *   · whether every image path in the data has a rendered file behind it
- *   · the figures the prose quotes, recounted, so a stale number is caught the way the
- *     inherited "장려상 7" was
+ *   · whether every AI work has its rendered concept media (video, poster, three stills)
+ *   · no figure is typed into the copy deck by hand — every count on the page is derived
  *
  * Reports and exits 0 by default — these are facts for a human to act on, not build failures.
  * `--strict` turns every finding into a non-zero exit, for a release checklist.
@@ -60,15 +59,6 @@ if (untranslated.length) {
   );
 }
 
-// ── 2. unreviewed SWOT ───────────────────────────────────────────────────────
-if (/export const SWOT_REVIEWED = false/.test(readFileSync("src/data/swot.ts", "utf8"))) {
-  note(
-    "warn",
-    "The 분석 (SWOT) screen is still marked unreviewed. It is the one screen not in the author's " +
-      "own words — read every line, then set SWOT_REVIEWED = true in src/data/swot.ts.",
-  );
-}
-
 // ── 3. every image in the data has rendered files ────────────────────────────
 const TIERS = ["thumb", "full"];
 const missing = [];
@@ -85,7 +75,7 @@ if (missing.length) {
 
 // ── 3b. works with no date ───────────────────────────────────────────────────
 // A work without a year sorts correctly (featured works go by rank) but is missing from the
-// metrics scene's output-per-year chart, and shows no year on the reel or the sheet.
+// skills section's output-per-year chart, and shows no year on its card or its sheet.
 const undated = D.items.filter((i) => i.type === "project" && !i.year).map((i) => i.id);
 if (undated.length) {
   note(
@@ -112,40 +102,29 @@ const counted = {
   provenOnce: tags.filter((t) => tagCount(t) === 1).length,
 };
 
-/*
- * Every figure the 분석 prose states, re-checked against the recount — comments included,
- * since the file's own provenance header quotes the same numbers.
- *
- * Two things this has to get right:
- *
- *   · check *every* occurrence, not the first. The first "대상 4" in the file is in the header
- *     comment, and matching only that would let a wrong figure in a bullet through.
- *   · not match a label inside a longer one. "우수상 12" naively matches the tail of
- *     "최우수상 10", so each label is anchored with a lookbehind for a preceding hangul
- *     syllable — Korean has no \b.
- */
-const swotText = readFileSync("src/data/swot.ts", "utf8");
-const claims = [
-  ["수상", counted.awards, "건", "award total"],
-  ...Object.entries(counted.grades).map(([grade, n]) => [grade, n, "", `grade ${grade}`]),
-  ["기술 태그", counted.tags, "개", "tag total"],
-];
-
-for (const [label, expected, suffix, what] of claims) {
-  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const re = new RegExp(`(?<![가-힣])${escaped} (\\d+)${suffix}`, "g");
-  for (const m of swotText.matchAll(re)) {
-    if (Number(m[1]) !== expected) {
-      note("fail", `분석 prose says "${m[0]}" but the records say ${expected} (${what}).`);
-    }
-  }
+// ── 5. the AI works' rendered media ──────────────────────────────────────────
+// scripts/render-media.mjs draws these from the same 3D scenes the page runs live. A missing
+// file is not fatal to the page — it falls back to the live scene or the diagram — but the
+// reader without WebGL, and every phone, would see nothing where the work should be.
+const aiSource = readFileSync("src/data/ai.ts", "utf8");
+const kinds = [...aiSource.matchAll(/visual: "(\w+)"/g)].map((m) => m[1]);
+const media = kinds.flatMap((k) => [`${k}.webm`, `${k}-poster.webp`, `${k}-1.webp`, `${k}-2.webp`, `${k}-3.webp`]);
+const missingMedia = media.filter((f) => !existsSync(join("public/media/ai", f)));
+for (const f of ["public/media/hero-poster.webp", "public/og.png"]) if (!existsSync(f)) missingMedia.push(f);
+if (missingMedia.length) {
+  note("fail", `${missingMedia.length} rendered media files are missing (${missingMedia.slice(0, 4).join(", ")}${missingMedia.length > 4 ? " …" : ""}). Run \`npm run media\`.`);
 }
 
-// The "N개가 단 1건" claim has its own shape.
-for (const m of swotText.matchAll(/(\d+)개가 단 1건/g)) {
-  if (Number(m[1]) !== counted.provenOnce) {
-    note("fail", `분석 prose says ${m[1]} tags are proven by a single work; the records say ${counted.provenOnce}.`);
-  }
+// ── 6. no hand-typed counts in the copy deck ─────────────────────────────────
+// The inherited "장려상 7" was a figure typed into prose that the records had moved past. The
+// copy deck now takes every count from src/lib/select.ts; a digit followed by a counter word
+// means someone typed one back in. "단 1건" is a definition (proven by a single work), not a count.
+const deck = readFileSync("src/data/ui.ts", "utf8")
+  .split("\n")
+  .filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l))
+  .join("\n");
+for (const m of deck.matchAll(/(?<![\w$.{])(?<!단 )(\d+)\s?(건|개|점|awards|projects|works)/g)) {
+  note("fail", `src/data/ui.ts types a count by hand: "${m[0]}". Derive it from stats in src/lib/select.ts.`);
 }
 
 // ── report ───────────────────────────────────────────────────────────────────
