@@ -21,7 +21,7 @@ export const STANCES = [
       ko: "책상에서 정의한 문제 대신, 사람이 실제로 겪는 불편에서 시작합니다.",
       en: "Start from what people actually struggle with, not a problem defined at a desk.",
     },
-    proof: "결식 아동 예약결제 · 심부전 환자 EV 개선 · 노동자 자세감지 · 발달장애 측정 클릭커",
+    proof: "학교폭력 증거 정리 · 결식 아동 예약결제 · 심부전 환자 EV 개선 · 노동자 자세감지 · 발달장애 측정 클릭커",
   },
   {
     name: { ko: "만들어서 검증한다", en: "Build it, then verify" },

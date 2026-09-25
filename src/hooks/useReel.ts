@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** How long each slide holds before the reel advances. */
+/** How long each slide holds before the reel advances, unless the caller says otherwise. */
 const SLIDE_MS = 3200;
+/** While a pointer holds the reel, how often to look again. */
+const RECHECK_MS = 400;
 /** How long a pointer on a tile suspends the reel after it stops moving. */
 const HOLD_MS = 5000;
 
@@ -11,6 +13,11 @@ export type Reel = {
   readonly index: number;
   /** Bumped on every change, so the sweep animation can be re-triggered per turn. */
   readonly turn: number;
+  /**
+   * Which way the last turn went: 1 onward, −1 back. Autoplay and a wrap from the last slide to
+   * the first both count as onward — the reel is still moving forward through the set.
+   */
+  readonly dir: 1 | -1;
   /** Take the reel to a slide and suspend autoplay for a moment (a pointer or focus landed). */
   readonly pick: (n: number) => void;
   /** Release the suspension (the pointer left the wall). */
@@ -29,9 +36,19 @@ export type Reel = {
  * stopped the wrong one on each cut; keying the interval to the live chapter means the hidden
  * wall's timer simply never exists.
  */
-export function useReel(count: number, active: boolean, autoplay: boolean): Reel {
+export function useReel(
+  count: number,
+  active: boolean,
+  autoplay: boolean,
+  /**
+   * How long slide `n` holds, where it should differ from the default — the works reel gives an
+   * AI work the full run of its diagram rather than cutting it off a third of the way in.
+   */
+  holdFor?: (n: number) => number | undefined,
+): Reel {
   const [index, setIndex] = useState(0);
   const [turn, setTurn] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
   const holdUntil = useRef(0);
 
   const to = useCallback(
@@ -41,6 +58,9 @@ export function useReel(count: number, active: boolean, autoplay: boolean): Reel
       setIndex((prev) => {
         if (prev === next) return prev;
         setTurn((t) => t + 1);
+        // Judged on the unwrapped target, so stepping back from the first slide to the last
+        // still reads as a step back.
+        setDir(n < prev ? -1 : 1);
         return next;
       });
     },
@@ -75,23 +95,42 @@ export function useReel(count: number, active: boolean, autoplay: boolean): Reel
     if (active) {
       setIndex(0);
       setTurn((t) => t + 1);
+      setDir(1);
     }
   }
 
+  // Entering the wall clears any hold left over from the last visit. This belongs here
+  // rather than in the render adjustment above: a ref must not be written during render.
+  useEffect(() => {
+    if (active) holdUntil.current = 0;
+  }, [active]);
+
+  const holdRef = useRef(holdFor);
+  useEffect(() => {
+    holdRef.current = holdFor;
+  });
+
+  /*
+   * One timeout per slide rather than an interval, so each slide can hold for its own time and
+   * the clock restarts whenever the slide changes — by the reel or by hand.
+   */
   useEffect(() => {
     if (!active || !autoplay || count <= 1) return;
-    // Entering the wall clears any hold left over from the last visit. This belongs here
-    // rather than in the render adjustment above: a ref must not be written during render.
-    holdUntil.current = 0;
-    const id = window.setInterval(() => {
-      if (Date.now() < holdUntil.current) return; // a pointer is parked on a tile
+    let id = 0;
+    const tick = () => {
+      if (Date.now() < holdUntil.current) {
+        id = window.setTimeout(tick, RECHECK_MS); // a pointer is parked on a tile
+        return;
+      }
       setIndex((prev) => {
         setTurn((t) => t + 1);
+        setDir(1);
         return (prev + 1) % count;
       });
-    }, SLIDE_MS);
-    return () => window.clearInterval(id);
-  }, [active, autoplay, count]);
+    };
+    id = window.setTimeout(tick, holdRef.current?.(index) ?? SLIDE_MS);
+    return () => window.clearTimeout(id);
+  }, [active, autoplay, count, index, turn]);
 
-  return { index, turn, pick, release };
+  return { index, turn, dir, pick, release };
 }

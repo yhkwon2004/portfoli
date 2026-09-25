@@ -54,6 +54,102 @@
     transform: none;
     opacity: 1;
   }
+  /*
+   * The container transform's flying frame (Dossier.tsx drives its box with the Web
+   * Animations API). A hairline with a glow, so in flight it reads as the tile's own edge
+   * being carried out to the size of the sheet.
+   */
+  .dossier .zoomrect {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    border: 1px solid var(--color-electric);
+    box-shadow:
+      0 0 24px rgba(67, 97, 255, 0.55),
+      inset 0 0 24px rgba(67, 97, 255, 0.2);
+  }
+
+  /*
+   * Inside the sheet, each record assembles itself: the hero plate wipes in from the side the
+   * step came from (`--sd`: 1 for →, −1 for ←) while its image settles out of a slight
+   * scale, the caption rises, and the body follows block by block. It is re-keyed per record,
+   * so this plays on the opening and on every step.
+   */
+  .dossier[data-open="true"] .sheet-body .hero {
+    animation: dz-wipe 0.8s var(--ease-io) backwards;
+  }
+  .dossier[data-open="true"] .sheet-body .hero img {
+    animation:
+      dz-settle 1.3s var(--ease-house) backwards,
+      ken 16s ease-in-out 1.3s infinite alternate;
+  }
+  .dossier[data-open="true"] .sheet-body .cap > * {
+    animation: dz-slide 0.75s var(--ease-house) backwards;
+  }
+  .dossier[data-open="true"] .sheet-body .cap > :nth-child(1) {
+    animation-delay: 0.22s;
+  }
+  .dossier[data-open="true"] .sheet-body .cap > :nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  .dossier[data-open="true"] .sheet-body .pad > * {
+    animation: dz-slide 0.75s var(--ease-house) backwards;
+    animation-delay: 0.36s;
+  }
+  .dossier[data-open="true"] .sheet-body .pad > :nth-child(2) {
+    animation-delay: 0.42s;
+  }
+  .dossier[data-open="true"] .sheet-body .pad > :nth-child(n + 3) {
+    animation-delay: 0.48s;
+  }
+  /* The detail cards and the gallery cascade inside their own blocks. */
+  .dossier[data-open="true"] .sheet-body .det section {
+    animation: dz-slide 0.7s var(--ease-house) backwards;
+    animation-delay: calc(0.5s + var(--k, 0) * 0.06s);
+  }
+  .dossier[data-open="true"] .sheet-body .tags .tag {
+    animation: pop 0.55s var(--ease-spring) backwards;
+    animation-delay: calc(0.45s + var(--k, 0) * 0.035s);
+  }
+  .dossier[data-open="true"] .sheet-body .gal img {
+    animation: dz-slide 0.7s var(--ease-house) backwards;
+    animation-delay: 0.62s;
+  }
+  .dossier[data-open="true"] .sheet-body .gal img:nth-child(2) {
+    animation-delay: 0.68s;
+  }
+  .dossier[data-open="true"] .sheet-body .gal img:nth-child(3) {
+    animation-delay: 0.74s;
+  }
+  .dossier[data-open="true"] .sheet-body .gal img:nth-child(n + 4) {
+    animation-delay: 0.8s;
+  }
+  @keyframes dz-wipe {
+    from {
+      clip-path: inset(0 calc((1 - var(--sd, 1)) * 50%) 0 calc((1 + var(--sd, 1)) * 50%));
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes dz-settle {
+    from {
+      scale: 1.14;
+      filter: grayscale(0.35) brightness(1.4) contrast(1.1) blur(6px);
+    }
+  }
+  @keyframes dz-slide {
+    from {
+      opacity: 0;
+      translate: calc(var(--sd, 1) * 26px) 0;
+    }
+  }
+
   .dossier .sheet::-webkit-scrollbar {
     width: 5px;
   }

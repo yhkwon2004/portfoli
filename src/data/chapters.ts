@@ -12,6 +12,7 @@ export type Chapter = {
 
 export const CHAPTERS = [
   { id: "title", name: { ko: "표제", en: "Title" } },
+  { id: "ai", name: { ko: "AI 대표작", en: "AI Works" } },
   { id: "profile", name: { ko: "인물", en: "Subject" } },
   { id: "grain", name: { ko: "원칙", en: "Principle" } },
   { id: "timeline", name: { ko: "연대기", en: "Chronicle" } },

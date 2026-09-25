@@ -83,6 +83,18 @@ if (missing.length) {
   note("fail", `${missing.length} image files referenced by the data do not exist: ${missing.slice(0, 5).join(", ")}${missing.length > 5 ? " …" : ""}. Re-run scripts/images.mjs against the masters.`);
 }
 
+// ── 3b. works with no date ───────────────────────────────────────────────────
+// A work without a year sorts correctly (featured works go by rank) but is missing from the
+// metrics scene's output-per-year chart, and shows no year on the reel or the sheet.
+const undated = D.items.filter((i) => i.type === "project" && !i.year).map((i) => i.id);
+if (undated.length) {
+  note(
+    "warn",
+    `${undated.length} works have no year (${undated.join(", ")}). They are left out of the ` +
+      `output-per-year chart; add the year in src/data/portfolio.ts once it is known.`,
+  );
+}
+
 // ── 4. recount the figures the prose quotes ──────────────────────────────────
 const RANKS = [["대상", 4], ["국가장학", 4], ["최우수상", 3], ["우수상", 2], ["장려상", 1], ["3위", 1], ["입선", 0]];
 const awards = D.items.filter((i) => i.type === "award");

@@ -63,19 +63,33 @@ export class AmbientSand {
     };
   }
 
-  /** Fired on every chapter cut: the field scatters, then each grain falls back to its own speed. */
-  burst(): void {
+  /**
+   * Fired on every chapter cut: the field scatters, then each grain falls back to its own speed.
+   *
+   * Forward, it is a warp — grains thrown out radially from the centre of the frame, the
+   * camera flying into the room. Backward, the sand *rises*: grains are flung upward from the
+   * foot of the frame and fall back through it, the one image of time running in reverse that
+   * a field of falling sand can make.
+   */
+  burst(dir: 1 | -1 = 1): void {
     const cx = this.w / 2;
     const cy = this.h / 2;
     for (const g of this.grains) {
       if (Math.random() > 0.55) continue;
-      const angle = rnd(0, Math.PI * 2);
-      const speed = rnd(170, 680) * (0.5 + g.z);
-      g.x = cx + rnd(-20, 20);
-      g.y = cy + rnd(-28, 28);
+      if (dir === 1) {
+        const angle = rnd(0, Math.PI * 2);
+        const speed = rnd(170, 680) * (0.5 + g.z);
+        g.x = cx + rnd(-20, 20);
+        g.y = cy + rnd(-28, 28);
+        g.vx = Math.cos(angle) * speed;
+        g.vy = Math.sin(angle) * speed * 0.75;
+      } else {
+        g.x = rnd(0, this.w);
+        g.y = this.h + rnd(0, 40);
+        g.vx = rnd(-40, 40) * (0.5 + g.z);
+        g.vy = -rnd(420, 980) * (0.45 + g.z);
+      }
       g.py = g.y;
-      g.vx = Math.cos(angle) * speed;
-      g.vy = Math.sin(angle) * speed * 0.75;
       g.a = rnd(0.4, 0.95);
     }
   }
@@ -91,7 +105,9 @@ export class AmbientSand {
       g.vx += (0 - g.vx) * k;
       g.vy += (terminal(g.z) - g.vy) * k;
 
-      if (g.y > this.h + 8) Object.assign(g, this.newGrain(-8));
+      // Recycled only once it is falling again: a rewound grain starts below the frame on
+      // purpose, and must not be sent back to the top before it has risen through it.
+      if (g.y > this.h + 8 && g.vy > 0) Object.assign(g, this.newGrain(-8));
       if (g.x < -8) g.x = this.w + 8;
       else if (g.x > this.w + 8) g.x = -8;
     }

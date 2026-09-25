@@ -1,0 +1,170 @@
+@layer components {
+  /* ─────────────────────────────  MOTION PRIMITIVES  ─────────────────────────────
+   * The vocabulary every chapter is built from. Nothing in this file knows about a chapter:
+   * each primitive is keyed off `--i` / `--ci` (an index the markup stamps), `--dir` (the
+   * direction of the last cut, from the stage) and one of three states the scene carries —
+   *
+   *   data-state="live"   entering or on screen: entrance keyframes run here
+   *   data-state="out"    the chapter that was just cut away from: exits run here
+   *   data-shown="true"   either of the two — the resting, visible styles
+   *
+   * Splitting "visible" from "entering" is what gives the site exits at all. Before, every
+   * visible style hung off `data-live`, so the instant a cut landed the outgoing chapter's
+   * contents snapped back to their hidden state and there was nothing left to leave.
+   */
+
+  /* ── kinetic type: units rise through a per-word mask ──
+   * The mask is a clip-path, not overflow: it can be tight on the one edge the letters travel
+   * through and generous on the other three, so accents, the Korean ascenders and the chrome
+   * glow are not shaved off. Which edge is tight follows `--dir` — going back, the letters
+   * drop in from above, so the top edge is the one that has to cut them.
+   */
+  .kin .w {
+    display: inline-block;
+    white-space: nowrap;
+    clip-path: inset(
+      calc(-0.34em - var(--dir, 1) * 0.1em) -0.3em calc(-0.34em + var(--dir, 1) * 0.1em) -0.3em
+    );
+  }
+  .kin .u {
+    display: inline-block;
+  }
+  .scene[data-state="live"] .kin .u,
+  .kin[data-play="true"] .u {
+    animation: kin-up var(--kin-dur, 0.86s) var(--ease-house) backwards;
+    animation-delay: calc(var(--kin-at, 0.36s) + var(--ci, 0) * var(--kin-step, 0.032s));
+  }
+  @keyframes kin-up {
+    from {
+      opacity: 0;
+      transform: translateY(calc(var(--dir, 1) * 150%)) rotate(calc(var(--dir, 1) * 7deg));
+    }
+    38% {
+      opacity: 1;
+    }
+  }
+
+  /* ── decode: the scramble twin sits exactly over the real, transparent text ── */
+  .dc {
+    position: relative;
+  }
+  .dc-fx {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: pre;
+    pointer-events: none;
+  }
+  .dc[data-dc] > .dc-t {
+    color: transparent;
+  }
+  /* The unresolved glyphs run hot and settle to the label's own colour as they lock. */
+  .dc[data-dc] > .dc-fx {
+    color: color-mix(in srgb, currentColor 45%, var(--color-electric-ink));
+  }
+
+  /* ── registration marks: the four crosses spring out to the corners ── */
+  .scene[data-state="live"] .regmarks,
+  .contact[data-open="true"] .regmarks {
+    animation: reg-snap 0.9s var(--ease-spring) backwards;
+    animation-delay: var(--reg-at, calc(0.36s + var(--i, 0) * 0.075s));
+  }
+  @keyframes reg-snap {
+    from {
+      inset: 18%;
+      opacity: 0;
+    }
+    24% {
+      opacity: 1;
+    }
+  }
+
+  /*
+   * ── the trace: a pen of light runs once around the frame ──
+   * A trim-path animation on a rectangle: four one-pixel gradients on the marks' pseudo-
+   * element, each growing from the corner where the last one finished — top left→right,
+   * right down, bottom right→left, left up — then the whole stroke fades back into the
+   * ordinary hairline. Drawn on the marks' own pseudo-element so a panel gains it for free
+   * with the marks it already carries.
+   */
+  .regmarks::before {
+    --tr: var(--color-electric);
+    content: "";
+    position: absolute;
+    inset: calc(var(--mark) / 2);
+    opacity: 0;
+    background:
+      linear-gradient(var(--tr), var(--tr)) left top / 100% 1px no-repeat,
+      linear-gradient(var(--tr), var(--tr)) right top / 1px 100% no-repeat,
+      linear-gradient(var(--tr), var(--tr)) right bottom / 100% 1px no-repeat,
+      linear-gradient(var(--tr), var(--tr)) left bottom / 1px 100% no-repeat;
+    filter: drop-shadow(0 0 3px rgba(67, 97, 255, 0.95));
+  }
+  .scene[data-state="live"] .regmarks::before,
+  .contact[data-open="true"] .regmarks::before {
+    animation: trace 1.25s linear backwards;
+    animation-delay: calc(var(--reg-at, calc(0.36s + var(--i, 0) * 0.075s)) + 0.12s);
+  }
+  @keyframes trace {
+    0% {
+      opacity: 1;
+      background-size: 0 1px, 1px 0, 0 1px, 1px 0;
+    }
+    22% {
+      background-size: 100% 1px, 1px 0, 0 1px, 1px 0;
+    }
+    44% {
+      background-size: 100% 1px, 1px 100%, 0 1px, 1px 0;
+    }
+    66% {
+      background-size: 100% 1px, 1px 100%, 100% 1px, 1px 0;
+    }
+    86% {
+      opacity: 1;
+      background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
+    }
+    100% {
+      opacity: 0;
+      background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
+    }
+  }
+
+  /*
+   * ── pop: scale from a point with a real spring ──
+   * On the individual `scale` property, not `transform`, so it composes with whatever
+   * transform the element already has — a hover lift, a tilt — instead of fighting it.
+   */
+  @keyframes pop {
+    from {
+      scale: 0.3;
+      opacity: 0;
+    }
+    35% {
+      opacity: 1;
+    }
+  }
+
+  /* ── draw: a stroke writes itself on (SVG, with pathLength="1") ── */
+  @keyframes draw {
+    from {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* ── ping: a ring leaves a point and dissolves — contact, arrival, a stamp landing ── */
+  @keyframes ping {
+    from {
+      scale: 0.4;
+      opacity: 0.9;
+    }
+    to {
+      scale: 3.6;
+      opacity: 0;
+    }
+  }
+}

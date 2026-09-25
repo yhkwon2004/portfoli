@@ -1,6 +1,9 @@
 "use client";
 
 import { Txt } from "@/components/Txt";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { riseAt } from "@/components/motion/timing";
 import { domains, maxDomainProof, skillCount } from "@/lib/select";
 import { text } from "@/lib/i18n";
 import { useLang } from "@/components/LangProvider";
@@ -29,18 +32,19 @@ export function SkillsScene({
   return (
     <Scene index={index} live={live} className="s-skills" gutter top>
       <div className="wall-head rise" style={{ "--i": 0 } as React.CSSProperties}>
-        <span className="count">{skillCount}</span>
-        <Txt v={UI.skillsEyebrow} as="p" className="eyebrow" />
+        <CountUp className="count" value={skillCount} delay={riseAt(0)} duration={1200} />
+        <Decode v={UI.skillsEyebrow} as="p" className="eyebrow" delay={riseAt(0) + 80} />
         <Txt v={UI.skillsHint} as="p" className="tagline" style={{ fontSize: ".74rem" }} />
       </div>
 
       <div className="domains">
         {domains.map((d, n) => (
           <article key={d.name.ko} className="domain rise" style={{ "--i": n + 1 } as React.CSSProperties}>
+            <span className="regmarks" aria-hidden="true" />
             <header>
               <Txt v={d.name} as="h3" />
               <span className="dcount">
-                {d.proof}
+                <CountUp value={d.proof} delay={riseAt(n + 1) + 180} duration={900} />
                 <i>
                   <Txt v={UI.works} />
                 </i>
@@ -54,13 +58,14 @@ export function SkillsScene({
               <i style={{ "--w": `${Math.round((d.proof / maxDomainProof) * 100)}%` } as React.CSSProperties} />
             </span>
             <div className="chips">
-              {d.tags.map((t) => (
+              {d.tags.map((t, k) => (
                 <button
                   key={t.tag}
                   type="button"
                   className="chip"
-                  // Capped at 5: past that the brightness ramp has nowhere left to go.
-                  style={{ "--n": Math.min(t.count, 5) } as React.CSSProperties}
+                  // Capped at 5: past that the brightness ramp has nowhere left to go. `--k` is
+                  // the chip's place in its domain, for the pop-in stagger.
+                  style={{ "--n": Math.min(t.count, 5), "--k": k } as React.CSSProperties}
                   onClick={() => onOpen(t.strongest.id)}
                   aria-label={`${t.tag} — ${t.count} ${text(UI.works, lang)} · ${text(t.strongest.t, lang)}`}
                 >

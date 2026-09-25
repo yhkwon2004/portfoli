@@ -1,6 +1,8 @@
 "use client";
 
 import { Txt } from "@/components/Txt";
+import { Decode } from "@/components/motion/Decode";
+import { riseAt } from "@/components/motion/timing";
 import { education, experience } from "@/lib/select";
 import { UI } from "@/data/ui";
 import { Scene } from "@/components/scenes/Scene";
@@ -20,16 +22,15 @@ export function TimelineScene({ index, live }: { index: number; live: boolean })
   return (
     <Scene index={index} live={live} className="s-timeline" gutter>
       <div className="rail-head rise" style={{ "--i": 0 } as React.CSSProperties}>
-        <Txt v={UI.timelineEyebrow} as="p" className="eyebrow" />
-        <p className="tagline" style={{ fontSize: ".8rem" }}>
-          {span}
-        </p>
+        <Decode v={UI.timelineEyebrow} as="p" className="eyebrow" delay={riseAt(0)} />
+        <Decode v={span} as="p" className="tagline" style={{ fontSize: ".8rem" }} delay={riseAt(0) + 300} />
       </div>
       <div className="rail">
         {nodes.map((item, n) => (
           <div className="node" key={item.id} style={{ "--i": n } as React.CSSProperties}>
             <span className="pip" aria-hidden="true" />
-            <span className="yr">{item.year}</span>
+            {/* Each year decodes as its node lands — the node's own delay, 0.42s + n × 0.17s. */}
+            <Decode v={item.year} className="yr" delay={420 + n * 170} />
             <Txt v={item.t} as="span" className="ttl" />
             <Txt v={item.s} as="span" className="sub" />
           </div>

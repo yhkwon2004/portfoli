@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { AiVisual } from "@/components/ai/AiVisual";
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
+import { aiWorkFor } from "@/data/ai";
 import { DETAIL_LABELS } from "@/data/labels";
 import { rankOf, topicTags } from "@/data/ranks";
 import { cover, gallery } from "@/lib/select";
@@ -12,11 +14,18 @@ import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { UI } from "@/data/ui";
 import type { DetailKey, Item } from "@/lib/types";
 
+/** The viewport box of whatever was pressed to open the sheet. */
+export type Origin = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+
 type Props = {
   /** The record on screen, or null when the sheet is closed. */
   item: Item | null;
   /** The set the record came from, so ← → can step it without closing. */
   set: readonly Item[];
+  /** Where the sheet opens out of — the tile, card or chip that was pressed — if known. */
+  origin: Origin | null;
+  /** The motion gate: off, the sheet simply fades as it always did. */
+  animate: boolean;
   onStep: (delta: number) => void;
   onClose: () => void;
 };
@@ -24,19 +33,54 @@ type Props = {
 const HERO_SIZES = "min(1140px, 93vw)";
 const GAL_SIZES = "(max-width: 860px) 45vw, 184px";
 
+/** The container transform: how long the sheet takes to open out of its tile. */
+const OPEN_MS = 620;
+const EASE_IO = "cubic-bezier(0.65, 0, 0.35, 1)";
+
 /**
  * The full record.
  *
  * Opened from a tile, a pick card, a capability chip or the focus panel. ← → step the same
- * set — all 35 awards or all 35 works — so you can read the whole run without closing and
- * re-opening the sheet 35 times.
+ * set — every award or every work — so you can read the whole run without closing and
+ * re-opening the sheet once per record.
+ *
+ * ── motion ──
+ * The sheet opens *out of* the thing that was pressed: a container transform. It is laid out
+ * at full size from the first frame, clipped to the rectangle of the tile, and the clip opens
+ * to the whole sheet while a hairline frame flies from the tile's box to the sheet's — so the
+ * eye follows one object growing, rather than a panel appearing in the middle of the screen.
+ * Closing runs the frame back to where it came from. Stepping a record wipes the new one in
+ * from the side it came from: → from the right, ← from the left.
+ *
+ * The record stays rendered while the sheet fades out. Before, the content was removed the
+ * instant the sheet was asked to close, so for 400 ms the visitor watched an empty frame fade.
  */
-export function Dossier({ item, set, onStep, onClose }: Props) {
+export function Dossier({ item, set, origin, animate, onStep, onClose }: Props) {
   const lang = useLang();
   const sheetRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef<HTMLElement>(null);
   const titleId = useId();
   const open = item !== null;
-  const at = item ? set.indexOf(item) : -1;
+
+  /*
+   * The record on display, and which way the last step went — both derived during render, the
+   * documented way to track "previous" without an effect (and without a frame of the wrong
+   * record). `shown` holds the last record after close so it can fade with the sheet.
+   */
+  const [shown, setShown] = useState<{ item: Item | null; dir: 1 | -1; open: boolean }>({
+    item,
+    dir: 1,
+    open,
+  });
+  const view = item ?? shown.item;
+  if (view !== shown.item || open !== shown.open) {
+    // A step is a change of record while the sheet stays open; an opening always enters
+    // forward, whatever record was on the sheet the last time it was closed.
+    const stepping = open && shown.open && shown.item !== null;
+    const back = stepping && item !== null && shown.item !== null && set.indexOf(item) < set.indexOf(shown.item);
+    setShown({ item: view, dir: back ? -1 : 1, open });
+  }
+  const at = view ? set.indexOf(view) : -1;
 
   useFocusTrap(sheetRef, open);
 
@@ -66,10 +110,88 @@ export function Dossier({ item, set, onStep, onClose }: Props) {
     sheetRef.current?.scrollTo({ top: 0 });
   }, [item]);
 
-  const rank = item ? rankOf(item) : null;
-  const lead = item ? cover(item) : null;
-  const rest = item ? gallery(item) : [];
-  const badge = item ? (rank ? rank.key : item.featured ? text(UI.featured, lang) : "") : "";
+  /*
+   * The container transform. A layout effect: the sheet has just been laid out open, and the
+   * clip has to be on it before that frame is painted, or it flashes full-size for one frame.
+   *
+   * The destination is computed from the sheet's layout size rather than read off its box,
+   * because at this instant its CSS transition is still at the closed state's scale.
+   */
+  const wasOpen = useRef(false);
+  const openedFrom = useRef<Origin | null>(null);
+  useLayoutEffect(() => {
+    const opening = open && !wasOpen.current;
+    const closing = !open && wasOpen.current;
+    wasOpen.current = open;
+    const sheet = sheetRef.current;
+    const zoom = zoomRef.current;
+    if (!animate || !sheet || !zoom || (!opening && !closing)) return;
+
+    if (opening) openedFrom.current = origin;
+    const from = openedFrom.current;
+    if (!from) return;
+
+    const w = sheet.offsetWidth;
+    const h = sheet.offsetHeight;
+    const to = { x: (window.innerWidth - w) / 2, y: (window.innerHeight - h) / 2, w, h };
+    const box = (r: Origin) => ({
+      left: `${r.x}px`,
+      top: `${r.y}px`,
+      width: `${r.w}px`,
+      height: `${r.h}px`,
+    });
+
+    if (opening) {
+      // The tile's rectangle, expressed as insets of the open sheet.
+      const clip = `inset(${from.y - to.y}px ${to.x + to.w - (from.x + from.w)}px ${
+        to.y + to.h - (from.y + from.h)
+      }px ${from.x - to.x}px)`;
+      const a = sheet.animate(
+        [
+          { clipPath: clip, opacity: 0.5, transform: "none" },
+          { clipPath: "inset(0px 0px 0px 0px)", opacity: 1, transform: "none" },
+        ],
+        { duration: OPEN_MS, easing: EASE_IO },
+      );
+      const z = zoom.animate(
+        [
+          { ...box(from), opacity: 1 },
+          { ...box(to), opacity: 1, offset: 0.78 },
+          { ...box(to), opacity: 0 },
+        ],
+        { duration: OPEN_MS + 120, easing: EASE_IO },
+      );
+      return () => {
+        a.cancel();
+        z.cancel();
+      };
+    }
+
+    // Closing: the frame shrinks back into the tile it came out of, while the sheet fades.
+    const z = zoom.animate(
+      [
+        { ...box(to), opacity: 0.9 },
+        { ...box(from), opacity: 0.9, offset: 0.8 },
+        { ...box(from), opacity: 0 },
+      ],
+      { duration: 480, easing: EASE_IO },
+    );
+    return () => z.cancel();
+  }, [open, animate, origin]);
+
+  const rank = view ? rankOf(view) : null;
+  const lead = view ? cover(view) : null;
+  const rest = view ? gallery(view) : [];
+  const ai = view && !lead ? aiWorkFor(view.id) : undefined;
+  const badge = view
+    ? rank
+      ? rank.key
+      : view.honor
+        ? text(view.honor.grade, lang)
+        : view.featured
+          ? text(UI.featured, lang)
+          : ""
+    : "";
 
   return (
     <div
@@ -88,7 +210,7 @@ export function Dossier({ item, set, onStep, onClose }: Props) {
       {...(!open ? { inert: true } : {})}
     >
       <div className="sheet" ref={sheetRef}>
-        {item && (
+        {view && (
           <>
             <div className="bar-top">
               <button type="button" onClick={onClose}>
@@ -117,55 +239,77 @@ export function Dossier({ item, set, onStep, onClose }: Props) {
               </span>
             </div>
 
+            {/* Re-keyed per record, so the entrance plays on every step, from the step's side. */}
             <div
-              className="hero"
-              style={{ "--rk": rank ? rank.color : "var(--color-sand)" } as React.CSSProperties}
+              className="sheet-body"
+              key={view.id}
+              style={{ "--sd": shown.dir } as React.CSSProperties}
             >
-              {lead && <Img master={lead.u} alt={lead.a} sizes={HERO_SIZES} priority />}
-              <div className="cap">
-                <span className="tagrow">
-                  <span className="drank">{badge}</span>
-                  <span className="dyear">{item.year}</span>
-                </span>
-                <Txt v={item.t} as="h2" />
-                <span id={titleId} className="sr-only-live">
-                  {text(item.t, lang)}
-                </span>
+              <div
+                className={`hero${ai ? " hero-ai" : ""}`}
+                style={{ "--rk": rank ? rank.color : "var(--color-sand)" } as React.CSSProperties}
+              >
+                {lead && <Img master={lead.u} alt={lead.a} sizes={HERO_SIZES} priority />}
+                {/* No photograph: the work's diagram heads the sheet instead, and runs. */}
+                {ai && <AiVisual kind={ai.visual} play={open && animate} fit="meet" />}
+                <div className="cap">
+                  <span className="tagrow">
+                    <span className="drank">{badge}</span>
+                    {view.year && <span className="dyear">{view.year}</span>}
+                    {view.honor && (
+                      <span className="dhonor">
+                        <Txt v={view.honor.event} />
+                        {view.honor.track && (
+                          <>
+                            {" · "}
+                            <Txt v={view.honor.track} />
+                          </>
+                        )}
+                      </span>
+                    )}
+                  </span>
+                  <Txt v={view.t} as="h2" />
+                  <span id={titleId} className="sr-only-live">
+                    {text(view.t, lang)}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div className="pad">
-              <Txt v={item.s} as="p" className="lede" />
-              {topicTags(item).length > 0 && (
-                <div className="tags">
-                  {topicTags(item).map((t) => (
-                    <span className="tag" key={t}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <DetailCards item={item} />
-              {rest.length > 0 && (
-                <div className="gal">
-                  {rest.map((m) => (
-                    <Img key={m.u} master={m.u} alt={m.a} sizes={GAL_SIZES} />
-                  ))}
-                </div>
-              )}
-              {item.links && item.links.length > 0 && (
-                <div className="links">
-                  {item.links.map((l) => (
-                    <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer">
-                      {l.label}
-                    </a>
-                  ))}
-                </div>
-              )}
+              <div className="pad">
+                <Txt v={view.s} as="p" className="lede" />
+                {topicTags(view).length > 0 && (
+                  <div className="tags">
+                    {topicTags(view).map((t, n) => (
+                      <span className="tag" key={t} style={{ "--k": n } as React.CSSProperties}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <DetailCards item={view} />
+                {rest.length > 0 && (
+                  <div className="gal">
+                    {rest.map((m) => (
+                      <Img key={m.u} master={m.u} alt={m.a} sizes={GAL_SIZES} />
+                    ))}
+                  </div>
+                )}
+                {view.links && view.links.length > 0 && (
+                  <div className="links">
+                    {view.links.map((l) => (
+                      <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer">
+                        {l.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </>
         )}
       </div>
+      {/* The flying frame of the container transform. Decorative, and parked when idle. */}
+      <i className="zoomrect" ref={zoomRef} aria-hidden="true" />
     </div>
   );
 }
@@ -181,8 +325,8 @@ function DetailCards({ item }: { item: Item }) {
 
   return (
     <div className="det">
-      {entries.map(([key, value]) => (
-        <section key={key} lang="ko">
+      {entries.map(([key, value], n) => (
+        <section key={key} lang="ko" style={{ "--k": n } as React.CSSProperties}>
           <Txt v={DETAIL_LABELS[key]} as="h3" />
           {Array.isArray(value) ? (
             <ul>

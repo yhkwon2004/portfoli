@@ -97,21 +97,21 @@ test.describe("the dossier", () => {
     // The chip opens a real piece of work, and a piece of work belongs to the works set — so
     // you can keep stepping from wherever the chip dropped you rather than being marooned on
     // one record.
-    await expect(sheet.locator(".dpos")).toContainText("/ 35");
+    await expect(sheet.locator(".dpos")).toContainText("/ 38");
   });
 });
 
 test.describe("the walls", () => {
-  test("both chapters reach all 35 records", async ({ page }) => {
+  test("both chapters reach every record", async ({ page }) => {
     await page.goto("/#awards");
     await settle(page);
     await expect(page.locator(".wall-awards .cell")).toHaveCount(35);
 
     // Works dropped the tile grid for one project at a time; the scale along the bottom is
-    // what still reaches any of the 35 directly, so it is what has to be complete.
+    // what still reaches any of the works directly, so it is what has to be complete.
     await page.goto("/#projects");
     await settle(page);
-    await expect(page.locator(".s-projects .wtick")).toHaveCount(35);
+    await expect(page.locator(".s-projects .wtick")).toHaveCount(38);
   });
 
   test("arrow keys move focus around the tile grid", async ({ page }) => {
@@ -140,7 +140,7 @@ test.describe("the walls", () => {
     await settle(page);
 
     await page.locator(".s-projects .wtick").nth(4).hover();
-    await expect(page.locator(".s-projects .wm-pos")).toContainText("05 / 35");
+    await expect(page.locator(".s-projects .wm-pos")).toContainText("05 / 38");
     await expect(page.locator(".s-projects .wtick").nth(4)).toHaveAttribute("aria-current", "true");
     // The plates are the work under the pointer, and there is exactly one near plate.
     await expect(page.locator(".s-projects .plate-near")).toHaveCount(1);

@@ -1,8 +1,14 @@
 "use client";
 
+import { AiVisual } from "@/components/ai/AiVisual";
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { riseAt } from "@/components/motion/timing";
 import { PORTFOLIO } from "@/data/portfolio";
+import { aiWorkFor } from "@/data/ai";
 import { rankOf } from "@/data/ranks";
 import { cover, picks, profile, stats, year } from "@/lib/select";
 import { text } from "@/lib/i18n";
@@ -32,25 +38,36 @@ export function ProfileScene({
   return (
     <Scene index={index} live={live} className="s-profile" gutter top>
       <div className="col-l">
-        <Txt v={UI.profileEyebrow} as="p" className="eyebrow rise" style={{ "--i": 0 } as React.CSSProperties} />
-        <Txt v={PORTFOLIO.owner} as="h2" className="who rise" style={{ "--i": 1 } as React.CSSProperties} />
+        <Decode
+          v={UI.profileEyebrow}
+          as="p"
+          className="eyebrow rise"
+          style={{ "--i": 0 } as React.CSSProperties}
+          delay={riseAt(0)}
+        />
+        <Kinetic
+          v={PORTFOLIO.owner}
+          as="h2"
+          className="who"
+          style={{ "--kin-at": "0.4s", "--kin-step": "0.06s" } as React.CSSProperties}
+        />
         <Txt v={profile.t} as="p" className="tagline rise" style={{ "--i": 2 } as React.CSSProperties} />
       </div>
 
       <div className="col-r">
         <Txt v={profile.s} as="p" className="tagline rise" style={{ "--i": 3 } as React.CSSProperties} />
         <div className="tags rise" style={{ "--i": 4 } as React.CSSProperties}>
-          {profile.tags.map((t) => (
-            <span className="tag" key={t}>
+          {profile.tags.map((t, n) => (
+            <span className="tag" key={t} style={{ "--k": n } as React.CSSProperties}>
               {t}
             </span>
           ))}
         </div>
         <div className="stat-row rise" style={{ "--i": 5 } as React.CSSProperties}>
-          <Stat n={stats.awards} label={UI.statAwards} />
-          <Stat n={stats.projects} label={UI.statProjects} />
-          <Stat n={stats.certifications} label={UI.statCerts} />
-          <Stat n={stats.experience} label={UI.statRoles} />
+          <Stat n={stats.awards} label={UI.statAwards} k={0} />
+          <Stat n={stats.projects} label={UI.statProjects} k={1} />
+          <Stat n={stats.certifications} label={UI.statCerts} k={2} />
+          <Stat n={stats.experience} label={UI.statRoles} k={3} />
         </div>
       </div>
 
@@ -69,10 +86,13 @@ export function ProfileScene({
   );
 }
 
-function Stat({ n, label }: { n: number; label: typeof UI.statAwards }) {
+/** The stat row rises at `--i: 5`; each figure then counts up, a beat after the one before. */
+function Stat({ n, label, k }: { n: number; label: typeof UI.statAwards; k: number }) {
   return (
     <div className="stat">
-      <b>{n}</b>
+      <b>
+        <CountUp value={n} delay={riseAt(5) + 60 + k * 90} duration={1000} />
+      </b>
       <Txt v={label} as="span" />
     </div>
   );
@@ -81,8 +101,11 @@ function Stat({ n, label }: { n: number; label: typeof UI.statAwards }) {
 function Pick({ item, n, onOpen }: { item: Item; n: number; onOpen: (id: string) => void }) {
   const lang = useLang();
   const img = cover(item);
+  const ai = aiWorkFor(item.id);
   const rank = rankOf(item);
-  const badge = rank ? rank.key : text(UI.featured, lang);
+  // A grade for an award, the result it won for an honoured work, else the featured mark.
+  const badge = rank ? rank.key : item.honor ? text(item.honor.grade, lang) : text(UI.featured, lang);
+  const when = year(item) || (ai ? "AI" : "");
 
   return (
     <button
@@ -91,13 +114,13 @@ function Pick({ item, n, onOpen }: { item: Item; n: number; onOpen: (id: string)
       // Offset past the six `.rise` elements above, so the picks land last.
       style={{ "--i": 7 + n, ...(rank ? { "--rk": rank.color } : {}) } as React.CSSProperties}
       onClick={() => onOpen(item.id)}
-      aria-label={`${badge} · ${year(item)} · ${text(item.t, lang)}`}
+      aria-label={[badge, when, text(item.t, lang)].filter(Boolean).join(" · ")}
     >
-      {img && <Img master={img.u} alt="" sizes={PICK_SIZES} />}
+      {img ? <Img master={img.u} alt="" sizes={PICK_SIZES} /> : ai && <AiVisual kind={ai.visual} play={false} />}
       <span className="pmeta">
         <span className="ptop">
           <b>{badge}</b>
-          <i>{year(item)}</i>
+          <i>{when}</i>
         </span>
         <Txt v={item.t} as="span" className="ptitle" />
       </span>

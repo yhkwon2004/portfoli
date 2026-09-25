@@ -7,8 +7,10 @@
  * ordering is deliberate: the authored CSS is the system, and utilities are the escape hatch.
  *
  * Why so much of this is hand-written rather than utilities: nearly all of it is keyframe
- * choreography driven by per-element custom properties (`--i` for the stagger, `--gs` for
- * grain weight, `--rk` for an award's grade colour, `--w` for a bar's length). A stagger of
+ * choreography driven by per-element custom properties (`--i` for the stagger, `--ci` for a
+ * kinetic letter's place in its word, `--dir` for which way the reel just moved, `--gs` for
+ * grain weight, `--rk` for an award's grade colour, `--w` for a bar's length). motion.css
+ * holds the shared vocabulary; each chapter's file composes it. A stagger of
  * `calc(0.34s + var(--i) * 0.075s)` has no utility form, and expressing the hourglass or the
  * award-shelf drop as arbitrary-value classes would be strictly less readable than the CSS
  * it compiles to. Utilities are used where they are genuinely better — one-off spacing and
@@ -18,6 +20,7 @@
 
 @import "../styles/tokens.css";
 @import "../styles/base.css";
+@import "../styles/motion.css";
 @import "../styles/stage.css";
 @import "../styles/scene.css";
 @import "../styles/walls.css";
@@ -27,4 +30,5 @@
 @import "../styles/hud.css";
 @import "../styles/dossier.css";
 @import "../styles/contact.css";
+@import "../styles/ai.css";
 @import "../styles/responsive.css";

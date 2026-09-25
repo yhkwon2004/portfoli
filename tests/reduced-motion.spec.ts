@@ -18,7 +18,7 @@ test.describe("reduced motion", () => {
     await expect(page.locator("h1.name")).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await settle(page);
-    await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-profile/);
+    await expect(page.locator('.scene[data-live="true"]')).toHaveClass(/s-ai/);
   });
 
   test("the ambient sand loop is stopped, not merely hidden", async ({ page }) => {
@@ -86,6 +86,28 @@ test("the wireframe room is stopped too, not just the sand", async ({ page }) =>
   expect(await pixels()).toBe(first);
 });
 
+test("the AI diagrams rest on their finished frame, and the triptych stays put", async ({ page }) => {
+  await page.goto("/#ai");
+  await page.waitForTimeout(1200);
+
+  const open = page.locator('.s-ai .aip[data-on="true"]');
+  await expect(open).toHaveCount(1);
+  await expect(open.locator(".aip-tab")).toHaveAttribute("data-n", "0");
+  // No loop: nothing writes the clock, and no beat is singled out.
+  await expect(open.locator(".av-tc")).toHaveText("");
+  await expect(open).not.toHaveAttribute("data-phase", /./);
+  // The finished frame is the one the server rendered: the gap is flagged, the case laid out.
+  await expect(open.locator(".av-readout")).toHaveText("CHECKED 5/6 · 1 MISSING");
+
+  // Nothing moves on by itself…
+  await page.waitForTimeout(3000);
+  await expect(open.locator(".aip-tab")).toHaveAttribute("data-n", "0");
+
+  // …but the panels still open by hand: that is navigation, not decoration.
+  await page.locator('.s-ai .aip-tab[data-n="2"]').click();
+  await expect(page.locator('.s-ai .aip[data-on="true"] .aip-tab')).toHaveAttribute("data-n", "2");
+});
+
 test("the works stage stands still: one flat plate, and no reel", async ({ page }) => {
   await page.goto("/#projects");
   await page.waitForTimeout(1400);
@@ -103,4 +125,57 @@ test("the works stage stands still: one flat plate, and no reel", async ({ page 
   const at = await page.locator(".s-projects .wm-pos").textContent();
   await page.waitForTimeout(4200);
   expect(await page.locator(".s-projects .wm-pos").textContent()).toBe(at);
+});
+
+/**
+ * The motion layer's own promises under reduced motion: nothing scripted runs — no shutter, no
+ * scrambling, no counting, no reticle — and the site's MOTION switch cannot turn back on what
+ * the system asked to turn off.
+ */
+test.describe("reduced motion: the scripted layer stands down", () => {
+  test("no power-on shutter, and the MOTION switch reads off and is locked", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForTimeout(300);
+    await expect(page.locator(".boot")).toBeHidden();
+    const sw = page.locator(".motionsw");
+    await expect(sw).toHaveAttribute("aria-checked", "false");
+    await expect(sw).toBeDisabled();
+  });
+
+  test("figures arrive as figures: no counting, no scrambling", async ({ page }) => {
+    await page.goto("/#skills");
+    await page.waitForTimeout(900);
+
+    const seen = await page.evaluate(
+      () =>
+        new Promise<{ counts: string[]; scrambling: boolean }>((resolve) => {
+          const counts: string[] = [];
+          let scrambling = false;
+          const t0 = performance.now();
+          window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+          const tick = () => {
+            const scene = document.querySelector(".s-metrics");
+            if (scene?.getAttribute("data-live") === "true") {
+              counts.push(scene.querySelector(".wall-head .count")?.textContent ?? "");
+            }
+            if (document.querySelector(".dc[data-dc]")) scrambling = true;
+            if (performance.now() - t0 < 1600) requestAnimationFrame(tick);
+            else resolve({ counts, scrambling });
+          };
+          requestAnimationFrame(tick);
+        }),
+    );
+
+    expect(seen.counts.length).toBeGreaterThan(0);
+    for (const c of seen.counts) expect(c).toBe("87");
+    expect(seen.scrambling).toBe(false);
+  });
+
+  test("the reticle never appears", async ({ page }) => {
+    await page.goto("/#awards");
+    await page.waitForTimeout(900);
+    await page.locator(".wall-awards .cell").nth(4).hover();
+    await page.waitForTimeout(400);
+    await expect(page.locator(".reticle")).toHaveAttribute("data-on", "false");
+  });
 });

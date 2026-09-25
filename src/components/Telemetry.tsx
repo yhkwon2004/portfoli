@@ -1,18 +1,27 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useLang } from "@/components/LangProvider";
+import { Decode } from "@/components/motion/Decode";
+import { useCut } from "@/components/motion/context";
+import { LAST } from "@/data/chapters";
 import { text } from "@/lib/i18n";
 import { UI } from "@/data/ui";
 import type { Telemetry as Reading } from "@/lib/sim/hourglass";
+import type { Store } from "@/lib/store";
 
 type Props = {
-  reading: Reading | null;
+  /** The pour's latest reading. Subscribed to here, so a sample re-renders this block alone. */
+  store: Store<Reading | null>;
   /** Re-aims the pour at the current chapter, restarting the surge. */
   onReset: () => void;
 };
 
 /** Fixed-width so a changing digit never shifts the column. */
 const num = (v: number, digits = 2): string => v.toFixed(digits);
+
+/** The static HTML has no reading; it renders the placeholders until the pour reports. */
+const none = (): null => null;
 
 /**
  * The instrument block.
@@ -31,20 +40,24 @@ const num = (v: number, digits = 2): string => v.toFixed(digits);
  * that change eight times a second would make the page unusable with a screen reader. The
  * information a non-visual reader needs about position is in the chapter live region.
  */
-export function TelemetryBlock({ reading, onReset }: Props) {
+export function TelemetryBlock({ store, onReset }: Props) {
   const lang = useLang();
+  const reading = useSyncExternalStore(store.subscribe, store.get, none);
+  // The block stands aside on the two bookends; each time it steps back in, its head re-reads.
+  const { chapter } = useCut();
+  const bookend = chapter === 0 || chapter === LAST;
 
   return (
     <div className="telemetry" aria-hidden="true">
-      <p className="tel-head">{UI.telemetryTitle}</p>
+      <Decode v={UI.telemetryTitle} as="p" className="tel-head" delay={260} replay={bookend} />
 
       <dl className="tel-grid">
-        <Row label="FLOW" value={reading ? String(reading.flow).padStart(3, "0") : "---"} />
-        <Row label="FILL" value={reading ? num(reading.fill) : "--.--"} />
-        <Row label="TRGT" value={reading ? num(reading.target) : "--.--"} />
-        <Row label="VOL" value={reading ? num(reading.volume) : "--.--"} />
-        <Row label="ANG" value={reading ? `${num(reading.repose, 1)}°` : "--.-°"} />
-        <Row label="SRG" value={reading ? num(reading.surge) : "--.--"} />
+        <Row n={0} label="FLOW" value={reading ? String(reading.flow).padStart(3, "0") : "---"} />
+        <Row n={1} label="FILL" value={reading ? num(reading.fill) : "--.--"} />
+        <Row n={2} label="TRGT" value={reading ? num(reading.target) : "--.--"} />
+        <Row n={3} label="VOL" value={reading ? num(reading.volume) : "--.--"} />
+        <Row n={4} label="ANG" value={reading ? `${num(reading.repose, 1)}°` : "--.-°"} />
+        <Row n={5} label="SRG" value={reading ? num(reading.surge) : "--.--"} />
       </dl>
 
       {/*
@@ -65,11 +78,13 @@ export function TelemetryBlock({ reading, onReset }: Props) {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ n, label, value }: { n: number; label: string; value: string }) {
+  // `--r` staggers the rows in when the block steps back into the frame after a bookend.
+  const style = { "--r": n } as React.CSSProperties;
   return (
     <>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
+      <dt style={style}>{label}</dt>
+      <dd style={style}>{value}</dd>
     </>
   );
 }

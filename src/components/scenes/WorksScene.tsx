@@ -1,10 +1,17 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { AiVisual } from "@/components/ai/AiVisual";
 import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
+import { CountUp } from "@/components/motion/CountUp";
+import { Decode } from "@/components/motion/Decode";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { riseAt } from "@/components/motion/timing";
 import { Scene } from "@/components/scenes/Scene";
+import { useFalloff } from "@/hooks/useFalloff";
 import { useReel } from "@/hooks/useReel";
+import { AI_LOOP_MS, aiWorkFor } from "@/data/ai";
 import { topicTags } from "@/data/ranks";
 import { cover, gallery } from "@/lib/select";
 import { text } from "@/lib/i18n";
@@ -44,7 +51,7 @@ const SLOTS = [
 const PLATE_SIZES = "(max-width: 860px) 60vw, 34vw";
 
 /**
- * 08 — Works, as plates hanging in the wireframe room.
+ * Works, as plates hanging in the wireframe room.
  *
  * The previous version of this chapter was a 7×5 grid of 90px tiles beside a reading panel:
  * a good index, and a bad way to look at a project. Thirty-five works rendered at the size of
@@ -53,15 +60,24 @@ const PLATE_SIZES = "(max-width: 860px) 60vw, 34vw";
  * So the chapter shows one at a time and gives it the room. Each work's own images become
  * plates at four depths, the pointer moves the whole cluster against that depth, and the
  * record reads at the bottom left the way the reference sets its own work captions. The wall
- * is not gone — it is the scale along the bottom, which is still all thirty-five and is still
+ * is not gone — it is the scale along the bottom, which is still every work and is still
  * the fastest way to reach a specific one.
  */
 export function WorksScene({ index, live, items, animate, onOpen }: Props) {
   const lang = useLang();
-  const reel = useReel(items.length, live, animate);
+  // An AI work holds for one full run of its diagram; everything else keeps the reel's pace.
+  const holdFor = useCallback(
+    (n: number) => (aiWorkFor(items[n]?.id ?? "") ? AI_LOOP_MS : undefined),
+    [items],
+  );
+  const reel = useReel(items.length, live, animate, holdFor);
   const item = items[reel.index];
+  const ai = item ? aiWorkFor(item.id) : undefined;
   const roomRef = useRef<HTMLDivElement>(null);
   const scaleRef = useRef<HTMLDivElement>(null);
+
+  // The scale is a waveform under the pointer: ticks near it stand up, falling off either side.
+  useFalloff(scaleRef, { selector: ".wtick", radius: 90, active: animate });
 
   /*
    * Parallax is written straight onto the node rather than held in state. A pointer crossing
@@ -105,13 +121,14 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
   );
 
   const plates = item ? [cover(item), ...gallery(item)].filter((i) => i !== null).slice(0, 4) : [];
+  const label = item ? [item.year, text(item.t, lang)].filter(Boolean).join(" ") : "";
 
   return (
     <Scene index={index} live={live} className="s-projects" gutter top>
       <div className="wall-head rise" style={{ "--i": 0 } as React.CSSProperties}>
-        <span className="count">{items.length}</span>
+        <CountUp className="count" value={items.length} delay={riseAt(0)} duration={1100} />
         <div>
-          <Txt v={UI.projectsEyebrow} as="p" className="eyebrow" />
+          <Decode v={UI.projectsEyebrow} as="p" className="eyebrow" delay={riseAt(0) + 80} />
         </div>
       </div>
 
@@ -121,9 +138,48 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
         onPointerMove={onMove}
         onPointerLeave={onLeave}
         onPointerEnter={() => reel.pick(reel.index)}
+        // The reel's own direction, for everything in the room: plates fly in from the side
+        // the reel is turning toward, and the caption's letters rise or drop to match.
+        style={{ "--rd": reel.dir } as React.CSSProperties}
       >
         {/* Re-keyed per turn so the plates fly in again on every change of work. */}
         <div className="plates" key={reel.turn}>
+          {/*
+            An AI work has no photographs; its diagram is the picture. The near plate runs it,
+            and the two behind hold its finished frame — the same drawing at three depths, the
+            way the photo plates are one work seen from three distances.
+          */}
+          {ai &&
+            item &&
+            SLOTS.slice(0, 3).map((slot, n) => {
+              const style = {
+                "--x": slot.x,
+                "--y": slot.y,
+                "--z": slot.z,
+                "--w": slot.w,
+                "--r": slot.r,
+                "--t": slot.t,
+                "--i": n,
+              } as React.CSSProperties;
+              return n === 0 ? (
+                <button
+                  key="ai-near"
+                  type="button"
+                  className="plate plate-near plate-ai"
+                  style={style}
+                  onClick={() => onOpen(item.id)}
+                  aria-label={`${label} — ${text(UI.picksHint, lang)}`}
+                >
+                  <AiVisual kind={ai.visual} play={live && animate} />
+                  <i className="pedge" aria-hidden="true" />
+                </button>
+              ) : (
+                <span key={`ai-${n}`} className="plate plate-ai plate-ghost" style={style} aria-hidden="true">
+                  <AiVisual kind={ai.visual} play={false} />
+                  <i className="pedge" aria-hidden="true" />
+                </span>
+              );
+            })}
           {plates.map((img, n) => {
             const slot = SLOTS[n] ?? SLOTS[0];
             const style = {
@@ -145,7 +201,7 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
                 className="plate plate-near"
                 style={style}
                 onClick={() => onOpen(item.id)}
-                aria-label={`${item.year} ${text(item.t, lang)} — ${text(UI.picksHint, lang)}`}
+                aria-label={`${label} — ${text(UI.picksHint, lang)}`}
               >
                 <Img master={img.u} alt="" sizes={PLATE_SIZES} priority />
                 <i className="pedge" aria-hidden="true" />
@@ -162,16 +218,29 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
         {item && (
           <figcaption className="wmeta" key={`m${reel.turn}`}>
             <span className="wm-top">
-              <b className="wm-year">{item.year}</b>
+              {item.year && <Decode v={item.year} as="b" className="wm-year" delay={120} />}
               {item.featured && <span className="wm-flag">{text(UI.featured, lang)}</span>}
+              {item.honor && (
+                <span className="wm-flag wm-honor">
+                  {text(item.honor.event, lang)} · <b>{text(item.honor.grade, lang)}</b>
+                </span>
+              )}
             </span>
-            <Txt v={item.t} as="h3" className="wm-title" />
+            {/* The caption is a title card: the work's name sets itself letter by letter. */}
+            <Kinetic
+              v={item.t}
+              as="h3"
+              className="wm-title"
+              style={{ "--kin-at": "0.14s", "--kin-step": "0.028s", "--kin-dur": "0.8s" } as React.CSSProperties}
+            />
             <Txt v={item.s} as="p" className="wm-sum" />
             <span className="wm-tags">
               {topicTags(item)
                 .slice(0, 5)
-                .map((t) => (
-                  <span key={t}>{t}</span>
+                .map((t, n) => (
+                  <span key={t} style={{ "--k": n } as React.CSSProperties}>
+                    {t}
+                  </span>
                 ))}
             </span>
           </figcaption>
@@ -200,7 +269,7 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
         </button>
 
         {/*
-          The whole set, as a scale. This is the wall's job — reach any of the thirty-five
+          The whole set, as a scale. This is the wall's job — reach any one of them
           directly — at the size the job actually needs, and it doubles as the progress
           readout the reference puts down its left edge.
         */}
@@ -217,9 +286,10 @@ export function WorksScene({ index, live, items, animate, onOpen }: Props) {
               key={w.id}
               type="button"
               data-n={n}
+              style={{ "--n": n } as React.CSSProperties}
               className={`wtick${w.featured ? " star" : ""}`}
               aria-current={n === reel.index}
-              aria-label={`${w.year} ${text(w.t, lang)}`}
+              aria-label={[w.year, text(w.t, lang)].filter(Boolean).join(" ")}
               onPointerEnter={() => reel.pick(n)}
               onFocus={() => reel.pick(n)}
               onClick={() => onOpen(w.id)}

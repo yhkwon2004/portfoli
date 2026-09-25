@@ -8,6 +8,7 @@
     align-content: start;
   }
   .domain {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
@@ -58,7 +59,7 @@
     background: linear-gradient(90deg, var(--color-chrome-4), var(--color-chrome));
     box-shadow: 0 0 10px rgba(67, 97, 255, 0.55);
   }
-  .scene[data-live="true"] .domain .dbar i {
+  .scene[data-shown="true"] .domain .dbar i {
     width: var(--w);
     transition: width 1.1s var(--ease-house) calc(0.55s + var(--i) * 0.12s);
   }
@@ -106,6 +107,14 @@
   .chip:hover i,
   .chip:focus-visible i {
     opacity: 0.85;
+  }
+  /*
+   * The chips pop in on a spring, domain by domain and left to right inside each — so the map
+   * fills in the order it is read, and the heaviest skills (sorted first) land first.
+   */
+  .scene[data-state="live"] .domain .chip {
+    animation: pop 0.55s var(--ease-spring) backwards;
+    animation-delay: calc(0.62s + var(--i, 0) * 0.075s + var(--k, 0) * 0.022s);
   }
 
   /* ─────────────  03 PRINCIPLE: the thesis beside its matrix  ───────────── */
@@ -164,8 +173,24 @@
     left: 1.4rem;
     bottom: 0;
   }
+  /*
+   * The axes track in: each label arrives from a wide letter-spacing and closes up, the
+   * After Effects "tracking in" preset — the classic way a caption announces itself.
+   */
+  .scene[data-state="live"] .matrixwrap .axis {
+    animation: track-in 1.1s var(--ease-house) backwards 0.5s;
+  }
+  @keyframes track-in {
+    from {
+      opacity: 0;
+      letter-spacing: 1.2em;
+      filter: blur(3px);
+    }
+  }
   /* One --gs drives border, tint, heading size, dot size and reveal order together. */
   .gq {
+    --mark: 8px;
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -206,18 +231,39 @@
     height: calc(2px + var(--gs) * 1.15px);
     box-shadow: 0 0 8px rgba(67, 97, 255, 0.55);
     opacity: 0;
+    /* Squash on the ground, not in the middle of the grain. */
+    transform-origin: 50% 100%;
   }
-  .scene[data-live="true"] .pile i {
-    animation: drop 0.5s var(--ease-settle) both;
+  .scene[data-shown="true"] .pile i {
+    opacity: 1;
+  }
+  /*
+   * The grains fall into their piles with a real bounce — a squash on landing, a stretch as
+   * they rebound — which is what separates something dropped from something faded in.
+   */
+  .scene[data-state="live"] .pile i {
+    animation: drop 0.7s linear backwards;
     animation-delay: calc(0.45s + (4 - var(--gs)) * 0.26s + var(--d) * 0.055s);
   }
   @keyframes drop {
-    from {
+    0% {
       opacity: 0;
-      transform: translateY(-22px);
+      transform: translateY(-26px) scale(0.8, 1.3);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
     }
-    to {
+    42% {
       opacity: 1;
+      transform: translateY(0) scale(1.45, 0.6);
+      animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+    }
+    64% {
+      transform: translateY(-5px) scale(0.9, 1.12);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    82% {
+      transform: translateY(0) scale(1.12, 0.88);
+    }
+    100% {
       transform: none;
     }
   }
@@ -234,6 +280,7 @@
     margin-top: 2vh;
   }
   .quad {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
@@ -245,17 +292,72 @@
       linear-gradient(158deg, color-mix(in srgb, var(--qc) 9%, transparent), transparent 64%),
       var(--surface-read);
   }
+  /*
+   * `--q0` is each quadrant's clip before it opens: collapsed onto its inner corner — the one
+   * that touches the centre of the cross — so all four unfold out of the same point.
+   */
   .quad-S {
     --qc: var(--color-quad-s);
+    --q0: inset(100% 0 0 100%);
   }
   .quad-W {
     --qc: var(--color-quad-w);
+    --q0: inset(100% 100% 0 0);
   }
   .quad-O {
     --qc: var(--color-quad-o);
+    --q0: inset(0 0 100% 100%);
   }
   .quad-T {
     --qc: var(--color-quad-t);
+    --q0: inset(0 100% 100% 0);
+  }
+  .quad {
+    opacity: 0;
+  }
+  .scene[data-shown="true"] .quad {
+    opacity: 1;
+    /* Stated rather than left at `none`, so the fold-out below has an inset to tween from. */
+    clip-path: inset(0 0 0 0);
+  }
+  .scene[data-state="live"] .quad {
+    animation: quad-open 0.9s var(--ease-io) backwards;
+    animation-delay: calc(0.34s + var(--i) * 0.09s);
+  }
+  @keyframes quad-open {
+    from {
+      clip-path: var(--q0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  /* The letter flips down into place on its top edge, a split-flap card falling. */
+  .quad header b {
+    display: inline-block;
+    transform-origin: 50% 0;
+  }
+  .scene[data-state="live"] .quad header b {
+    animation: flap 0.8s var(--ease-settle) backwards;
+    animation-delay: calc(0.62s + var(--i) * 0.09s);
+  }
+  @keyframes flap {
+    from {
+      opacity: 0;
+      transform: perspective(240px) rotateX(-100deg);
+    }
+    30% {
+      opacity: 1;
+    }
+  }
+  .scene[data-state="live"] .quad li {
+    animation: f-in 0.55s var(--ease-house) backwards;
+    animation-delay: calc(0.78s + var(--i) * 0.09s + var(--k, 0) * 0.05s);
+  }
+  /* Out: the four fold back into the centre of the cross, together. */
+  .scene[data-state="out"] .quad {
+    clip-path: var(--q0);
+    transition: clip-path 0.4s var(--ease-exit);
   }
   .quad header {
     display: flex;
@@ -351,6 +453,7 @@
     line-height: 1.5;
   }
   .aim {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
@@ -364,7 +467,9 @@
     font-weight: 700;
     font-size: clamp(1.3rem, 2.6vw, 2.1rem);
     line-height: 1.2;
-    text-shadow: 0 0 40px rgba(224, 165, 63, 0.28);
+    /* A filter, not a text-shadow: the kinetic letters are masked per word, and a shadow drawn
+       inside a mask is cut off square at its edge. */
+    filter: drop-shadow(0 0 22px rgba(120, 150, 255, 0.24));
     white-space: pre-line;
   }
   .aimbody {
@@ -473,13 +578,32 @@
     transform: scaleX(0);
     transform-origin: left;
   }
-  .scene[data-live="true"] .cert {
-    animation: stamp 0.8s var(--ease-settle) both;
+  .scene[data-state="live"] .cert {
+    animation: stamp 0.8s var(--ease-settle) backwards;
     animation-delay: calc(0.36s + var(--i) * 0.13s);
   }
-  .scene[data-live="true"] .cert .hair {
+  .scene[data-shown="true"] .cert .hair {
     transform: scaleX(1);
     transition: transform 0.9s var(--ease-house) calc(0.7s + var(--i) * 0.13s);
+  }
+  /*
+   * The impact: a square ring leaves the corner bracket as the plate lands, and is clipped by
+   * the plate's own edge — ink spreading from where the stamp struck.
+   */
+  .cert .ink {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--color-electric);
+    box-shadow: 0 0 12px rgba(67, 97, 255, 0.6);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .scene[data-state="live"] .cert .ink {
+    animation: ping 1.2s var(--ease-house) backwards;
+    animation-delay: calc(0.62s + var(--i) * 0.13s);
   }
   @keyframes stamp {
     0% {

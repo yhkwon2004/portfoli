@@ -98,6 +98,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${jetbrains.variable} ${notoSansKr.variable}`}
     >
       <body>
+        {/*
+          Without a script, nothing will ever open the power-on shutter or release the
+          chapters' held keyframes — so both are switched off before the first paint, and the
+          page arrives as the static document it is.
+        */}
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html:
+              "<style>.boot{display:none!important}.scene,.scene *,.scene *::before,.scene *::after{animation:none!important}</style>",
+          }}
+        />
         {children}
         {/*
           Structured data, generated from the same records the page renders — so the machine-
