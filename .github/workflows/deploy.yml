@@ -1,8 +1,6 @@
-name: Deploy to GitHub Pages
+name: Deploy cinematic portfolio manually
 
-# Auto-deploys on a push to `main`. This repository does not have a `main` yet — its default
-# branch is the working branch — so until one exists, deploy from the Actions tab
-# (Deploy to GitHub Pages → Run workflow) or with `gh workflow run deploy.yml`.
+# Kept for existing manual entry points; it publishes the same site as nextjs.yml.
 on:
   push:
     branches: [main]
@@ -13,7 +11,6 @@ permissions:
   pages: write
   id-token: write
 
-# Never cancel a deploy midway; queue instead.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -24,37 +21,22 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-
-      - run: npm ci
-
       - uses: actions/configure-pages@v5
-        id: pages
         with:
-          # Turns Pages on and sets its source to GitHub Actions if it is not already
-          # configured, so a fresh repository does not need anyone to visit Settings first.
           enablement: true
-
-      - name: Build
-        # Pages serves a project site from /<repo>, so the router and every asset URL need
-        # that prefix. `configure-pages` works it out; we pass it through to next.config.ts.
-        run: npm run build
-        env:
-          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
-
+      - name: Build and check cinematic portfolio
+        working-directory: public/cinematic
+        run: |
+          node build.mjs
+          node check.mjs
       - name: Disable Jekyll
-        # Without this, Pages' Jekyll pass drops every path beginning with an underscore —
-        # which is all of Next's _next/ output.
-        run: touch out/.nojekyll
-
+        run: touch public/cinematic/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: public/cinematic
 
   deploy:
     needs: build

@@ -1,0 +1,62 @@
+# 권용현 — Developer & Maker
+
+ALCHE의 대형 타이포그래피, 곡면 격자, 유리 3D, 가로 작품 전개를 참고해 만든 개인 포트폴리오입니다. GitHub 저장소와 공개 Notion의 실제 프로젝트·수상·학력·경험·자격 자료를 반영했습니다. 원본과 세부 광학 효과 및 전환 타이밍은 다를 수 있습니다.
+
+## 실행
+
+Node.js가 설치된 환경에서 이 폴더를 열고 실행합니다.
+
+```sh
+npm start
+```
+
+[로컬 미리보기](http://localhost:4173/)에서 확인할 수 있습니다. 외부 패키지 설치는 필요하지 않습니다. 종료는 터미널에서 Ctrl+C입니다. HTML 더블클릭 대신 서버로 열어야 모듈과 3D 자산이 로드됩니다.
+
+## 구현 내용
+
+- 첫 화면: 포인터에 반응하는 3D 유리 심볼, 곡면 격자, 실제 자산 로딩 진행률, 대표 프로젝트 6개의 스크롤 갤러리.
+- `/works/`: 전체 프로젝트 38개, 분야·연도·검색 필터. 검색 조건은 주소에 저장됩니다.
+- `/works/프로젝트-ID/`: 관련 작품 필름스트립, 제목 모션, 프로젝트 설명과 제작 과정, 역할·기술, 원문 링크, 이전·다음 작품.
+- 이미지 확대: 썸네일 탐색, 여러 이미지 순환, 좌우 방향키, Escape 닫기, 닫은 뒤 원래 버튼으로 포커스 복귀. 실제 사진·설계 자료·화면 131개를 프로젝트에 연결했습니다.
+- 영상: 자료에 포함된 실제 YouTube 영상 4개를 클릭해 페이지 안에서 재생. 원문 영상 링크도 함께 제공.
+- `/news/`: 공식 기사 6건, 최근 소식과 수상 기록 35개. 직접 소개와 행사 관련 보도를 구분하며, 관련 프로젝트 상세에서도 기사 원문으로 연결됩니다.
+- `/about/`: 실제 소개·학력·경험·자격과 현장 사진 갤러리, GitHub·Notion·블로그·이메일 연결.
+- `/motion/`: 실시간 3D 스터디. Glass / Wireframe / Particles 전환, 속도, 일시정지·재생, 초기화.
+- 모바일 메뉴, 키보드 이동, 동작 줄이기 설정, WebGL 실패 시 정적 배경, 이미지 로딩 오류 시 재시도.
+- 페이지별 주소, 새로고침, 브라우저 뒤로·앞으로 이동. 별도의 프레임워크나 라우팅 라이브러리 없이 동작.
+
+## 수정하는 파일
+
+| 파일 | 내용 |
+| --- | --- |
+| `content.js` | 이름, 연락처, 소개, 뉴스, 대표 프로젝트 순서 |
+| `data.js` | 전체 프로젝트와 수상·경험 기록 |
+| `assets/portfolio/` | 본인 프로젝트 이미지 원본과 썸네일 |
+| `pages.js` | 작품 목록·상세·소개·소식·모션 페이지 구성 |
+| `app.js` | 라우팅, 필터, 로딩, 확대 보기, 영상, 메뉴, 사운드 |
+| `style.css`, `pages.css` | 홈과 상세 페이지의 디자인·반응형 배치 |
+| `scene.js` | 배경 셰이더, 3D 재질과 모션 |
+
+`data.js`의 항목은 `id`, `type`, `title`, `summary`, `year`, `category`, `tags`, `details`, `images`, `links`, `videos`로 구성됩니다. `images`에는 `src`, `thumb`, `alt`, `role`을 넣고, 별도 출처는 `source: {label, url}`로 표시합니다. 이미지 없는 프로젝트는 타이포그래피 표지를 표시합니다. `illustrative: true` 이미지는 실제 현장 사진과 구분되도록 `CONCEPT VISUAL`을 표시합니다. 기사는 `content.js`의 `press`에서 관리합니다.
+
+내용이나 기본 HTML을 수정한 뒤에는 다음 명령을 실행합니다.
+
+```sh
+npm run check
+```
+
+정적 경로를 다시 만들고 자료, 내부 링크, 자산, 필터, 영상 URL, HTML escaping을 검사합니다. `npm run build`는 정적 경로 생성만 수행합니다. 생성된 `works/`, `records/`, `about/`, `news/`, `motion/` 폴더의 HTML은 직접 편집하지 않습니다.
+
+## 배치
+
+이 폴더의 HTML·JS·CSS·`assets`·`vendor` 및 생성된 경로 폴더를 정적 호스팅에 그대로 배치할 수 있습니다. 하위 경로에서도 상대 경로로 동작합니다. 저장소의 `public/cinematic/`에 배치되며, 기본 브랜치에 푸시하면 GitHub Actions가 빌드·검사 후 [GitHub Pages](https://yhkwon2004.github.io/portfoli/)로 배포합니다.
+
+## 자료 및 자산 출처
+
+- 내용·사진: [제공한 GitHub 저장소](https://github.com/yhkwon2004/portfoli)와 [공개 Notion 포트폴리오](https://befitting-paper-753.notion.site/PR-75bfaf73802f835f948881f5ba22bdc4?pvs=74).
+- 시각 참고 및 3D 자산: [ALCHE](https://alche.studio/). `assets/scene.glb`, `assets/env-*.png`는 참고 사이트의 자산이며, 별도 재배포 라이선스가 부여된 것은 아닙니다. 모션 페이지에 참고 출처를 표시했습니다.
+- Three.js 0.180.0: MIT. `vendor/LICENSE-three.txt` 포함.
+- 서체: Google Fonts의 IBM Plex Mono / Noto Sans KR. 연결되지 않으면 시스템 글꼴을 사용합니다.
+- 사운드: Web Audio로 합성한 저음량 화음. 사용자가 켜기 전에는 재생하지 않습니다.
+
+브라우저에서 데스크톱과 390px 모바일의 필터, 상세 주소 새로고침, 뒤로 가기, 이미지 확대와 방향키, YouTube 재생, 모션 제어, 모바일 메뉴를 확인했습니다.

@@ -1,0 +1,6 @@
+{
+  "name": "yonghyun-portfolio",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node build.mjs && node server.mjs", "build": "node build.mjs", "check": "node build.mjs && node check.mjs" }
+}

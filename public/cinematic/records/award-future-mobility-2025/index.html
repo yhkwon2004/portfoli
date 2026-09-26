@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#060609">
+  <meta name="description" content="기계공학과와 협업해 자율주행 이동형 의료 차량 아이디어를 기획하고 심부전 환자 이송 구조를 설계했습니다.">
+  <title>미래수송기기 아이디어 해커톤 경진대회 · 우수상 — 권용현</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23060609'/%3E%3Cpath d='M7 25L16 7l9 18h-5l-4-9-4 9z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="pages.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body class="booting">
+  <div id="page-loader" class="page-loader" role="status" aria-live="polite"><div class="loader-brand">KWON<span>®</span></div><div class="loader-wordmark" aria-hidden="true">KWON</div><div class="loader-preview" hidden><img alt=""></div><div class="loader-center"><svg viewBox="0 0 120 110" aria-hidden="true"><path d="M60 10 110 100H10Z M60 40 90 90H30Z" fill="none" stroke="currentColor" stroke-width="1"/></svg><p id="loader-label">현장을 이해하고, 가능성을 구현합니다.</p></div><div class="loader-bottom"><span id="loader-status">LOADING EXPERIENCE</span><span id="loader-percent">00%</span></div><div class="loader-progress"><i></i></div></div>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <a class="skip-link" href="#works">작업으로 건너뛰기</a>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="ambient-fallback" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div><div class="screen-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cinema-vignette" aria-hidden="true"></div>
+  <header class="header">
+    <a class="brand" href="./#top" aria-label="처음으로">FOLIO</a>
+    <nav class="desktop-nav" aria-label="주 메뉴">
+      <a href="news/">News</a><a href="works/">Works</a><a href="about/">About</a><a href="motion/">Motion</a>
+    </nav>
+    <div class="header-actions">
+      <a class="pill contact-link" href="#contact"><span>Contact / Connect</span><span aria-hidden="true">Contact / Connect</span></a>
+      <button class="sound-toggle" aria-label="사운드 켜기" aria-pressed="false"><span></span><span></span><span></span><span></span></button>
+      <button class="menu-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span></button>
+    </div>
+  </header>
+  <nav id="mobile-menu" class="mobile-menu" aria-label="모바일 메뉴" hidden>
+    <a href="./#top">Top <small>00</small></a><a href="works/">Works <small>01</small></a><a href="news/">News <small>02</small></a><a href="about/">About <small>03</small></a><a href="motion/">Motion <small>04</small></a><a href="#contact">Contact <small>05</small></a>
+  </nav>
+  <nav class="section-rail" aria-label="섹션 바로가기">
+    <a href="./#top" class="active" data-section="top"><i></i><span>TOP</span></a>
+    <a href="#works" data-section="works"><i></i><span>WORKS</span></a>
+    <a href="about/" data-section="about"><i></i><span>ABOUT</span></a>
+    <a href="#vision" data-section="vision"><i></i><span>VISION</span></a>
+    <a href="#practice" data-section="practice"><i></i><span>PRACTICE</span></a>
+  </nav>
+  <main id="home-page">
+    <section id="top" class="hero" aria-labelledby="hero-title">
+      <div class="hero-intro"><span class="hero-kicker"><i></i> INDEPENDENT DEVELOPER & MAKER</span><p id="intro-copy"></p></div><div class="hero-edition"><span>YONGHYUN KWON</span><span>SELECTED WORK / 2023—2026</span></div>
+      <h1 id="hero-title" class="hero-title">FOLIO</h1>
+      <div class="hero-caption"><span class="cross">✳</span><span id="hero-role"></span></div><a class="hero-explore" href="works/"><span class="hero-explore-icon">↗</span><span>Ideas into reality.<small>EXPLORE THE ARCHIVE</small></span></a>
+      <div id="news" class="news"><h2>Latest / 최근 이야기 <span>(03)</span></h2><div id="news-list"></div></div>
+      <a href="#works" class="scroll-cue">scroll to explore <span>↓</span></a>
+      <div class="hero-coordinate"><span class="live-dot"></span> BASED IN SOUTH KOREA <span>© 2026</span></div>
+    </section>
+    <section id="works" class="works" aria-labelledby="works-title">
+      <div class="works-sticky"><div class="work-atmosphere" aria-hidden="true"><img alt=""></div><div class="work-axis" aria-hidden="true"></div>
+        <div class="section-topline"><span>01 / SELECTED WORKS</span><span class="work-count">01 — 06</span></div>
+        <h2 id="works-title" class="works-title">Selected<br><em>Works.</em></h2><span class="work-direction" aria-hidden="true">SCROLL TO DISCOVER / ↓</span>
+        <div class="work-stage"><div class="work-track" id="work-track"></div></div>
+        <div class="work-bottom"><div><span class="eyebrow" id="active-work-type"></span><h3><a id="active-work-title" href="works/"></a></h3><p id="active-work-subtitle"></p></div><div class="work-controls"><button id="previous-work" aria-label="이전 프로젝트">←</button><span id="work-index">01 / 06</span><button id="next-work" aria-label="다음 프로젝트">→</button></div></div>
+        <div class="work-scrubber" role="group" aria-label="대표 프로젝트 선택"></div><a class="all-works-link" href="works/">All projects <span>↗</span></a>
+      </div>
+    </section>
+    <div class="manifesto-band" aria-hidden="true"><div>REAL WORLD. <em>REAL IMPACT.</em> REAL WORLD. <em>REAL IMPACT.</em></div></div><section id="about" class="statement about" aria-labelledby="about-title">
+      <div class="section-topline"><span>02 / ABOUT ME</span><span id="about-name">YOUR NAME</span></div>
+      <div class="statement-watermark" aria-hidden="true">Beyond.</div><div class="statement-content reveal"><p class="eyebrow">BEYOND THE EXPECTED.</p><h2 id="about-title"></h2><p class="statement-english" id="about-english"></p><p class="statement-description" id="about-description"></p><div id="home-stats" class="home-stats"></div><a class="underlined-link" href="about/">More about me ↗</a></div>
+      <span class="section-bottom-label">SOFTWARE × HARDWARE × REAL WORLD</span>
+    </section>
+    <section id="vision" class="statement vision" aria-labelledby="vision-title">
+      <div class="section-topline"><span>03 / MY VISION</span><span>IDEAS WITHOUT LIMITS</span></div>
+      <div class="vision-orbits" aria-hidden="true"><i></i><i></i><i></i></div><div class="statement-content reveal"><p class="eyebrow">WHAT I BELIEVE IN.</p><h2 id="vision-title"></h2><p class="statement-english" id="vision-english"></p></div>
+      <span class="section-bottom-label">BUILD. LEARN. SHARE.</span>
+    </section>
+    <section id="practice" class="practice" aria-labelledby="practice-title">
+      <div class="section-topline"><span>04 / WHAT I DO</span><span>FROM IDEA TO EXPERIENCE</span></div>
+      <div class="practice-heading"><h2 id="practice-title" class="practice-title reveal">Making<br><em>it happen.</em></h2><p>분야의 경계를 넘나들며,<br>아이디어가 작동하는 순간까지.</p></div>
+      <div class="practice-grid" id="practice-grid"></div>
+    </section>
+    <section class="home-journal" id="journal" aria-labelledby="journal-title"><header class="journal-heading"><div><p class="eyebrow">FIELD NOTES / IN THE PRESS</p><h2 id="journal-title">Beyond<br><em>the screen.</em></h2></div><p>화면 밖에서 이어지는 이야기.<br>실제 현장의 기록과 언론이 전한 소식.</p></header><div id="home-press" class="press-grid"></div><a class="underlined-link" href="news/#press">All stories ↗</a></section>
+    <section id="contact" class="contact" aria-labelledby="contact-title">
+      <div class="section-topline"><span>05 / GET IN TOUCH</span><span>LET’S MAKE SOMETHING MEANINGFUL</span></div>
+      <div class="contact-orbit" aria-hidden="true"><i></i><i></i><span>LET’S MAKE IT REAL</span></div><div class="contact-content reveal"><p class="eyebrow">HAVE AN IDEA?</p><h2 id="contact-title">Let’s build<br>what matters<span class="accent">.</span></h2><a class="contact-cta" id="email-link" href="#contact">함께 만들 다음 이야기 <span>↗</span></a><p id="contact-note"></p><div id="contact-socials" class="contact-socials"></div></div>
+    </section>
+  </main>
+  <main id="page-view" class="page-view" tabindex="-1" hidden></main>
+  <footer><div class="footer-top"><div><span id="footer-name">YOUR NAME</span><p id="footer-role"></p></div><div class="footer-nav"><a href="#works">Works</a><a href="about/">About</a><a href="#practice">Practice</a><a href="./#top">Back to top ↑</a></div></div><div class="footer-meta"><span>© <span id="year">2026</span> <span id="copyright-name">YOUR NAME</span></span><span id="location"></span></div><div class="footer-wordmark" aria-hidden="true">FOLIO</div></footer>
+  <div class="sound-intro" aria-label="사운드 설정"><span class="sound-label"><i></i> sound</span><p>사운드와 함께 포트폴리오를 감상하시겠어요?</p><button class="pill" id="enable-sound">사운드 켜기</button><button class="text-button" id="dismiss-sound">사운드 없이 둘러보기</button></div>
+  <dialog id="lightbox" class="lightbox" aria-label="프로젝트 이미지 확대 보기"><button class="lightbox-close" aria-label="이미지 닫기">×</button><button class="lightbox-prev" aria-label="이전 이미지">←</button><figure><img alt=""><figcaption></figcaption></figure><button class="lightbox-next" aria-label="다음 이미지">→</button><span class="lightbox-count"></span></dialog>
+  <p id="announcement" class="sr-only" aria-live="polite"></p>
+  <noscript><p class="noscript">이 포트폴리오의 인터랙션을 보려면 JavaScript를 켜 주세요.</p></noscript>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

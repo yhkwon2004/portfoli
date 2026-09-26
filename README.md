@@ -1,5 +1,12 @@
 # 권용현 · HOURGLASS
 
+## 현재 배포: Cinematic Portfolio
+
+새 포트폴리오는 `public/cinematic/`에 있습니다. 해당 폴더에서 `npm start`로 실행하고
+`npm run check`로 정적 상세 경로와 콘텐츠·자산을 검증합니다. 패키지 설치는 필요하지 않습니다.
+기본 브랜치 push와 수동 Pages 배포 모두 이 폴더를 [공개 사이트](https://yhkwon2004.github.io/portfoli/)로 배포합니다.
+기존 Next.js 코드와 CI는 보존했습니다. 아래 문서는 기존 HOURGLASS 구현에 대한 기록입니다.
+
 크롬과 와이어프레임으로 재해석한 모래시계 포트폴리오. **한 화면에서 영화처럼** 재생되는
 구조로, 페이지는 스크롤되지 않고 장(chapter)만 전환됩니다.
 
