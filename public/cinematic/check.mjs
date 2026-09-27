@@ -1,10 +1,25 @@
 import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
 import { records, content, projects, awards, press, featured, categories, filterProjects, youtubeId, itemPath } from './content.js';
-import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos } from './pages.js';
+import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds } from './pages.js';
+import { institutions } from './media.js';
+import { workPose, clamp } from './home-motion.js';
 const local=path=>new URL(path,import.meta.url);
 assert.equal(new Set(records.map(item=>item.id)).size,records.length,'Record IDs must be unique');
 assert(featured.every(item=>item?.type==='project'),'Featured projects must resolve');
+assert.equal(featured[4].id,'project-factline');
+assert.equal(featured[5].id,'project-self-powered-dehumidifier');
+assert.equal(clamp(-1),0);assert.equal(clamp(2),1);
+assert.deepEqual(workPose(0,1000),{x:0,y:0,z:0,rotation:-0,opacity:1,scale:1});
+for(const d of [.2,1,2,3]){const left=workPose(-d,1000),right=workPose(d,1000);assert.equal(left.x,-right.x);assert.equal(left.z,right.z);assert(right.opacity>=0&&right.opacity<=1);assert(right.z<=0);}
+assert.equal(activityIds.length,5);
+assert.equal((resolvePage('activities/').html.match(/data-activity-id=/g)||[]).length,5);
+for(const id of activityIds)assert(records.some(item=>item.id===id));
+const imagesFor=id=>records.find(item=>item.id===id).images;
+assert(imagesFor('project-manual-electric-vehicle').some(image=>image.src.endsWith('/upcycle-material.webp')));
+assert(!imagesFor('project-upcycle').some(image=>image.src.endsWith('/upcycle-material.webp')));
+for(const name of ['build','chassis','workshop']){const file=`evidence/projects/handmade-car-${name}.webp`;assert(imagesFor('project-autonomous').some(image=>image.src.endsWith(file)));assert(!imagesFor('project-handmade-car').some(image=>image.src.endsWith(file)));}
+assert(!records.some(item=>item.images.some(image=>image.src.includes('upcycle-panel'))));
 assert.equal(filterProjects().length,projects.length);
 assert.equal(filterProjects({query:'  Re:CAP  '}).length,projects.filter(item=>`${item.title} ${item.summary} ${item.tags.join(' ')}`.toLowerCase().includes('re:cap')).length);
 assert.equal(filterProjects({query:'no-project-matches-this-98765'}).length,0);
@@ -17,6 +32,10 @@ assert.equal(youtubeId('https://evil.example/watch?v=sLgSZitPeOc'),null);
 assert.equal(youtubeId('javascript:alert(1)'),null);
 assert.equal(escapeHTML('<img onerror="x">'), '&lt;img onerror=&quot;x&quot;&gt;');
 const assets=new Set(['app.js','content.js','data.js','pages.js','scene.js','style.css','pages.css','assets/scene.glb',...['px','nx','py','ny','pz','nz'].map(side=>`assets/env-${side}.png`),'vendor/three.module.js','vendor/three.core.js','vendor/GLTFLoader.js','vendor/BufferGeometryUtils.js']);
+for(const path of ['media.js','home-motion.js','home-motion.css','detail-updates.css'])assets.add(path);
+assert.equal(institutions.length,6);
+for(const institution of institutions){assert(['https:','http:'].includes(new URL(institution.url).protocol));assert(institution.name);assets.add(institution.logo);}
+for(const item of content.practice)assert(projects.some(project=>project.id===item.projectId)&&item.steps.length===3);
 assert.equal(new Set(press.map(article=>article.id)).size,press.length,'Press IDs must be unique');
 for(const [index,article] of press.entries()){
   assert(article.title&&article.publisher&&article.summary,`Incomplete article: ${article.id}`);
@@ -35,6 +54,7 @@ for(const [index,article] of press.entries()){
     assert(article.image.source?.label&&['http:','https:'].includes(new URL(article.image.source.url).protocol),`Missing article photo credit: ${article.id}`);
   }
   const card=pressCard(article);assert(card.includes('target="_blank" rel="noopener noreferrer"'));
+  assert(article.image?.src.startsWith('assets/portfolio/press/'),'News uses the publisher photograph');
   assert.equal((card.match(/<a\b/g)||[]).length,1,'Press cards cannot contain nested links');
   assert(resolvePage('news/').html.includes(`data-press-id="${article.id}"`));
 }
@@ -53,18 +73,23 @@ for(const item of records){
     const path=itemPath(item),page=resolvePage(path);
     assert.equal(page.item.id,item.id,`Wrong route: ${path}`);
     assert(page.html.includes(escapeHTML(item.title)));
+    const related=page.html.split('<section class="related-projects"')[1].split('</section>')[0];
+    assert(!related.includes(`href="${itemPath(item)}"`),'Related rail must exclude the current item');
+    assert.equal((related.match(/class="related-card"/g)||[]).length,6);
     for(const match of page.html.matchAll(/data-image="(\d+)"/g))assert(item.images[Number(match[1])],`Invalid gallery image: ${path} ${match[1]}`);
     const html=await readFile(local(`${path}index.html`),'utf8');
     assert(html.includes('<base href="../../">'),`Broken deep route base: ${path}`);
   }
 }
 await Promise.all([...assets].map(asset=>access(local(asset))));
-for(const path of ['works/','news/','about/','motion/']){assert.notEqual(resolvePage(path).kind,'not-found');await access(local(`${path}index.html`));}
+for(const path of ['works/','news/','about/','activities/','motion/']){assert.notEqual(resolvePage(path).kind,'not-found');await access(local(`${path}index.html`));}
 for(const news of content.news)assert.notEqual(resolvePage(news.target).kind,'not-found');
 assert.equal(resolvePage('works/missing/').kind,'not-found');
 assert.equal(resolvePage('records/project-upcycle/').kind,'not-found');
 assert(resolvePage('works/',new URLSearchParams('q=nothing-matches-98765')).html.includes('검색 결과가 없습니다'));
 const html=await readFile(local('index.html'),'utf8'),ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
+assert(!html.includes('sound-intro'),'Sound prompt removed');
+assert(content.links.some(link=>link.url==='https://www.instagram.com/dydgus_.0802'));
 assert.equal(new Set(ids).size,ids.length,'Duplicate HTML IDs');
 for(const match of html.matchAll(/href="(?:\.\/)?#([^"]+)"/g))assert(ids.includes(match[1]),`Missing anchor: ${match[1]}`);
 console.log(`PASS: ${projects.length} projects, ${awards.length} awards, ${press.length} verified press links, ${fieldPhotos.length} field photographs, ${records.length} records, ${assets.size} local assets, filters, embeds, safe markup and all static routes.`);

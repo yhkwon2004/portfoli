@@ -54,15 +54,34 @@ export const records = [
   {
     "id": "edu-jst",
     "type": "education",
-    "title": "JST 공유대학교 스마트 모빌리티 SW공학과",
-    "summary": "전북대학교 연계 스마트 모빌리티 SW 전공",
-    "year": "2023-2029",
+    "title": "전북대학교 스마트모빌리티 SW 공학과 복수전공",
+    "summary": "공유대학 이수를 통해 스마트모빌리티 SW 공학과를 복수전공했습니다.",
+    "year": "2024",
     "tags": [
       "Smart Mobility"
     ],
     "featured": false,
     "rank": 99,
     "category": "education",
+    "images": [],
+    "details": {},
+    "links": [],
+    "videos": []
+  },
+  {
+    "id": "exp-llm-lab",
+    "type": "experience",
+    "title": "인공지능 LLM 연구실 활동",
+    "summary": "인공지능 LLM 연구실에서 연구 활동에 참여했습니다.",
+    "year": "2023",
+    "tags": [
+      "AI",
+      "LLM",
+      "Research"
+    ],
+    "featured": false,
+    "rank": 99,
+    "category": "experience",
     "images": [],
     "details": {},
     "links": [],
@@ -90,8 +109,8 @@ export const records = [
   {
     "id": "exp-drone-instructor",
     "type": "experience",
-    "title": "초경량 무인 멀티콥터 지도조종자 | 교육 교관",
-    "summary": "무인 멀티콥터 조종과 교육 운영 경험을 쌓았습니다.",
+    "title": "드론 교육 교관 및 메카니즘 활동",
+    "summary": "드론 교육 교관으로 활동하고, 자작차 동아리 메카니즘에서 차량 제작을 경험했습니다.",
     "year": "2024-2025",
     "tags": [
       "Drone",
@@ -108,15 +127,17 @@ export const records = [
   {
     "id": "exp-cnu",
     "type": "experience",
-    "title": "전남대 인턴십 프로그램 1위 평가",
-    "summary": "문제 해결력과 실행력을 바탕으로 인턴십 프로그램에서 1위 평가를 받았습니다.",
-    "year": "2025-2026",
+    "title": "테이블컵 창업동아리 연계 인턴십",
+    "summary": "전남대학교 연계 테이블컵 창업동아리 인턴십에 참여했습니다.",
+    "year": "2025",
     "tags": [],
     "featured": true,
     "rank": 5,
     "category": "experience",
     "images": [],
-    "details": {},
+    "details": {
+      "평가": "인턴십 프로그램 1위 평가"
+    },
     "links": [],
     "videos": []
   },
@@ -141,7 +162,7 @@ export const records = [
   {
     "id": "exp-iot-lab",
     "type": "experience",
-    "title": "사물인터넷연구실 | H/W(PCB, 3D) / F/W",
+    "title": "지능형 IoT 연구실 활동",
     "summary": "PCB, 3D 설계, 펌웨어 기반 하드웨어 제품 실험을 진행했습니다.",
     "year": "2025-2026",
     "tags": [
@@ -1280,6 +1301,27 @@ export const records = [
         "alt": "자율주행 트랙 주행 실습 장면",
         "role": "gallery",
         "illustrative": false
+      },
+      {
+        "src": "assets/portfolio/full/evidence/projects/handmade-car-build.webp",
+        "thumb": "assets/portfolio/thumb/evidence/projects/handmade-car-build.webp",
+        "alt": "자율주행 대회 준비 1 — 차량 조립과 제어 장치 점검",
+        "role": "gallery",
+        "illustrative": false
+      },
+      {
+        "src": "assets/portfolio/full/evidence/projects/handmade-car-chassis.webp",
+        "thumb": "assets/portfolio/thumb/evidence/projects/handmade-car-chassis.webp",
+        "alt": "자율주행 대회 준비 2 — 부품 준비와 테스트 환경 구성",
+        "role": "gallery",
+        "illustrative": false
+      },
+      {
+        "src": "assets/portfolio/full/evidence/projects/handmade-car-workshop.webp",
+        "thumb": "assets/portfolio/thumb/evidence/projects/handmade-car-workshop.webp",
+        "alt": "자율주행 대회 준비 3 — 대회장 주행 코스 점검",
+        "role": "gallery",
+        "illustrative": false
       }
     ],
     "details": {
@@ -1378,27 +1420,6 @@ export const records = [
         "src": "assets/portfolio/full/notion-projects/handmade-car-driving.webp",
         "thumb": "assets/portfolio/thumb/notion-projects/handmade-car-driving.webp",
         "alt": "자작차량 주행 사진",
-        "role": "gallery",
-        "illustrative": false
-      },
-      {
-        "src": "assets/portfolio/full/evidence/projects/handmade-car-build.webp",
-        "thumb": "assets/portfolio/thumb/evidence/projects/handmade-car-build.webp",
-        "alt": "자작차량 조립 및 제작 장면",
-        "role": "gallery",
-        "illustrative": false
-      },
-      {
-        "src": "assets/portfolio/full/evidence/projects/handmade-car-chassis.webp",
-        "thumb": "assets/portfolio/thumb/evidence/projects/handmade-car-chassis.webp",
-        "alt": "자작차량 차체 작업 장면",
-        "role": "gallery",
-        "illustrative": false
-      },
-      {
-        "src": "assets/portfolio/full/evidence/projects/handmade-car-workshop.webp",
-        "thumb": "assets/portfolio/thumb/evidence/projects/handmade-car-workshop.webp",
-        "alt": "자작차량 제작 워크숍 장면",
         "role": "gallery",
         "illustrative": false
       }
@@ -1564,20 +1585,6 @@ export const records = [
         "src": "assets/portfolio/full/notion-projects/coffee-box-cover.webp",
         "thumb": "assets/portfolio/thumb/notion-projects/coffee-box-cover.webp",
         "alt": "커피박 상자 제작 프로젝트",
-        "role": "gallery",
-        "illustrative": false
-      },
-      {
-        "src": "assets/portfolio/full/evidence/projects/upcycle-material.webp",
-        "thumb": "assets/portfolio/thumb/evidence/projects/upcycle-material.webp",
-        "alt": "업사이클 소재 준비 장면",
-        "role": "gallery",
-        "illustrative": false
-      },
-      {
-        "src": "assets/portfolio/full/evidence/projects/upcycle-panel.webp",
-        "thumb": "assets/portfolio/thumb/evidence/projects/upcycle-panel.webp",
-        "alt": "업사이클 패널 제작 결과",
         "role": "gallery",
         "illustrative": false
       },
@@ -3043,6 +3050,13 @@ export const records = [
         "alt": "수동 제어 전기차량 커버",
         "role": "cover",
         "illustrative": false
+      },
+      {
+        "src": "assets/portfolio/full/evidence/projects/upcycle-material.webp",
+        "thumb": "assets/portfolio/thumb/evidence/projects/upcycle-material.webp",
+        "alt": "1인용 전기 차량 제작 — 완성 차량과 제작 팀",
+        "role": "gallery",
+        "illustrative": false
       }
     ],
     "details": {},
@@ -3251,6 +3265,81 @@ export const records = [
       ]
     },
     "links": [],
+    "videos": []
+  },
+  {
+    "id": "project-factline",
+    "type": "project",
+    "title": "LLM 기반 기록·증거 정리 서비스 — FACTLINE",
+    "summary": "흩어진 일상 기록과 대화, 증거를 시간순 사실관계로 연결하는 서비스입니다. LLM 기반 질문과 자료 정리 흐름으로 상담 준비를 돕습니다.",
+    "year": "2026",
+    "tags": [
+      "LLM",
+      "Next.js",
+      "TypeScript",
+      "Vercel AI SDK",
+      "Prisma",
+      "PostgreSQL"
+    ],
+    "featured": true,
+    "rank": 5,
+    "category": "AI & Data",
+    "images": [
+      {
+        "src": "assets/portfolio/full/factline/landing.webp",
+        "thumb": "assets/portfolio/thumb/factline/landing.webp",
+        "alt": "FACTLINE 진입 화면 — 일상 기록을 사실관계로 연결하는 서비스 소개",
+        "role": "cover",
+        "illustrative": false,
+        "source": {
+          "label": "FACTLINE GitHub · 공식 README 화면",
+          "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/docs/screenshots/landing.png"
+        }
+      },
+      {
+        "src": "assets/portfolio/full/factline/dashboard.webp",
+        "thumb": "assets/portfolio/thumb/factline/dashboard.webp",
+        "alt": "FACTLINE 기록 허브 — 다이어리와 대화, 사건 정리를 연결하는 대시보드",
+        "role": "gallery",
+        "illustrative": false,
+        "source": {
+          "label": "FACTLINE GitHub · 공식 README 화면",
+          "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/docs/screenshots/dashboard.png"
+        }
+      },
+      {
+        "src": "assets/portfolio/full/factline/self-record.webp",
+        "thumb": "assets/portfolio/thumb/factline/self-record.webp",
+        "alt": "FACTLINE 셀프 기록 — 관련 자료를 선택하고 후속 질문을 이어 가는 화면",
+        "role": "gallery",
+        "illustrative": false,
+        "source": {
+          "label": "FACTLINE GitHub · 공식 README 화면",
+          "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/docs/screenshots/self-record.png"
+        }
+      }
+    ],
+    "details": {
+      "프로젝트개요": "평소에는 다이어리처럼 생활을 기록하고, 필요한 순간에 관련 대화와 증거를 모아 사건의 흐름을 정리하는 모바일 우선 웹 애플리케이션입니다.",
+      "핵심기능": [
+        "일상 기록·대화·증거를 검색하고 시간순 타임라인으로 연결",
+        "답변의 단서를 따라 부족한 정보를 질문하고 누락·모순을 점검",
+        "사용자가 제공한 사실을 바탕으로 진술서 초안과 상담 준비 보고서 생성"
+      ],
+      "LLM 연결": "Vercel AI SDK·AI Gateway 연결과 로컬 OpenAI 호환 LLM 서버 연결을 지원합니다. 로컬 개발과 테스트에는 규칙 기반 Mock AI를 사용합니다.",
+      "구현원칙": "AI는 법적 판단을 내리지 않고 사용자가 제공한 사실을 구조화합니다. 증거 원문 대신 파일명·설명·해시·연결 이벤트를 관리합니다.",
+      "기술구성": "Next.js App Router, React, TypeScript, Prisma, PostgreSQL 기반으로 화면·도메인·AI 연결 계층을 구성했습니다."
+    },
+    "links": [
+      {
+        "label": "GitHub 프로젝트",
+        "url": "https://github.com/yhkwon2004/FACTLINE"
+      },
+      {
+        "label": "구현 내용 · README",
+        "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/README.md"
+      }
+    ],
     "videos": []
   }
 ];
