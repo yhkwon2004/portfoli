@@ -26,7 +26,7 @@ text('#footer-role',content.role); text('#copyright-name',content.name); text('#
 text('#year',new Date().getFullYear());
 lines('#intro-copy',content.intro); lines('#about-title',content.about.heading);
 text('#about-english',content.about.english); text('#about-description',content.about.description);
-$('#quote-stage').innerHTML=content.quotes.map((quote,index)=>`<div class="quote-frame" aria-hidden="${index!==0}"><span class="eyebrow">THOUGHT / 0${index+1}</span><p class="quote-line">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-word">${e(word)}</span>`).join(' ')).join('<br>')}</p><p class="quote-note">${e(quote.note)}</p></div>`).join('');
+$('#quote-stage').innerHTML=content.quotes.map((quote,index)=>`<div class="quote-frame" aria-hidden="${index!==0}"><span class="eyebrow">THOUGHT / 0${index+1}</span><p class="quote-line">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-word">${e(word)}</span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p></div>`).join('');
 $('.quote-controls').innerHTML=content.quotes.map((quote,index)=>`<button data-quote="${index}" aria-label="문장 ${index+1}" aria-pressed="${index===0}"><span></span></button>`).join('');
 $('#institution-logos').innerHTML=institutions.map(item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${item.name==='AWS'?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`).join('');
 $('#email-link').href=`mailto:${content.email}`;
