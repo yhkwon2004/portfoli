@@ -61,20 +61,22 @@ export function rng(seed: number): () => number {
 // ── palette, as three.js colours ──
 
 export const C = {
-  bg: new THREE.Color("#05060a"),
-  bg3: new THREE.Color("#10131c"),
-  grid: new THREE.Color("#1a2033"),
-  line: new THREE.Color("#2a3150"),
-  fg: new THREE.Color("#f3f5fa"),
-  fg3: new THREE.Color("#9aa1b3"),
-  fg4: new THREE.Color("#6f7689"),
-  violet: new THREE.Color("#9d8cff"),
-  cyan: new THREE.Color("#57e6ff"),
-  lime: new THREE.Color("#d4ff5f"),
-  rose: new THREE.Color("#ff6b88"),
-  amber: new THREE.Color("#ffc857"),
-  green: new THREE.Color("#7df0a6"),
-  magenta: new THREE.Color("#f07bff"),
+  bg: new THREE.Color("#08080a"),
+  bg3: new THREE.Color("#141418"),
+  grid: new THREE.Color("#1b1b22"),
+  line: new THREE.Color("#2c2c36"),
+  fg: new THREE.Color("#f5f5f7"),
+  fg3: new THREE.Color("#a0a0ab"),
+  fg4: new THREE.Color("#7b7b86"),
+  // the model: iris → ice
+  violet: new THREE.Color("#b3a7ff"),
+  cyan: new THREE.Color("#9ee9ff"),
+  // results only
+  champagne: new THREE.Color("#e6d5ae"),
+  rose: new THREE.Color("#ff8aa0"),
+  amber: new THREE.Color("#ffd27a"),
+  green: new THREE.Color("#8ff0b6"),
+  magenta: new THREE.Color("#f19cff"),
 };
 
 // ── canvas textures: labels, icons, matcaps — drawn once, no image files ──
@@ -111,12 +113,12 @@ export function labelTexture(
     const r = h / 2;
     g.beginPath();
     g.roundRect(2, 2, w - 4, h - 4, r - 2);
-    g.fillStyle = opts.bg ?? "rgba(5,6,10,0.82)";
+    g.fillStyle = opts.bg ?? "rgba(8,8,10,0.82)";
     g.fill();
     g.lineWidth = 3;
-    g.strokeStyle = opts.border ?? opts.color ?? "#57e6ff";
+    g.strokeStyle = opts.border ?? opts.color ?? "#9ee9ff";
     g.stroke();
-    g.fillStyle = opts.color ?? "#57e6ff";
+    g.fillStyle = opts.color ?? "#9ee9ff";
     g.fillText(text, pad + size * 0.1, h / 2 + 2);
   });
   return { tex, aspect: w / h };

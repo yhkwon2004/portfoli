@@ -94,7 +94,7 @@ export function Harness() {
 
   if (!cfg) return null;
   return (
-    <div style={{ width: cfg.w, height: cfg.h, background: "#05060a" }} data-scene={cfg.scene}>
+    <div style={{ width: cfg.w, height: cfg.h, background: "#08080a" }} data-scene={cfg.scene}>
       <Stage3D scene={cfg.scene} drive={drive.current} active={false} capture onReady={onReady} />
     </div>
   );

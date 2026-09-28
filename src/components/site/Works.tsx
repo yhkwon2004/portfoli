@@ -5,36 +5,47 @@ import { Img } from "@/components/Img";
 import { Txt } from "@/components/Txt";
 import { useLang } from "@/components/LangProvider";
 import { SectionHead } from "@/components/site/SectionHead";
+import { usePreview } from "@/components/site/Preview";
 import { useMotion } from "@/components/site/MotionContext";
-import { aiMedia, aiWorkFor } from "@/data/ai";
+import { aiMedia, aiWorkFor, isScene } from "@/data/ai";
 import { topicTags } from "@/data/ranks";
 import { UI } from "@/data/ui";
-import { asset } from "@/lib/assets";
+import { asset, src } from "@/lib/assets";
 import { text } from "@/lib/i18n";
 import { cover, domains, domainsOf, projects, year } from "@/lib/select";
 import type { Item } from "@/lib/types";
 
 type OpenFn = (id: string, from?: HTMLElement | null) => void;
 
-const SIZES = "(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 30vw";
+/** The picture a work is shown by: its rendered poster if it is an AI scene, else its cover. */
+function pictureOf(item: Item): { url: string; master: string | null } | null {
+  const ai = aiWorkFor(item.id);
+  if (ai && isScene(ai.visual)) return { url: asset(aiMedia(ai.visual).poster), master: null };
+  const c = cover(item);
+  return c ? { url: src(c.u, "thumb"), master: c.u } : null;
+}
 
 /**
- * Every work, filterable by field. A filter never re-colours or re-orders what survives — the
- * cards that stay glide to their new places (a FLIP: measured before, measured after, and
- * animated across the difference), and the ones that leave simply go.
+ * The work, in two registers. First a few selected pieces, large, as pictures. Then the whole
+ * body of work as an index — a typographic list that shows each piece's picture only when the
+ * pointer asks for it, filterable by field. A filter never re-orders what survives: the rows
+ * that stay glide to their new places (a FLIP) and the ones that leave simply go.
  */
 export function Works({ onOpen }: { onOpen: OpenFn }) {
   const lang = useLang();
   const { motion } = useMotion();
   const [filter, setFilter] = useState(-1);
-  const grid = useRef<HTMLUListElement>(null);
+  const list = useRef<HTMLOListElement>(null);
   const before = useRef<Map<string, DOMRect>>(new Map());
+  const preview = usePreview();
 
-  const list = filter < 0 ? projects : projects.filter((p) => domainsOf(p).includes(filter));
+  // The AI works have a section of their own above; the selection here is the rest of the best.
+  const selected = projects.filter((p) => p.featured && !aiWorkFor(p.id)).slice(0, 4);
+  const rows = filter < 0 ? projects : projects.filter((p) => domainsOf(p).includes(filter));
   const counts = domains.map((_, n) => projects.filter((p) => domainsOf(p).includes(n)).length);
 
   const pick = (n: number) => {
-    const g = grid.current;
+    const g = list.current;
     if (g && motion) {
       before.current = new Map(
         Array.from(g.querySelectorAll<HTMLElement>("[data-id]")).map((el) => [el.dataset.id ?? "", el.getBoundingClientRect()]),
@@ -44,25 +55,24 @@ export function Works({ onOpen }: { onOpen: OpenFn }) {
   };
 
   useLayoutEffect(() => {
-    const g = grid.current;
+    const g = list.current;
     const prev = before.current;
     if (!g || !prev.size) return;
     g.querySelectorAll<HTMLElement>("[data-id]").forEach((el) => {
       const was = prev.get(el.dataset.id ?? "");
       const now = el.getBoundingClientRect();
       if (!was) {
-        el.animate([{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "none" }], {
-          duration: 520,
-          easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+        el.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], {
+          duration: 560,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
         });
         return;
       }
-      const dx = was.left - now.left;
       const dy = was.top - now.top;
-      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
-      el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], {
-        duration: 700,
-        easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+      if (Math.abs(dy) < 1) return;
+      el.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], {
+        duration: 760,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
       });
     });
     before.current = new Map();
@@ -71,7 +81,19 @@ export function Works({ onOpen }: { onOpen: OpenFn }) {
   return (
     <section className="section works" id="works" aria-labelledby="works-title">
       <div className="wrap">
-        <SectionHead idx="04" label={UI.worksIdx} a={UI.worksTitleA} b={UI.worksTitleB} id="works-title">
+        <SectionHead idx="04" label={UI.worksIdx} a={UI.worksTitleA} b={UI.worksTitleB} id="works-title" />
+
+        <Txt v={UI.selected} as="h3" className="label works-sub" />
+        <ul className="works-selected">
+          {selected.map((w, n) => (
+            <li key={w.id} data-reveal="up" style={{ "--d": (n % 2) * 90 } as React.CSSProperties} data-id={w.id}>
+              <Feature item={w} n={n} onOpen={onOpen} />
+            </li>
+          ))}
+        </ul>
+
+        <div className="works-index-head">
+          <Txt v={UI.index} as="h3" className="label works-sub" />
           <div className="filters" role="group" aria-label={text(UI.filterLabel, lang)}>
             <button type="button" className="chip" aria-pressed={filter < 0} onClick={() => pick(-1)}>
               <Txt v={UI.filterAll} /> <b>{projects.length}</b>
@@ -82,99 +104,90 @@ export function Works({ onOpen }: { onOpen: OpenFn }) {
               </button>
             ))}
           </div>
-        </SectionHead>
+        </div>
         <p className="works-count label" aria-live="polite">
-          {list.length} <Txt v={UI.shown} />
+          {rows.length} <Txt v={UI.shown} />
         </p>
-        <ul className="works-grid" ref={grid}>
-          {list.map((w, n) => (
-            <li key={w.id} data-id={w.id} data-reveal="up" style={{ "--d": (n % 3) * 70 } as React.CSSProperties}>
-              <WorkCard item={w} onOpen={onOpen} />
-            </li>
-          ))}
-        </ul>
+
+        <div className="wx-cols label" aria-hidden="true">
+          <span>No.</span>
+          <Txt v={UI.colTitle} as="span" />
+          <Txt v={UI.colField} as="span" />
+          <Txt v={UI.colYear} as="span" />
+        </div>
+        <ol className="works-index" ref={list} onPointerMove={preview.move} onPointerLeave={preview.hide}>
+          {rows.map((w) => {
+            const pic = pictureOf(w);
+            const field = domainsOf(w)[0];
+            const n = projects.indexOf(w) + 1;
+            return (
+              <li key={w.id} data-id={w.id}>
+                <button
+                  type="button"
+                  className="wx-row"
+                  data-ai={!!aiWorkFor(w.id) || undefined}
+                  onClick={(e) => onOpen(w.id, e.currentTarget)}
+                  onPointerEnter={(e) => preview.show(pic?.url ?? null, e)}
+                  aria-label={[text(w.t, lang), year(w), w.honor ? `${text(w.honor.event, lang)} ${text(w.honor.grade, lang)}` : ""]
+                    .filter(Boolean)
+                    .join(" · ")}
+                >
+                  <span className="wx-no mono">{String(n).padStart(2, "0")}</span>
+                  <span className="wx-thumb" aria-hidden="true">
+                    {pic && (pic.master ? <Img master={pic.master} alt="" sizes="96px" /> : <img src={pic.url} alt="" loading="lazy" />)}
+                  </span>
+                  <span className="wx-title">
+                    <Txt v={w.t} />
+                    {w.honor && <span className="wx-honor mono">{text(w.honor.grade, lang)}</span>}
+                  </span>
+                  <span className="wx-field">{field !== undefined ? text(domains[field]!.name, lang) : ""}</span>
+                  <span className="wx-year mono">{year(w) || "—"}</span>
+                  <span className="wx-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 16 16">
+                      <path d="M4 12L12 4M6 4h6v6" fill="none" stroke="currentColor" strokeWidth="1.4" />
+                    </svg>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
       </div>
+      {preview.node}
     </section>
   );
 }
 
-function WorkCard({ item, onOpen }: { item: Item; onOpen: OpenFn }) {
+function Feature({ item, n, onOpen }: { item: Item; n: number; onOpen: OpenFn }) {
   const lang = useLang();
-  const { motion } = useMotion();
-  const ai = aiWorkFor(item.id);
-  const media = ai ? aiMedia(ai.visual) : null;
-  const img = cover(item);
-  const video = useRef<HTMLVideoElement>(null);
-  const [hover, setHover] = useState(false);
+  const pic = pictureOf(item);
   const tags = topicTags(item).slice(0, 3);
-  const y = year(item);
-
+  const field = domainsOf(item)[0];
   return (
     <button
       type="button"
-      className="work glass spot"
+      className="feature"
       data-tilt=""
       data-cursor="OPEN"
-      data-ai={!!ai || undefined}
       onClick={(e) => onOpen(item.id, e.currentTarget)}
-      onPointerEnter={() => {
-        setHover(true);
-        if (motion) video.current?.play().catch(() => {});
-      }}
-      onPointerLeave={() => {
-        setHover(false);
-        video.current?.pause();
-      }}
-      aria-label={[text(item.t, lang), y, item.honor ? `${text(item.honor.event, lang)} ${text(item.honor.grade, lang)}` : ""]
-        .filter(Boolean)
-        .join(" · ")}
+      aria-label={[text(item.t, lang), year(item)].filter(Boolean).join(" · ")}
     >
-      <span className="work-media" data-vt="">
-        {media ? (
-          <>
-            <img src={asset(media.poster)} alt="" loading="lazy" />
-            {motion && (
-              <video
-                ref={video}
-                src={hover ? asset(media.video) : undefined}
-                muted
-                loop
-                playsInline
-                preload="none"
-                aria-hidden="true"
-                data-on={hover}
-              />
-            )}
-          </>
-        ) : img ? (
-          <Img master={img.u} alt="" sizes={SIZES} />
-        ) : (
-          <span className="work-blank mono" aria-hidden="true">
-            {item.t.en.slice(0, 2).toUpperCase()}
-          </span>
-        )}
-        {item.featured && (
-          <span className="work-flag mono">
-            ★ <Txt v={UI.featured} />
-          </span>
-        )}
+      <span className="feature-media" data-vt="">
+        {pic?.master ? (
+          <Img master={pic.master} alt="" sizes="(max-width: 860px) 92vw, 46vw" />
+        ) : pic ? (
+          <img src={pic.url} alt="" loading="lazy" />
+        ) : null}
+        {item.imgs[0]?.concept && <Txt v={UI.conceptVisual} as="span" className="feature-concept mono" />}
       </span>
-      <span className="work-body">
-        <span className="work-meta mono">
-          <span>{y || "AI"}</span>
-          {item.honor && <span className="work-honor">{text(item.honor.grade, lang)}</span>}
+      <span className="feature-body">
+        <span className="feature-meta mono">
+          <span>{String(n + 1).padStart(2, "0")}</span>
+          <span>{field !== undefined ? text(domains[field]!.name, lang) : ""}</span>
+          <span>{year(item)}</span>
         </span>
-        <Txt v={item.t} as="span" className="work-title" />
-        <span className="work-tags">
-          {tags.map((t) => (
-            <span key={t}>{t}</span>
-          ))}
-        </span>
-      </span>
-      <span className="work-arrow" aria-hidden="true">
-        <svg viewBox="0 0 16 16">
-          <path d="M4 12L12 4M6 4h6v6" fill="none" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
+        <Txt v={item.t} as="span" className="feature-title" />
+        <span className="feature-tags">{tags.join(" · ")}</span>
       </span>
     </button>
   );

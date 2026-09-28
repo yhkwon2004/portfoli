@@ -20,7 +20,7 @@ export const DOMAINS = [
   {
     name: { ko: "AI · 데이터", en: "AI & Data" },
     tags: [
-      "AI", "Deep Learning", "Computer Vision", "Segmentation", "Pose Generation",
+      "AI", "LLM", "Deep Learning", "Computer Vision", "Segmentation", "Pose Generation",
       "Object Detection", "Detection", "Vision", "TTS", "Python", "Data Viz", "Timeline", "Evidence",
       "Big Data", "Data", "Dashboard", "Streamlit", "Plotly", "Research", "Experiment",
     ],

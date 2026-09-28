@@ -195,11 +195,13 @@ export function Hero() {
             </div>
           </dl>
 
-          <div className="hero-scroll" aria-hidden="true">
-            <span className="label">
-              <Txt v={UI.heroScroll} />
-            </span>
-            <i />
+          {/* The credit line along the foot of the frame: who, the cue to scroll, where. */}
+          <div className="wrap hero-meta mono">
+            <span>{text(UI.heroRole, lang)}</span>
+            <i aria-hidden="true" />
+            <span aria-hidden="true">{text(UI.heroScroll, lang)} ↓</span>
+            <i aria-hidden="true" />
+            <span>{text(UI.heroPlace, lang)}</span>
           </div>
         </div>
       </section>
@@ -211,9 +213,7 @@ export function Hero() {
           items={ticker.map((t) => (
             <>
               <span>{t}</span>
-              <span className="tick-star" aria-hidden="true">
-                ✦
-              </span>
+              <span className="tick-star" aria-hidden="true" />
             </>
           ))}
         />

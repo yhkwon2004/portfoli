@@ -107,7 +107,8 @@ const counted = {
 // file is not fatal to the page — it falls back to the live scene or the diagram — but the
 // reader without WebGL, and every phone, would see nothing where the work should be.
 const aiSource = readFileSync("src/data/ai.ts", "utf8");
-const kinds = [...aiSource.matchAll(/visual: "(\w+)"/g)].map((m) => m[1]);
+// A work shown by its own screenshots ("screens") has no rendered scene and needs none.
+const kinds = [...aiSource.matchAll(/visual: "(\w+)"/g)].map((m) => m[1]).filter((k) => k !== "screens");
 const media = kinds.flatMap((k) => [`${k}.webm`, `${k}-poster.webp`, `${k}-1.webp`, `${k}-2.webp`, `${k}-3.webp`]);
 const missingMedia = media.filter((f) => !existsSync(join("public/media/ai", f)));
 for (const f of ["public/media/hero-poster.webp", "public/og.png"]) if (!existsSync(f)) missingMedia.push(f);

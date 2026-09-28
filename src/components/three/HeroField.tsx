@@ -194,11 +194,11 @@ const POINT_VS = /* glsl */ `
     gl_PointSize = uSize * uPixel * s / -mv.z * (1.0 + push * 0.9);
     float tw = 0.5 + 0.5 * sin(uTime * (0.8 + aSeed * 1.6) + aSeed * 60.0);
     vAlpha = mix(0.35, 1.0, tw);
-    vec3 violet = vec3(0.616, 0.549, 1.0);
-    vec3 cyan = vec3(0.341, 0.902, 1.0);
-    vec3 lime = vec3(0.831, 1.0, 0.373);
+    // iris into ice across the field, and one point in thirty a spark of plain white
+    vec3 violet = vec3(0.702, 0.655, 1.0);
+    vec3 cyan = vec3(0.62, 0.914, 1.0);
     vColor = mix(violet, cyan, smoothstep(-1.6, 1.6, p.x + p.y * 0.4));
-    vColor = mix(vColor, lime, step(0.965, aSeed) * 0.9);
+    vColor = mix(vColor, vec3(1.0), step(0.965, aSeed) * 0.85);
     vColor += push * 0.25;
   }
 `;
@@ -228,7 +228,7 @@ const LINE_VS = /* glsl */ `
     float s = fract(uTime * (0.22 + aSeed * 0.25) + aSeed * 7.0);
     float pulse = exp(-pow((aT - s) * 7.0, 2.0));
     vA = 0.07 + pulse * 0.75;
-    vColor = mix(vec3(0.616, 0.549, 1.0), vec3(0.341, 0.902, 1.0), aT);
+    vColor = mix(vec3(0.702, 0.655, 1.0), vec3(0.62, 0.914, 1.0), aT);
   }
 `;
 

@@ -55,7 +55,7 @@ export default function Stage3D({ scene, drive, active, className, capture = fal
       }}
       onCreated={(state) => {
         // A capture is a picture on its own, so even the hero gets its ground painted in.
-        if (scene !== "hero" || capture) state.gl.setClearColor("#05060a", 1);
+        if (scene !== "hero" || capture) state.gl.setClearColor("#08080a", 1);
         onReady?.(state);
       }}
       aria-hidden="true"

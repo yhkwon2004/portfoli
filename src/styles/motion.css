@@ -136,7 +136,7 @@
     font-family: var(--font-mono);
     font-size: 0.62rem;
     letter-spacing: 0.14em;
-    color: #041016;
+    color: var(--color-bg);
     opacity: 0;
     transition: opacity 0.2s;
   }
@@ -148,8 +148,8 @@
     width: 58px;
     height: 58px;
     margin: -29px 0 0 -29px;
-    border-color: rgba(87, 230, 255, 0.9);
-    background: rgba(87, 230, 255, 0.08);
+    border-color: rgba(158, 233, 255, 0.9);
+    background: rgba(158, 233, 255, 0.08);
   }
   .cursor-ring[data-state="label"] {
     width: 86px;

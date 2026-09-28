@@ -18,9 +18,9 @@ type Props = {
 
 /**
  * The head every section shares: an index and a label in the machine voice, a two-part title,
- * and an optional note set against it. In English the second half of the title drops into the
- * italic serif — the one warm note in a mono-and-grotesque system; Korean has no italic, so
- * it stays in the gothic and takes the gradient instead.
+ * and an optional note set against it. Two tones, no colour: in English the second half drops
+ * into the italic serif, the one warm note in the system; Korean has no italic, so there the
+ * first half — the qualifier — steps back to grey and the noun stands in white.
  */
 export function SectionHead({ idx, label, a, b, note, id, children }: Props) {
   const lang = useLang();
@@ -36,7 +36,18 @@ export function SectionHead({ idx, label, a, b, note, id, children }: Props) {
         </p>
         <h2 id={id} aria-label={full} lang={rb.lang} data-reveal="up" style={{ "--d": 60 } as React.CSSProperties}>
           <span aria-hidden="true">
-            <Txt v={a} /> <span className={lang === "en" ? "serif-i" : "grad-text"}>{rb.text}</span>
+            {lang === "en" ? (
+              <>
+                <Txt v={a} /> <span className="serif-i">{rb.text}</span>
+              </>
+            ) : (
+              <>
+                <span className="tone">
+                  <Txt v={a} />
+                </span>{" "}
+                {rb.text}
+              </>
+            )}
           </span>
         </h2>
       </div>

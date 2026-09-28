@@ -128,14 +128,14 @@ function cardTexture(kind: Kind, slot: number): THREE.CanvasTexture {
     g.font = '600 44px "Geist Mono", ui-monospace, monospace';
     g.fillStyle = "#9aa1b3";
     g.fillText(kind, 46, 318);
-    g.fillStyle = "#57e6ff";
+    g.fillStyle = "#9ee9ff";
     g.fillText(`T${slot + 1}`, 400, 318);
   });
 }
 
 function checkTexture(): THREE.CanvasTexture {
   return canvasTexture(128, 128, (g) => {
-    g.fillStyle = "#57e6ff";
+    g.fillStyle = "#9ee9ff";
     g.beginPath();
     g.arc(64, 64, 58, 0, Math.PI * 2);
     g.fill();
@@ -268,7 +268,7 @@ function build() {
   });
   root.add(arcs);
 
-  const stamp = label("LAID OUT  ✓", 0.34, { color: "#d4ff5f", border: "#d4ff5f", size: 52 });
+  const stamp = label("LAID OUT  ✓", 0.34, { color: "#e6d5ae", border: "#e6d5ae", size: 52 });
   stamp.position.set(0, 2.55, 0.4);
   root.add(stamp);
 
@@ -377,8 +377,8 @@ export function EvidenceScene({ drive }: { drive: Drive }) {
 
   return (
     <>
-      <color attach="background" args={["#05060a"]} />
-      <fog attach="fog" args={["#05060a", 9, 22]} />
+      <color attach="background" args={["#08080a"]} />
+      <fog attach="fog" args={["#08080a", 9, 22]} />
       <primitive object={s.root} />
     </>
   );

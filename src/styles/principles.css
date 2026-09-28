@@ -21,12 +21,12 @@
     box-shadow: 0 -30px 80px -30px rgba(0, 0, 0, 0.9);
   }
   .deck-no {
-    font-size: clamp(3rem, 7vw, 6rem);
-    line-height: 0.9;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(3.4rem, 7vw, 6.4rem);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    color: var(--color-fg-4);
   }
   .deck-body {
     display: grid;
@@ -60,14 +60,14 @@
     width: 60%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(87, 230, 255, 0.12), transparent 65%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent 65%);
     pointer-events: none;
   }
   .deck-card:nth-child(2) .deck-glow {
-    background: radial-gradient(circle, rgba(157, 140, 255, 0.16), transparent 65%);
+    background: radial-gradient(circle, rgba(179, 167, 255, 0.08), transparent 65%);
   }
   .deck-card:nth-child(3) .deck-glow {
-    background: radial-gradient(circle, rgba(212, 255, 95, 0.08), transparent 65%);
+    background: radial-gradient(circle, rgba(230, 213, 174, 0.06), transparent 65%);
   }
   @media (max-width: 700px) {
     .deck-card {

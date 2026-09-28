@@ -1,25 +1,48 @@
 import { expect, test } from "@playwright/test";
 import { jump, visit } from "./helpers";
 
+/** Scroll so a fraction of the n-th case study's pinned run is behind the reader. */
+async function caseAt(page: import("@playwright/test").Page, n: number, frac: number) {
+  await page.evaluate(
+    ([n, frac]) => {
+      const el = document.querySelectorAll<HTMLElement>("#ai article.case")[n]!;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      const y = top + (el.offsetHeight - window.innerHeight) * frac;
+      const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis;
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo(0, y);
+    },
+    [n, frac] as const,
+  );
+  await page.waitForTimeout(300);
+}
+
 test.describe("the AI case studies", () => {
-  test("come first after the introduction, three of them, in rank order", async ({ page }) => {
+  test("come first after the introduction, four of them, in rank order", async ({ page }) => {
     await visit(page);
     const cases = page.locator("#ai article.case");
-    await expect(cases).toHaveCount(3);
+    await expect(cases).toHaveCount(4);
     await expect(cases.nth(0).locator(".case-title")).toHaveAttribute("aria-label", /학교폭력/);
     await expect(cases.nth(1).locator(".case-title")).toHaveAttribute("aria-label", /AirSim/);
     await expect(cases.nth(2).locator(".case-title")).toHaveAttribute("aria-label", /포즈/);
+    await expect(cases.nth(3).locator(".case-title")).toHaveAttribute("aria-label", /FACTLINE/);
     // The honours sit on the works that won them — and only on those.
     await expect(cases.nth(0).locator(".chip-honor")).toContainText("전국 2위");
     await expect(cases.nth(1).locator(".chip-honor")).toContainText("장려상");
     await expect(cases.nth(2).locator(".chip-honor")).toHaveCount(0);
+    await expect(cases.nth(3).locator(".chip-honor")).toHaveCount(0);
   });
 
-  test("say plainly that the pictures are concept visualisations", async ({ page }) => {
+  test("say plainly what each picture is: a concept render, or the product's own screens", async ({ page }) => {
     await visit(page);
-    const notes = page.locator("#ai .case-note");
-    await expect(notes).toHaveCount(3);
-    for (const n of await notes.all()) await expect(n).toContainText("3D 콘셉트 시각화");
+    const scenes = page.locator('#ai article.case:not([data-stage="screens"]) .case-note');
+    await expect(scenes).toHaveCount(3);
+    for (const n of await scenes.all()) await expect(n).toContainText("3D 콘셉트 시각화");
+
+    // The one shown by real screenshots says so, and says whose they are.
+    const real = page.locator('#ai article.case[data-stage="screens"] .case-note');
+    await expect(real).toContainText("실제 서비스 화면");
+    await expect(real.locator("a")).toHaveAttribute("href", /^https:\/\//);
   });
 
   test("scrolling through a case plays it: the steps light in order and the HUD follows", async ({ page }) => {
@@ -28,31 +51,35 @@ test.describe("the AI case studies", () => {
     const steps = first.locator(".case-steps li");
     await expect(steps).toHaveCount(4);
 
-    const caseTop = async (frac: number) => {
-      await page.evaluate((frac) => {
-        const el = document.querySelector<HTMLElement>("#ai article.case")!;
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        const y = top + (el.offsetHeight - window.innerHeight) * frac;
-        const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis;
-        if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
-        else window.scrollTo(0, y);
-      }, frac);
-      await page.waitForTimeout(300);
-    };
-
-    await caseTop(0.05);
+    await caseAt(page, 0, 0.05);
     await expect(steps.nth(0)).toHaveAttribute("data-on", "true");
     await expect(first.locator(".case-hud-tr")).toContainText("01 / 04");
 
-    await caseTop(0.6);
+    await caseAt(page, 0, 0.6);
     await expect(steps.nth(2)).toHaveAttribute("data-on", "true");
     await expect(steps.nth(0)).toHaveAttribute("data-done", "true");
     await expect(first.locator(".case-hud-tr")).toContainText("03 / 04");
 
     // …and back: the reader sets the pace in both directions.
-    await caseTop(0.3);
+    await caseAt(page, 0, 0.3);
     await expect(steps.nth(1)).toHaveAttribute("data-on", "true");
     await expect(steps.nth(2)).toHaveAttribute("data-on", "false");
+  });
+
+  test("a case told in screens turns to the next screen with each step", async ({ page }) => {
+    await visit(page);
+    const n = await page.locator("#ai article.case").count();
+    const last = page.locator("#ai article.case").nth(n - 1);
+    await expect(last).toHaveAttribute("data-stage", "screens");
+    const shots = last.locator(".win-shot");
+    await expect(shots).toHaveCount(3);
+
+    await caseAt(page, n - 1, 0.05);
+    await expect(shots.nth(0)).toHaveAttribute("data-on", "true");
+    await caseAt(page, n - 1, 0.95);
+    await expect(shots.nth(2)).toHaveAttribute("data-on", "true");
+    await expect(shots.nth(0)).toHaveAttribute("data-past", "true");
+    await expect(last.locator(".case-hud-tr")).toContainText("03 / 03");
   });
 
   test("always show something in the stage: a poster, the video, or the live scene", async ({ page }) => {

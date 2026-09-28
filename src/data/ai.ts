@@ -1,7 +1,7 @@
 import type { Bi } from "@/lib/types";
 
 /**
- * The three AI works the reel now leads with — and what each one's diagram shows.
+ * The AI works the page leads with — and what each one's stage shows.
  *
  * The records themselves (title, summary, honour, details) live in src/data/portfolio.ts with
  * everything else, so the dossier, the works reel and the metrics count them like any other
@@ -17,10 +17,18 @@ import type { Bi } from "@/lib/types";
 
 export type AiVisualKind = "evidence" | "drive" | "pose";
 
+/**
+ * How a work's stage is drawn: one of the 3D scenes — or, for a work that has real product
+ * screens, those screens themselves. A real screenshot always beats a concept render.
+ */
+export type AiStage = AiVisualKind | "screens";
+
+export const isScene = (v: AiStage): v is AiVisualKind => v !== "screens";
+
 export type AiWork = {
   /** The record in portfolio.ts. */
   readonly id: string;
-  readonly visual: AiVisualKind;
+  readonly visual: AiStage;
   /** Machine voice for the diagram's corner — Latin on purpose, like the telemetry. */
   readonly code: string;
   /** The name a collapsed panel has room for. */
@@ -64,6 +72,19 @@ export const AI_WORKS = [
       { ko: "세그멘테이션 영역 설정", en: "Segment the regions" },
       { ko: "구도 · 촬영 기법", en: "Composition & technique" },
       { ko: "마네킹 포즈 생성", en: "Generate a mannequin pose" },
+    ],
+  },
+  {
+    // The author's 2026 work, with real screens from its repository — so its stage shows the
+    // product itself, one screen per step, instead of a scene drawn to explain it.
+    id: "project-factline",
+    visual: "screens",
+    code: "FACTLINE / LLM",
+    short: { ko: "FACTLINE", en: "FACTLINE" },
+    steps: [
+      { ko: "일상을 기록으로 남기기", en: "Everyday life, kept as records" },
+      { ko: "시간순 사실관계로 연결", en: "Linked into a timeline of facts" },
+      { ko: "후속 질문으로 빈칸 점검", en: "Follow-up questions find the gaps" },
     ],
   },
 ] as const satisfies readonly AiWork[];

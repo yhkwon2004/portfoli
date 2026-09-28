@@ -48,7 +48,7 @@ export function Journey() {
   return (
     <section className="section journey" id="journey" aria-labelledby="journey-title">
       <div className="wrap">
-        <SectionHead idx="06" label={UI.journeyIdx} a={UI.journeyTitleA} b={UI.journeyTitleB} id="journey-title" />
+        <SectionHead idx="07" label={UI.journeyIdx} a={UI.journeyTitleA} b={UI.journeyTitleB} id="journey-title" />
         <div className="journey-grid">
           <div className="timeline" ref={line}>
             <i className="tl-line" aria-hidden="true" />

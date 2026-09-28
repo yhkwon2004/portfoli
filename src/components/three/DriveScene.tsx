@@ -16,6 +16,7 @@ import {
   stepDrive,
   type Drive,
 } from "@/components/three/core";
+import { useStudioEnv } from "@/components/three/env";
 import { basic, dispose, floorGrid, glow, label, lineMat, sizeLabel, type Sprite } from "@/components/three/kit";
 
 /**
@@ -130,7 +131,6 @@ function build() {
   const root = new THREE.Group();
   const r = rng(5);
   const dot = dotTexture();
-  const chrome = matcapTexture("#d8eeff");
 
   // the simulator's ground, a shade off black so the world reads as a place, and its horizon
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), basic("#090c15"));
@@ -287,7 +287,7 @@ function build() {
   const bayFill = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.1), basic(C.cyan, 0, true));
   bayFill.rotation.x = -Math.PI / 2;
   bayFill.position.y = 0.018;
-  const parked = label("PARKED", 0.26, { color: "#d4ff5f", border: "#d4ff5f" });
+  const parked = label("PARKED", 0.26, { color: "#e6d5ae", border: "#e6d5ae" });
   parked.position.set(0, 1.2, 0);
   bay.add(bayLines, bayFill, parked);
   root.add(bay);
@@ -326,7 +326,14 @@ function build() {
 
   // ── the car ──
   const car = new THREE.Group();
-  const shell = new THREE.MeshMatcapMaterial({ matcap: chrome });
+  // a pearl paint under clear coat, mirroring the studio environment
+  const shell = new THREE.MeshPhysicalMaterial({
+    color: "#e4e9f2",
+    metalness: 0.35,
+    roughness: 0.26,
+    clearcoat: 1,
+    clearcoatRoughness: 0.06,
+  });
   const bodyGeo = new THREE.ExtrudeGeometry(carShape(), {
     depth: 0.46,
     bevelEnabled: true,
@@ -473,7 +480,7 @@ function build() {
         void main() {
           float a = vA;
           if (uPoint > 0.5) { float r = length(gl_PointCoord - 0.5); a *= smoothstep(0.5, 0.1, r); }
-          gl_FragColor = vec4(mix(vec3(0.616, 0.549, 1.0), vec3(0.341, 0.902, 1.0), 0.5), a * (uPoint > 0.5 ? 1.0 : 0.45));
+          gl_FragColor = vec4(mix(vec3(0.702, 0.655, 1.0), vec3(0.62, 0.914, 1.0), 0.5), a * (uPoint > 0.5 ? 1.0 : 0.45));
         }
       `,
     });
@@ -486,7 +493,7 @@ function build() {
   const nodeMat = netMat(true);
   const edgeMatN = netMat(false);
   net.add(new THREE.LineSegments(edgeGeo, edgeMatN), new THREE.Points(nodeGeo, nodeMat));
-  const training = label("TRAINING", 0.22, { color: "#9d8cff", border: "#9d8cff" });
+  const training = label("TRAINING", 0.22, { color: "#b3a7ff", border: "#b3a7ff" });
   training.position.set(0, 1.25, 0);
   net.add(training);
   root.add(net);
@@ -496,6 +503,7 @@ function build() {
 
 export function DriveScene({ drive }: { drive: Drive }) {
   const s = useMemo(build, []);
+  useStudioEnv(0.8);
   const { camera } = useThree();
   useEffect(() => () => dispose(s.root), [s]);
 
@@ -617,8 +625,8 @@ export function DriveScene({ drive }: { drive: Drive }) {
 
   return (
     <>
-      <color attach="background" args={["#05060a"]} />
-      <fog attach="fog" args={["#05060a", 12, 30]} />
+      <color attach="background" args={["#08080a"]} />
+      <fog attach="fog" args={["#08080a", 12, 30]} />
       <primitive object={s.root} />
     </>
   );

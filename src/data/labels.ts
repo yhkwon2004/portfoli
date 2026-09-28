@@ -13,6 +13,19 @@ import type { Bi, DetailKey } from "@/lib/types";
  * beneath it; the bodies themselves are Korean-only in the source data.
  */
 export const DETAIL_LABELS: Record<DetailKey, Bi> = {
+  "LLM 연결": { ko: "LLM 연결", en: "LLM Integration" },
+  구현원칙: { ko: "구현 원칙", en: "Principles" },
+  기술구성: { ko: "기술 구성", en: "Architecture" },
+  "문제 정의": { ko: "문제 정의", en: "Problem Definition" },
+  "배운 점": { ko: "배운 점", en: "What I Learned" },
+  "서비스 흐름": { ko: "서비스 흐름", en: "Service Flow" },
+  성과: { ko: "성과", en: "Result" },
+  "시뮬레이터 검증": { ko: "시뮬레이터 검증", en: "Simulator Validation" },
+  "시장 검증": { ko: "시장 검증", en: "Market Validation" },
+  "진행 과정": { ko: "진행 과정", en: "Process" },
+  "팀과 역할": { ko: "팀과 역할", en: "Team & Role" },
+  평가: { ko: "평가", en: "Evaluation" },
+  "프로젝트 개요": { ko: "프로젝트 개요", en: "Overview" },
   기술스택: { ko: "기술 스택", en: "Tech Stack" },
   대표프로젝트: { ko: "대표 프로젝트", en: "Representative Work" },
   막혔던부분과해결: { ko: "막혔던 부분과 해결", en: "Blockers & Resolution" },

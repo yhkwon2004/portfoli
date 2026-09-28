@@ -17,10 +17,10 @@
     stroke-width: 0.6;
   }
   .av-glow-0 {
-    stop-color: rgba(87, 230, 255, 0.55);
+    stop-color: rgba(158, 233, 255, 0.55);
   }
   .av-glow-1 {
-    stop-color: rgba(87, 230, 255, 0);
+    stop-color: rgba(158, 233, 255, 0);
   }
   .av-code,
   .av-tc {
@@ -56,7 +56,7 @@
     stroke-width: 1;
   }
   .av-scan-glow {
-    fill: rgba(87, 230, 255, 0.16);
+    fill: rgba(158, 233, 255, 0.16);
   }
 
   /* evidence */
@@ -65,7 +65,7 @@
     stroke: var(--color-cyan);
     stroke-width: 1.5;
     stroke-dasharray: 1;
-    filter: drop-shadow(0 0 3px rgba(87, 230, 255, 0.9));
+    filter: drop-shadow(0 0 3px rgba(158, 233, 255, 0.9));
   }
   .av-ticks path {
     stroke: var(--color-fg-3);
@@ -176,7 +176,7 @@
     stroke: var(--color-cyan);
     stroke-width: 2;
     stroke-dasharray: 1;
-    filter: drop-shadow(0 0 4px rgba(87, 230, 255, 0.95));
+    filter: drop-shadow(0 0 4px rgba(158, 233, 255, 0.95));
   }
   .av-bay {
     fill: none;
@@ -185,7 +185,7 @@
     stroke-dasharray: 1;
   }
   .av-bayfill {
-    fill: rgba(87, 230, 255, 0.22);
+    fill: rgba(158, 233, 255, 0.22);
   }
   .av-parked text {
     font-size: 8px;
@@ -363,7 +363,7 @@
     stroke-dasharray: 1;
   }
   .av-spot {
-    fill: rgba(87, 230, 255, 0.28);
+    fill: rgba(158, 233, 255, 0.28);
     stroke: var(--color-cyan);
     stroke-width: 1;
   }

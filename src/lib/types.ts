@@ -38,6 +38,16 @@ export type Img = {
   /** Alt text. */
   readonly a: string;
   readonly r: ImgRole;
+  /** A generated or illustrative picture, not a photograph of the work — labelled as such. */
+  readonly concept?: boolean;
+  /** Where the picture comes from, when it is not the author's own. */
+  readonly credit?: Link;
+};
+
+/** A recorded demo of the work, on YouTube. */
+export type Video = {
+  readonly title: string;
+  readonly url: string;
 };
 
 export type Link = {
@@ -52,6 +62,19 @@ export type Link = {
  * nobody proof-read, and a plain `string` key would let a new heading ship unlabelled.
  */
 export type DetailKey =
+  | "LLM 연결"
+  | "구현원칙"
+  | "기술구성"
+  | "문제 정의"
+  | "배운 점"
+  | "서비스 흐름"
+  | "성과"
+  | "시뮬레이터 검증"
+  | "시장 검증"
+  | "진행 과정"
+  | "팀과 역할"
+  | "평가"
+  | "프로젝트 개요"
   | "기술스택"
   | "대표프로젝트"
   | "막혔던부분과해결"
@@ -115,6 +138,7 @@ export type Item = {
   readonly honor?: Honor;
   readonly details?: Details;
   readonly links?: readonly Link[];
+  readonly videos?: readonly Video[];
 };
 
 export type Portfolio = {

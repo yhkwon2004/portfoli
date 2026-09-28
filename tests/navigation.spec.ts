@@ -5,10 +5,10 @@ test.describe("navigation", () => {
   test("the nav lists the sections in the order the page runs", async ({ page }) => {
     await visit(page);
     const hrefs = await page.locator(".nav-pill a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs).toEqual(["#ai", "#skills", "#works", "#awards", "#journey", "#contact"]);
+    expect(hrefs).toEqual(["#ai", "#skills", "#works", "#awards", "#press", "#journey", "#contact"]);
     // …and that is the document order of the sections themselves.
     const order = await page.evaluate(() =>
-      ["ai", "skills", "works", "awards", "journey", "contact"].map((id) => document.getElementById(id)!.offsetTop),
+      ["ai", "skills", "works", "awards", "press", "journey", "contact"].map((id) => document.getElementById(id)!.offsetTop),
     );
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });

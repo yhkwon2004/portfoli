@@ -94,13 +94,13 @@ export function Skills({ onOpen }: { onOpen: OpenFn }) {
             </header>
             <div className="stack" role="img" aria-label={gradeDistribution.map((g) => `${lang === "en" ? g.rank.en : g.rank.key} ${g.count}`).join(", ")}>
               {gradeDistribution.map((g) => (
-                <i key={g.rank.key} style={{ flexGrow: g.count, background: g.rank.color }} title={`${g.rank.key} ${g.count}`} />
+                <i key={g.rank.key} style={{ flexGrow: g.count, "--o": 0.3 + 0.7 * (g.rank.weight / 4) } as React.CSSProperties} title={`${g.rank.key} ${g.count}`} />
               ))}
             </div>
             <ul className="legend">
               {gradeDistribution.map((g) => (
                 <li key={g.rank.key}>
-                  <i style={{ background: g.rank.color }} aria-hidden="true" />
+                  <i style={{ "--o": 0.3 + 0.7 * (g.rank.weight / 4) } as React.CSSProperties} aria-hidden="true" />
                   <span lang={lang === "en" ? "en" : "ko"}>{lang === "en" ? g.rank.en : g.rank.key}</span>
                   <b className="mono">{g.count}</b>
                 </li>
@@ -112,7 +112,7 @@ export function Skills({ onOpen }: { onOpen: OpenFn }) {
             <header className="tile-head">
               <Txt v={UI.depthTitle} as="h3" />
             </header>
-            <div className="ring" role="img" aria-label={`${stats.thinTags} / ${stats.tags}`} style={{ "--share": thinShare } as React.CSSProperties}>
+            <div className="depth-ring" role="img" aria-label={`${stats.thinTags} / ${stats.tags}`} style={{ "--share": thinShare } as React.CSSProperties}>
               <svg viewBox="0 0 120 120" aria-hidden="true">
                 <circle cx="60" cy="60" r="50" className="ring-bg" />
                 <circle cx="60" cy="60" r="50" className="ring-fg" pathLength={1} />

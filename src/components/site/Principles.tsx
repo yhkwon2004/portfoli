@@ -14,7 +14,7 @@ export function Principles() {
   return (
     <section className="section principles" id="principles" aria-labelledby="principles-title">
       <div className="wrap">
-        <SectionHead idx="07" label={UI.principlesIdx} a={UI.principlesTitleA} b={UI.principlesTitleB} id="principles-title" />
+        <SectionHead idx="08" label={UI.principlesIdx} a={UI.principlesTitleA} b={UI.principlesTitleB} id="principles-title" />
         <ol className="deck">
           {STANCES.map((s, n) => (
             <li key={s.name.en} className="deck-card glass" style={{ "--n": n } as React.CSSProperties}>

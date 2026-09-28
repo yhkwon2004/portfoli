@@ -3,71 +3,73 @@
  * and the `text-accent` utility provably read the same value.
  *
  * ── the palette ──────────────────────────────────────────────────────────────────────
- * An AI portfolio, lit like a lab at night. The ground is a near-black with a cold cast; the
- * light arrives as one signature gradient — violet into cyan — that stands for "the model",
- * and a single acid lime that is reserved for results: honours, a grade, a finished state.
- * A colour that means "this won something" is only worth anything if nothing else wears it.
+ * A gallery after dark. The ground is a neutral near-black — no blue cast, so the work and the
+ * light it carries are the only colour in the room. Greys are true greys, stepped for text.
  *
- * The greys carry a few degrees of the same blue so they sit on the ground rather than on top
- * of it. Every text step is measured against --color-bg:
- *   fg 18.4:1 · fg-2 13.1:1 · fg-3 7.2:1 · fg-4 4.6:1 (large or secondary text only)
+ * Colour is spent in exactly three places:
+ *   · pearl — a white that turns faintly iridescent, for the one display line that should
+ *     catch the light (the hero's answer). Never on body text, never on more than a line.
+ *   · iris → ice — a soft violet into a pale cyan: "the model". The 3D scenes, a progress
+ *     line, the live dot. Small doses.
+ *   · champagne — results only: an honour, a grade, a finished state. A colour that means
+ *     "this won something" is only worth anything if nothing else wears it.
+ *
+ * Every text step is measured against --color-bg (#08080a):
+ *   fg 18.4:1 · fg-2 13.8:1 · fg-3 7.7:1 · fg-4 4.8:1 (secondary text only) · champagne 13.8:1
  */
 @theme {
-  --color-bg: #05060a;
-  --color-bg-2: #0a0c12;
-  --color-bg-3: #10131c;
-  --color-bg-4: #171b27;
-  --color-grid: #141826;
+  --color-bg: #08080a;
+  --color-bg-2: #0e0e11;
+  --color-bg-3: #141418;
+  --color-bg-4: #1c1c22;
+  --color-grid: #16161b;
 
-  --color-line: rgba(200, 210, 255, 0.08);
-  --color-line-2: rgba(200, 210, 255, 0.15);
-  --color-line-3: rgba(200, 210, 255, 0.26);
+  --color-line: rgba(255, 255, 255, 0.07);
+  --color-line-2: rgba(255, 255, 255, 0.12);
+  --color-line-3: rgba(255, 255, 255, 0.22);
 
-  --color-fg: #f3f5fa;
-  --color-fg-2: #cfd4df;
-  --color-fg-3: #9aa1b3;
-  --color-fg-4: #6f7689;
+  --color-fg: #f5f5f7;
+  --color-fg-2: #d6d6dc;
+  --color-fg-3: #a0a0ab;
+  --color-fg-4: #7b7b86;
 
-  /* the model: violet → cyan */
-  --color-violet: #9d8cff;
-  --color-cyan: #57e6ff;
+  /* the model: iris → ice */
+  --color-violet: #b3a7ff;
+  --color-cyan: #9ee9ff;
   /* results only */
-  --color-lime: #d4ff5f;
-  /* the three segmentation / status hues the diagrams need */
-  --color-rose: #ff6b88;
-  --color-amber: #ffc857;
-  --color-green: #7df0a6;
-  --color-magenta: #f07bff;
+  --color-champagne: #e6d5ae;
+  /* the segmentation / status hues the diagrams and 3D labels need — nowhere else */
+  --color-rose: #ff8aa0;
+  --color-amber: #ffd27a;
+  --color-green: #8ff0b6;
+  --color-magenta: #f19cff;
 
-  --color-accent: #57e6ff;
-  --color-accent-2: #9d8cff;
+  --color-accent: #9ee9ff;
+  --color-accent-2: #b3a7ff;
 
-  --font-sans: var(--font-geist), var(--font-noto-kr), system-ui, -apple-system, sans-serif;
-  --font-kr: var(--font-noto-kr), var(--font-geist), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-kr: var(--font-sans);
+  /* Hangul has no mono cut; it falls through to Pretendard, never to a system gothic */
+  --font-mono: var(--font-geist-mono), "Pretendard Variable", Pretendard, ui-monospace, "SF Mono", Menlo, monospace;
   --font-serif: var(--font-instrument), "Times New Roman", serif;
 
-  /* Motion. Out-expo for arrivals; in-out for travel; a spring for things that land. */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@supports (transition-timing-function: linear(0, 1)) {
-  :root {
-    /* A sampled damped oscillator (ζ 0.5): overshoots, rings once, settles. */
-    --ease-spring: linear(0, 0.029 2.1%, 0.104 4.2%, 0.213 6.3%, 0.34 8.3%, 0.61 12.5%, 0.737 14.6%,
-      0.849 16.7%, 0.946 18.8%, 1.023 20.8%, 1.083 22.9%, 1.124 25%, 1.15 27.1%, 1.162 29.2%,
-      1.162 31.3%, 1.138 35.4%, 1.017 47.9%, 0.983 54.2%, 1);
-  }
+  /* Motion: long, quiet arrivals. Quint-out lands without a bounce; in-out for travel. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.25, 1.15, 0.4, 1);
 }
 
 :root {
-  --gradient: linear-gradient(115deg, var(--color-violet) 0%, var(--color-cyan) 60%, #b8f7ff 100%);
-  --gradient-soft: linear-gradient(115deg, rgba(157, 140, 255, 0.18), rgba(87, 230, 255, 0.12));
-  --gutter: clamp(20px, 5vw, 72px);
-  --maxw: 1440px;
-  --nav-h: 72px;
-  --radius: 22px;
-  --radius-sm: 14px;
+  /* pearl: for one display line at a time */
+  --pearl: linear-gradient(105deg, #ffffff 0%, #e4defe 30%, #c6efff 62%, #ffffff 100%);
+  /* iris → ice: the model's colour, for lines and small marks */
+  --gradient: linear-gradient(110deg, var(--color-violet) 0%, var(--color-cyan) 100%);
+  --gradient-soft: linear-gradient(115deg, rgba(179, 167, 255, 0.12), rgba(158, 233, 255, 0.08));
+  --gutter: clamp(20px, 5vw, 80px);
+  --maxw: 1480px;
+  --nav-h: 76px;
+  --radius: 20px;
+  --radius-sm: 12px;
+  /* a card's light: a hairline, and a single highlight along its top edge */
+  --card-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px var(--color-line);
 }

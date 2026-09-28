@@ -24,7 +24,7 @@ export function Contact() {
       <div className="contact-glow" aria-hidden="true" />
       <div className="wrap">
         <p className="shead-idx" data-reveal="fade">
-          <b>08</b>
+          <b>09</b>
           <i aria-hidden="true" />
           <Txt v={UI.contactIdx} as="span" className="label" />
         </p>

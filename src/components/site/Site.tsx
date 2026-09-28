@@ -16,6 +16,7 @@ import { Journey } from "@/components/site/Journey";
 import { Loader } from "@/components/site/Loader";
 import { MotionProvider } from "@/components/site/MotionContext";
 import { Nav } from "@/components/site/Nav";
+import { Press } from "@/components/site/Press";
 import { Principles } from "@/components/site/Principles";
 import { Skills } from "@/components/site/Skills";
 import { SmoothScroll } from "@/components/site/SmoothScroll";
@@ -200,6 +201,7 @@ export function Site() {
           <Skills onOpen={open} />
           <Works onOpen={open} />
           <Awards onOpen={open} />
+          <Press onOpen={open} />
           <Journey />
           <Principles />
           <Contact />

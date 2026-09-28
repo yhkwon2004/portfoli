@@ -8,13 +8,13 @@ import {
   backOut,
   dotTexture,
   easeInOut,
-  matcapTexture,
   rng,
   seg,
   stepDrive,
   type Drive,
 } from "@/components/three/core";
 import { basic, dispose, glow, label, sizeLabel, type Sprite } from "@/components/three/kit";
+import { useStudioEnv } from "@/components/three/env";
 import { SIMPLEX_3D } from "@/components/three/noise";
 
 /**
@@ -241,7 +241,7 @@ function build() {
   root.add(sun, sunGlow);
 
   const tags = [
-    { s: label("SKY", 0.4, { color: "#57e6ff" }), h: 0.4, y: 3.9, at: new THREE.Vector3(0.4, 3.9, -5.8) },
+    { s: label("SKY", 0.4, { color: "#9ee9ff" }), h: 0.4, y: 3.9, at: new THREE.Vector3(0.4, 3.9, -5.8) },
     { s: label("BUILDING", 0.26, { color: "#f07bff" }), h: 0.26, y: 2.9, at: new THREE.Vector3(-2.75, 2.9, -2.0) },
     { s: label("TREE", 0.26, { color: "#7df0a6" }), h: 0.26, y: 3.1, at: new THREE.Vector3(3.5, 3.15, -2.7) },
     { s: label("GROUND", 0.22, { color: "#ffc857" }), h: 0.22, y: 0.2, at: new THREE.Vector3(-1.9, 0.25, -0.6) },
@@ -252,7 +252,14 @@ function build() {
   });
 
   // ── the mannequin ──
-  const chrome = new THREE.MeshMatcapMaterial({ matcap: matcapTexture("#e3ecff") });
+  // polished, like a display mannequin: a physical metal that mirrors the studio environment
+  const chrome = new THREE.MeshPhysicalMaterial({
+    color: "#e8ecf4",
+    metalness: 0.88,
+    roughness: 0.2,
+    clearcoat: 0.9,
+    clearcoatRoughness: 0.12,
+  });
   const jointMat = basic(C.cyan);
   const J: Record<JointName, THREE.Group> = {} as Record<JointName, THREE.Group>;
   const parts: { obj: THREE.Object3D; at: number }[] = [];
@@ -408,7 +415,7 @@ function build() {
   thirdsTag.material.depthTest = false;
   thirdsTag.center.set(0, 0.5);
   overlay.add(thirdsTag);
-  const shot = label("CAPTURED  ✓", 0.034, { color: "#d4ff5f", border: "#d4ff5f" });
+  const shot = label("CAPTURED  ✓", 0.034, { color: "#e6d5ae", border: "#e6d5ae" });
   shot.position.set(0.43, -0.43, 0);
   shot.center.set(1, 0);
   shot.material.depthTest = false;
@@ -420,6 +427,7 @@ function build() {
 
 export function PoseScene({ drive }: { drive: Drive }) {
   const s = useMemo(build, []);
+  useStudioEnv(0.9);
   const { camera, size } = useThree();
   useEffect(() => () => dispose(s.root), [s]);
 
@@ -560,7 +568,7 @@ export function PoseScene({ drive }: { drive: Drive }) {
 
   return (
     <>
-      <color attach="background" args={["#05060a"]} />
+      <color attach="background" args={["#08080a"]} />
       <primitive object={s.root} />
     </>
   );

@@ -1,34 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Serif, Noto_Sans_KR } from "next/font/google";
+import { Geist_Mono, Instrument_Serif } from "next/font/google";
+import { asset } from "@/lib/assets";
 import { DESCRIPTION, OWNER_EN, OWNER_KO, SITE_URL, personJsonLd, worksJsonLd } from "@/lib/site";
 import "./globals.css";
 
 /*
- * Four faces, one job each.
+ * Three faces, one job each.
  *
- * Geist is the interface and the display voice — a geometric grotesque that holds up both at
- * 11px in a label and at 14vw in the hero. Geist Mono is the machine voice: indices, tags,
- * readouts, every number that must hold a column. Instrument Serif is the one warm note, used
- * only in italics for the English accents on section titles. Noto Sans KR carries the Korean
- * that most of the copy is written in; it sits second in every stack, so hangul falls through
- * to it while Latin stays in Geist.
+ * Pretendard is the voice of the page — Korean and Latin drawn as one family, so a title that
+ * mixes 한글 and English never changes texture mid-line. It is self-hosted as the upstream
+ * dynamic subset (public/fonts/pretendard, SIL OFL 1.1): the browser fetches only the slices
+ * of the Hangul block a page actually uses. Geist Mono is the machine voice — indices, tags,
+ * readouts, every number that must hold a column. Instrument Serif is the one warm note, in
+ * italics only, for the English half of a section title.
  *
- * All self-hosted by next/font at build time, `display: swap` throughout: showing the headline
- * immediately in a fallback beats showing it late in the right face.
+ * `display: swap` throughout: the headline shown immediately in a fallback beats the headline
+ * shown late in the right face.
  */
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 const serif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
   style: ["normal", "italic"],
   variable: "--font-instrument",
-  display: "swap",
-});
-const notoKr = Noto_Sans_KR({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-noto-kr",
   display: "swap",
 });
 
@@ -67,7 +61,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#05060a",
+  themeColor: "#08080a",
   colorScheme: "dark",
 };
 
@@ -75,10 +69,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="ko"
-      className={`${geist.variable} ${geistMono.variable} ${serif.variable} ${notoKr.variable}`}
+      className={`${geistMono.variable} ${serif.variable}`}
       // Scripts set data-motion / data-lang before paint; the server cannot know either.
       suppressHydrationWarning
     >
+      <head>
+        <link rel="stylesheet" href={asset("/fonts/pretendard/pretendardvariable-dynamic-subset.css")} />
+      </head>
       <body>
         {/*
           Without a script nothing reveals: every [data-reveal] element starts hidden and waits

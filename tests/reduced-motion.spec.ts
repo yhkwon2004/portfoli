@@ -24,7 +24,7 @@ test.describe("with reduced motion", () => {
 
   test("nothing is left invisible: every heading is shown at once", async ({ page }) => {
     await visit(page);
-    for (const id of ["ai", "skills", "works", "awards", "journey", "contact"]) {
+    for (const id of ["ai", "skills", "works", "awards", "press", "journey", "contact"]) {
       await jump(page, id);
       const h = page.locator(`#${id} h2`).first();
       await expect(h).toHaveCSS("opacity", "1");
@@ -34,7 +34,9 @@ test.describe("with reduced motion", () => {
   test("stages hold one still frame; nothing autoplays", async ({ page }) => {
     await visit(page);
     await jump(page, "ai", 0.05);
-    const frames = page.locator("#ai .case-frame");
+    // Every 3D stage holds its poster; a stage of real screens has no motion to hold back.
+    const frames = page.locator('#ai article.case:not([data-stage="screens"]) .case-frame');
+    await expect(frames).toHaveCount(3);
     for (const f of await frames.all()) await expect(f).toHaveAttribute("data-mode", "poster");
     await expect(page.locator("#ai video")).toHaveCount(0);
     await expect(page.locator("canvas")).toHaveCount(0);

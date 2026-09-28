@@ -16,8 +16,8 @@
     grid-column: span 3;
     grid-row: span 2;
     background:
-      radial-gradient(90% 70% at 100% 0%, rgba(157, 140, 255, 0.14), transparent 60%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+      radial-gradient(90% 70% at 100% 0%, rgba(255, 255, 255, 0.045), transparent 60%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008) 40%),
       var(--chart-surface);
   }
   .tile-domain {
@@ -40,7 +40,8 @@
     letter-spacing: -0.02em;
   }
   .tile-num {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+    font-weight: 200;
     color: var(--color-fg);
     line-height: 1;
   }
@@ -50,14 +51,12 @@
     gap: 0.3rem;
   }
   .tile-big > span:first-child {
-    font-size: clamp(3.4rem, 6vw, 5.4rem);
-    font-weight: 600;
+    font-size: clamp(3.6rem, 6vw, 5.6rem);
+    font-weight: 200;
     letter-spacing: -0.06em;
     line-height: 0.9;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--color-fg);
+    font-feature-settings: "tnum";
   }
   .tile-note {
     font-size: 0.86rem;
@@ -94,17 +93,17 @@
     text-overflow: ellipsis;
   }
   .bar-track {
-    height: 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.05);
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.06);
     overflow: hidden;
   }
   .bar-track i {
     display: block;
     height: 100%;
     width: calc(var(--w) * 100%);
-    border-radius: 0 4px 4px 0;
-    background: var(--gradient);
+    border-radius: 0 2px 2px 0;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), var(--color-fg));
     transform-origin: left;
     transform: scaleX(0);
     transition: transform 1.2s var(--ease-out);
@@ -125,10 +124,10 @@
     gap: 6px;
   }
   .tile-dots i {
-    width: 12px;
-    height: 12px;
-    border-radius: 4px;
-    background: linear-gradient(135deg, var(--color-violet), var(--color-cyan));
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-fg-2);
     opacity: 0;
     transform: scale(0.4);
     transition:
@@ -173,11 +172,11 @@
     transition: transform 0.4s var(--ease-spring), color 0.3s;
   }
   .tile-work:hover {
-    border-color: rgba(87, 230, 255, 0.4);
-    background: rgba(87, 230, 255, 0.05);
+    border-color: var(--color-line-3);
+    background: rgba(255, 255, 255, 0.04);
   }
   .tile-work:hover svg {
-    color: var(--color-cyan);
+    color: var(--color-fg);
     transform: translate(2px, -2px);
   }
   .tile-chips {
@@ -194,9 +193,9 @@
       background 0.3s;
   }
   .tile-chips .chip:hover {
-    border-color: rgba(87, 230, 255, 0.6);
+    border-color: var(--color-line-3);
     color: var(--color-fg);
-    background: rgba(87, 230, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   /* grades: one stacked bar with a 2px surface gap between segments */
@@ -210,6 +209,8 @@
   }
   .stack i {
     min-width: 3px;
+    background: var(--color-champagne);
+    opacity: var(--o);
   }
   .legend {
     list-style: none;
@@ -225,9 +226,13 @@
     gap: 0.4rem;
   }
   .legend i {
-    width: 10px;
-    height: 10px;
-    border-radius: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+  .tile-grades .legend i {
+    background: var(--color-champagne);
+    opacity: var(--o);
   }
   .legend b {
     font-weight: 400;
@@ -238,18 +243,18 @@
   }
 
   /* depth: a ring whose arc is the share of skills resting on a single work */
-  .ring {
+  .depth-ring {
     position: relative;
     width: 120px;
     aspect-ratio: 1;
     margin: 0 auto;
   }
-  .ring svg {
+  .depth-ring svg {
     width: 100%;
     height: 100%;
     rotate: -90deg;
   }
-  .ring circle {
+  .depth-ring circle {
     fill: none;
     stroke-width: 10;
   }
@@ -257,7 +262,7 @@
     stroke: rgba(255, 255, 255, 0.07);
   }
   .ring-fg {
-    stroke: #0f9fbd;
+    stroke: var(--color-fg-2);
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
@@ -266,17 +271,17 @@
   .tile[data-inview] .ring-fg {
     stroke-dashoffset: calc(1 - var(--share));
   }
-  .ring p {
+  .depth-ring p {
     position: absolute;
     inset: 0;
     display: grid;
     place-items: center;
   }
-  .ring b {
+  .depth-ring b {
     font-weight: 400;
     font-size: 1.4rem;
   }
-  .ring b span {
+  .depth-ring b span {
     font-size: 0.8rem;
     color: var(--color-fg-3);
   }

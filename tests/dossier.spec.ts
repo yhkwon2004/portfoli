@@ -43,6 +43,39 @@ test.describe("the record sheet", () => {
     for (const img of await stills.all()) await expect(img).toHaveAttribute("alt", /학교폭력/);
   });
 
+  test("a work told in real screens shows them, credited, with its steps and no concept diagram", async ({ page }) => {
+    await visit(page, "/#work/project-factline");
+    const d = dialog(page);
+    await expect(d.locator("h2")).toContainText("FACTLINE");
+    await expect(d.locator(".dos-media video")).toHaveCount(0);
+    await expect(d.locator(".dos-concept")).toHaveCount(0);
+    await expect(d.locator(".dos-diagram")).toHaveCount(0);
+    await expect(d.locator(".dos-steps-list li")).toHaveCount(3);
+    // Screens that come from the project's own README say where they come from.
+    await expect(d.locator(".dos-media .dos-cap a")).toHaveAttribute("href", /github\.com/);
+  });
+
+  test("a demo video is a still until asked for, then the privacy-enhanced player", async ({ page }) => {
+    // Nothing leaves for YouTube in a test run; the page is judged on what it asks for.
+    await page.route(/youtube|ytimg/, (r) => r.abort());
+    await visit(page, "/#work/project-autonomous");
+    const v = dialog(page).locator(".dos-video").first();
+    await expect(v.locator("iframe")).toHaveCount(0);
+    await expect(v.locator("img")).toHaveAttribute("src", /i\.ytimg\.com\/vi\/[\w-]+\//);
+    await v.getByRole("button").click();
+    await expect(v.locator("iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\/[\w-]+/);
+  });
+
+  test("a record the press covered links to the coverage", async ({ page }) => {
+    await visit(page, "/#work/project-upcycle");
+    const press = dialog(page).locator(".dos-press a");
+    expect(await press.count()).toBeGreaterThan(0);
+    for (const a of await press.all()) {
+      await expect(a).toHaveAttribute("href", /^https:\/\//);
+      await expect(a).toHaveAttribute("rel", /noopener/);
+    }
+  });
+
   test("← → step through the set, Escape closes and clears the link", async ({ page }) => {
     await visit(page, "/#work/project-ai-evidence");
     const d = dialog(page);

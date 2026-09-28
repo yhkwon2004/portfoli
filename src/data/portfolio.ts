@@ -89,14 +89,14 @@ export const PORTFOLIO = {
       "id": "edu-jst",
       "type": "education",
       "t": {
-        "ko": "JST 공유대학교 스마트 모빌리티 SW공학과",
-        "en": "JST Shared University, Smart Mobility Software Engineering"
+        "ko": "전북대학교 스마트모빌리티 SW 공학과 복수전공",
+        "en": "Jeonbuk National University — Smart Mobility SW Engineering (double major)"
       },
       "s": {
-        "ko": "전북대학교 연계 스마트 모빌리티 SW 전공",
-        "en": "Smart mobility software program connected with Jeonbuk National University"
+        "ko": "공유대학 이수를 통해 스마트모빌리티 SW 공학과를 복수전공했습니다.",
+        "en": "A double major in Smart Mobility SW Engineering, taken through the shared-university programme."
       },
-      "year": "2023-2029",
+      "year": "2024",
       "tags": [
         "Smart Mobility"
       ],
@@ -129,12 +129,12 @@ export const PORTFOLIO = {
       "id": "exp-drone-instructor",
       "type": "experience",
       "t": {
-        "ko": "초경량 무인 멀티콥터 지도조종자 | 교육 교관",
-        "en": "Ultralight multicopter instructor"
+        "ko": "드론 교육 교관 및 메카니즘 활동",
+        "en": "Drone instructor, and the Mechanism build club"
       },
       "s": {
-        "ko": "무인 멀티콥터 조종과 교육 운영 경험을 쌓았습니다.",
-        "en": "Built experience in multicopter piloting and instructor-led education."
+        "ko": "드론 교육 교관으로 활동하고, 자작차 동아리 메카니즘에서 차량 제작을 경험했습니다.",
+        "en": "Taught drone flight as an instructor, and built vehicles with the Mechanism self-made-car club."
       },
       "year": "2024-2025",
       "tags": [
@@ -149,18 +149,21 @@ export const PORTFOLIO = {
       "id": "exp-cnu",
       "type": "experience",
       "t": {
-        "ko": "전남대 인턴십 프로그램 1위 평가",
-        "en": "Top-ranked evaluation in Chonnam National University internship program"
+        "ko": "테이블컵 창업동아리 연계 인턴십",
+        "en": "Internship with the Table Cup startup club"
       },
       "s": {
-        "ko": "문제 해결력과 실행력을 바탕으로 인턴십 프로그램에서 1위 평가를 받았습니다.",
-        "en": "Earned the top evaluation based on execution and problem-solving ability."
+        "ko": "전남대학교 연계 테이블컵 창업동아리 인턴십에 참여했습니다.",
+        "en": "Took part in the Table Cup startup-club internship run with Chonnam National University."
       },
-      "year": "2025-2026",
+      "year": "2025",
       "tags": [],
       "featured": true,
       "rank": 5,
-      "imgs": []
+      "imgs": [],
+      "details": {
+        "평가": "인턴십 프로그램 1위 평가"
+      }
     },
     {
       "id": "exp-recap",
@@ -186,8 +189,8 @@ export const PORTFOLIO = {
       "id": "exp-iot-lab",
       "type": "experience",
       "t": {
-        "ko": "사물인터넷연구실 | H/W(PCB, 3D) / F/W",
-        "en": "IoT Lab | Hardware, PCB, 3D, firmware"
+        "ko": "지능형 IoT 연구실 활동",
+        "en": "Intelligent IoT Lab"
       },
       "s": {
         "ko": "PCB, 3D 설계, 펌웨어 기반 하드웨어 제품 실험을 진행했습니다.",
@@ -199,6 +202,44 @@ export const PORTFOLIO = {
         "Firmware",
         "3D"
       ],
+      "featured": false,
+      "rank": 99,
+      "imgs": []
+    },
+    {
+      "id": "exp-llm-lab",
+      "type": "experience",
+      "t": {
+        "ko": "인공지능 LLM 연구실 활동",
+        "en": "AI · LLM research lab"
+      },
+      "s": {
+        "ko": "인공지능 LLM 연구실에서 연구 활동에 참여했습니다.",
+        "en": "Took part in research at an AI and LLM lab."
+      },
+      "year": "2023",
+      "tags": [
+        "AI",
+        "LLM",
+        "Research"
+      ],
+      "featured": false,
+      "rank": 99,
+      "imgs": []
+    },
+    {
+      "id": "exp-chiangmai",
+      "type": "experience",
+      "t": {
+        "ko": "치앙마이 SW 스마트헬스케어 연수 · 세미나 발표",
+        "en": "Chiang Mai smart-healthcare SW programme · seminar talk"
+      },
+      "s": {
+        "ko": "",
+        "en": ""
+      },
+      "year": "2023",
+      "tags": [],
       "featured": false,
       "rank": 99,
       "imgs": []
@@ -299,6 +340,74 @@ export const PORTFOLIO = {
       "imgs": []
     },
     {
+      "id": "cert-computer",
+      "type": "certification",
+      "t": {
+        "ko": "컴퓨터활용능력 1급",
+        "en": "Computer Specialist in Spreadsheet & Database, Level 1"
+      },
+      "s": {
+        "ko": "",
+        "en": ""
+      },
+      "year": "2024",
+      "tags": [],
+      "featured": false,
+      "rank": 99,
+      "imgs": []
+    },
+    {
+      "id": "cert-accounting",
+      "type": "certification",
+      "t": {
+        "ko": "회계관리 2급",
+        "en": "Accounting Management, Level 2"
+      },
+      "s": {
+        "ko": "",
+        "en": ""
+      },
+      "year": "2026",
+      "tags": [],
+      "featured": false,
+      "rank": 99,
+      "imgs": []
+    },
+    {
+      "id": "cert-adsp",
+      "type": "certification",
+      "t": {
+        "ko": "ADsP · 데이터분석 준전문가",
+        "en": "ADsP · Advanced Data Analytics Semi-Professional"
+      },
+      "s": {
+        "ko": "",
+        "en": ""
+      },
+      "year": "",
+      "tags": [],
+      "featured": false,
+      "rank": 99,
+      "imgs": []
+    },
+    {
+      "id": "cert-sqld",
+      "type": "certification",
+      "t": {
+        "ko": "SQLD",
+        "en": "SQLD · SQL Developer"
+      },
+      "s": {
+        "ko": "",
+        "en": ""
+      },
+      "year": "",
+      "tags": [],
+      "featured": false,
+      "rank": 99,
+      "imgs": []
+    },
+    {
       "id": "award-school-video-2023",
       "type": "award",
       "t": {
@@ -319,7 +428,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2023-06-21.jpg",
+          "u": "/assets/evidence/awards/award-2023-06-21.webp",
           "a": "2023년 6월 21일 수상 상장",
           "r": "certificate"
         }
@@ -346,7 +455,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2023-08-31.jpg",
+          "u": "/assets/evidence/awards/award-2023-08-31.webp",
           "a": "2023년 8월 31일 수상 상장",
           "r": "certificate"
         }
@@ -373,7 +482,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2023-11-14.jpg",
+          "u": "/assets/evidence/awards/award-2023-11-14.webp",
           "a": "2023년 11월 14일 수상 상장",
           "r": "certificate"
         }
@@ -400,7 +509,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2023-12-10.jpg",
+          "u": "/assets/evidence/awards/award-2023-12-10.webp",
           "a": "2023년 12월 10일 수상 상장",
           "r": "certificate"
         }
@@ -427,7 +536,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2023-12-20.jpg",
+          "u": "/assets/evidence/awards/award-2023-12-20.webp",
           "a": "2023년 12월 20일 수상 상장",
           "r": "certificate"
         }
@@ -454,7 +563,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2023-12-22.jpg",
+          "u": "/assets/evidence/awards/award-2023-12-22.webp",
           "a": "2023년 12월 22일 수상 상장",
           "r": "certificate"
         }
@@ -508,7 +617,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-01-26.jpg",
+          "u": "/assets/evidence/awards/award-2024-01-26.webp",
           "a": "2024년 1월 26일 수상 상장",
           "r": "certificate"
         }
@@ -535,7 +644,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-05-25.jpg",
+          "u": "/assets/evidence/awards/award-2024-05-25.webp",
           "a": "2024년 5월 25일 수상 상장",
           "r": "certificate"
         }
@@ -562,7 +671,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-05-31.jpg",
+          "u": "/assets/evidence/awards/award-2024-05-31.webp",
           "a": "2024년 5월 31일 수상 상장",
           "r": "certificate"
         }
@@ -589,7 +698,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-06-25.jpg",
+          "u": "/assets/evidence/awards/award-2024-06-25.webp",
           "a": "2024년 6월 25일 수상 상장",
           "r": "certificate"
         }
@@ -616,7 +725,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-06-26.jpg",
+          "u": "/assets/evidence/awards/award-2024-06-26.webp",
           "a": "2024년 6월 26일 수상 상장",
           "r": "certificate"
         }
@@ -643,7 +752,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-08-20.jpg",
+          "u": "/assets/evidence/awards/award-2024-08-20.webp",
           "a": "2024년 8월 20일 수상 상장",
           "r": "certificate"
         }
@@ -670,7 +779,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-08-31.jpg",
+          "u": "/assets/evidence/awards/award-2024-08-31.webp",
           "a": "2024년 8월 31일 수상 상장",
           "r": "certificate"
         }
@@ -697,7 +806,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-09-06.jpg",
+          "u": "/assets/evidence/awards/award-2024-09-06.webp",
           "a": "2024년 9월 6일 수상 상장",
           "r": "certificate"
         }
@@ -724,7 +833,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-10-31.jpg",
+          "u": "/assets/evidence/awards/award-2024-10-31.webp",
           "a": "2024년 10월 31일 수상 상장",
           "r": "certificate"
         }
@@ -751,7 +860,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-11-02.jpg",
+          "u": "/assets/evidence/awards/award-2024-11-02.webp",
           "a": "2024년 11월 2일 수상 상장",
           "r": "certificate"
         }
@@ -778,12 +887,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-11-13.jpg",
+          "u": "/assets/evidence/awards/award-2024-11-13.webp",
           "a": "2024년 11월 13일 수상 상장",
           "r": "certificate"
         },
         {
-          "u": "/assets/evidence/awards/award-2024-11-13-2.jpg",
+          "u": "/assets/evidence/awards/award-2024-11-13-2.webp",
           "a": "2024년 11월 13일 추가 수상 상장",
           "r": "gallery"
         }
@@ -810,7 +919,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-11-21.jpg",
+          "u": "/assets/evidence/awards/award-2024-11-21.webp",
           "a": "2024년 11월 21일 수상 상장",
           "r": "certificate"
         }
@@ -837,12 +946,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-12-06.jpg",
+          "u": "/assets/evidence/awards/award-2024-12-06.webp",
           "a": "2024년 12월 6일 수상 상장",
           "r": "certificate"
         },
         {
-          "u": "/assets/evidence/awards/award-2024-12-06-2.jpg",
+          "u": "/assets/evidence/awards/award-2024-12-06-2.webp",
           "a": "2024년 12월 6일 추가 수상 상장",
           "r": "gallery"
         }
@@ -869,7 +978,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-12-19.jpg",
+          "u": "/assets/evidence/awards/award-2024-12-19.webp",
           "a": "2024년 12월 19일 수상 상장",
           "r": "certificate"
         }
@@ -896,7 +1005,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2024-12-24.jpg",
+          "u": "/assets/evidence/awards/award-2024-12-24.webp",
           "a": "2024년 12월 24일 수상 상장",
           "r": "certificate"
         }
@@ -923,7 +1032,7 @@ export const PORTFOLIO = {
       "rank": 1,
       "imgs": [
         {
-          "u": "/assets/evidence/award-national-scholarship.jpg",
+          "u": "/assets/evidence/award-national-scholarship.webp",
           "a": "국가우수 이공계 장학생 상장",
           "r": "certificate"
         }
@@ -950,7 +1059,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-02-14.jpg",
+          "u": "/assets/evidence/awards/award-2025-02-14.webp",
           "a": "2025년 2월 14일 수상 상장",
           "r": "certificate"
         }
@@ -977,7 +1086,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-05-12.jpg",
+          "u": "/assets/evidence/awards/award-2025-05-12.webp",
           "a": "2025년 5월 12일 수상 상장",
           "r": "certificate"
         }
@@ -1004,7 +1113,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-06-04.jpg",
+          "u": "/assets/evidence/awards/award-2025-06-04.webp",
           "a": "2025년 6월 4일 수상 상장",
           "r": "certificate"
         }
@@ -1031,7 +1140,7 @@ export const PORTFOLIO = {
       "rank": 5,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-07-04.jpg",
+          "u": "/assets/evidence/awards/award-2025-07-04.webp",
           "a": "2025년 7월 4일 수상 상장",
           "r": "certificate"
         }
@@ -1058,7 +1167,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-07-18.jpg",
+          "u": "/assets/evidence/awards/award-2025-07-18.webp",
           "a": "2025년 7월 18일 수상 상장",
           "r": "certificate"
         }
@@ -1085,12 +1194,12 @@ export const PORTFOLIO = {
       "rank": 2,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-08-07.jpg",
+          "u": "/assets/evidence/awards/award-2025-08-07.webp",
           "a": "2025년 8월 7일 수상 상장",
           "r": "certificate"
         },
         {
-          "u": "/assets/evidence/awards/award-2025-08-07-2.jpg",
+          "u": "/assets/evidence/awards/award-2025-08-07-2.webp",
           "a": "2025년 8월 7일 추가 수상 상장",
           "r": "gallery"
         }
@@ -1117,7 +1226,7 @@ export const PORTFOLIO = {
       "rank": 3,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-08-29.jpg",
+          "u": "/assets/evidence/awards/award-2025-08-29.webp",
           "a": "2025년 8월 29일 수상 상장",
           "r": "certificate"
         }
@@ -1144,12 +1253,12 @@ export const PORTFOLIO = {
       "rank": 4,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-09-16.jpg",
+          "u": "/assets/evidence/awards/award-2025-09-16.webp",
           "a": "2025년 9월 16일 수상 상장",
           "r": "certificate"
         },
         {
-          "u": "/assets/evidence/awards/award-2025-09-16-2.jpg",
+          "u": "/assets/evidence/awards/award-2025-09-16-2.webp",
           "a": "2025년 9월 16일 인증서",
           "r": "gallery"
         }
@@ -1176,7 +1285,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-10-24.jpg",
+          "u": "/assets/evidence/awards/award-2025-10-24.webp",
           "a": "2025년 10월 24일 수상 상장",
           "r": "certificate"
         }
@@ -1203,7 +1312,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-10-31.jpg",
+          "u": "/assets/evidence/awards/award-2025-10-31.webp",
           "a": "2025년 10월 31일 수상 상장",
           "r": "certificate"
         }
@@ -1230,7 +1339,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-11-13.jpg",
+          "u": "/assets/evidence/awards/award-2025-11-13.webp",
           "a": "2025년 11월 13일 수상 상장",
           "r": "certificate"
         }
@@ -1257,12 +1366,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/awards/award-2025-12-02.jpg",
+          "u": "/assets/evidence/awards/award-2025-12-02.webp",
           "a": "2025년 12월 2일 수상 상장",
           "r": "certificate"
         },
         {
-          "u": "/assets/evidence/awards/award-2025-12-02-2.jpg",
+          "u": "/assets/evidence/awards/award-2025-12-02-2.webp",
           "a": "2025년 12월 2일 추가 수상 상장",
           "r": "gallery"
         }
@@ -1307,7 +1416,8 @@ export const PORTFOLIO = {
           "사건을 시간 순서대로 재구성",
           "빠진 증거를 짚어 주는 증거 누락 점검"
         ],
-        "협업": "학교폭력이라는 민감한 주제를 참교육과 함께 다뤘습니다."
+        "협업": "학교폭력이라는 민감한 주제를 참교육과 함께 다뤘습니다.",
+        "성과": "HUSS AI 경진대회 · 전국 2위"
       }
     },
     {
@@ -1358,7 +1468,8 @@ export const PORTFOLIO = {
         "기술스택": [
           "AirSim",
           "딥러닝"
-        ]
+        ],
+        "성과": "미래자동차 경진대회 · 조향 및 주차 신호인식 · 장려상"
       }
     },
     {
@@ -1422,22 +1533,22 @@ export const PORTFOLIO = {
       "rank": 4,
       "imgs": [
         {
-          "u": "/assets/notion-projects/carla-cover.png",
+          "u": "/assets/notion-projects/carla-cover.webp",
           "a": "CARLA 자율주행 시뮬레이션 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/ros2-gazebo.png",
+          "u": "/assets/notion-projects/ros2-gazebo.webp",
           "a": "ROS2 Gazebo 실습 화면",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/pixhawk-cover.png",
+          "u": "/assets/notion-projects/pixhawk-cover.webp",
           "a": "픽스호크 자율주행 실습 장면",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/autonomous-rviz.png",
+          "u": "/assets/evidence/projects/autonomous-rviz.webp",
           "a": "RViz 자율주행 경로 시각화 화면",
           "r": "gallery"
         },
@@ -1447,8 +1558,23 @@ export const PORTFOLIO = {
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/autonomous-track-run.jpg",
+          "u": "/assets/evidence/projects/autonomous-track-run.webp",
           "a": "자율주행 트랙 주행 실습 장면",
+          "r": "gallery"
+        },
+        {
+          "u": "/assets/evidence/projects/handmade-car-build.webp",
+          "a": "자율주행 대회 준비 1 — 차량 조립과 제어 장치 점검",
+          "r": "gallery"
+        },
+        {
+          "u": "/assets/evidence/projects/handmade-car-chassis.webp",
+          "a": "자율주행 대회 준비 2 — 부품 준비와 테스트 환경 구성",
+          "r": "gallery"
+        },
+        {
+          "u": "/assets/evidence/projects/handmade-car-workshop.webp",
+          "a": "자율주행 대회 준비 3 — 대회장 주행 코스 점검",
           "r": "gallery"
         }
       ],
@@ -1464,6 +1590,10 @@ export const PORTFOLIO = {
           "자율주행은 알고리즘 하나가 아니라 센서, 제어, 환경 제약을 함께 다뤄야 한다는 점",
           "시뮬레이터와 실제 장비 사이의 오차를 줄이는 튜닝 감각",
           "소프트웨어와 하드웨어가 만나는 현장에서의 문제 해결 방식"
+        ],
+        "시뮬레이터 검증": [
+          "Python API로 차량 시뮬레이터를 제어하고, End-to-End 학습 결과를 조향 입력으로 연결했습니다.",
+          "전이 학습과 가중치 조정으로 제어 모델을 보완했습니다."
         ]
       },
       "links": [
@@ -1483,6 +1613,12 @@ export const PORTFOLIO = {
           "label": "자율주행 경진대회",
           "url": "https://www.notion.so/333faf73802f806da756fdaadd4f250c"
         }
+      ],
+      "videos": [
+        {
+          "title": "자율주행 시뮬레이터 시연",
+          "url": "https://youtu.be/sLgSZitPeOc"
+        }
       ]
     },
     {
@@ -1496,7 +1632,7 @@ export const PORTFOLIO = {
         "ko": "원광대학교 자작차 동아리 메카니즘에서 BAJA, EV, Formula 차량 설계와 제작, 주행 테스트까지 전 과정에 참여한 장기 프로젝트입니다.",
         "en": "원광대학교 자작차 동아리 메카니즘에서 BAJA, EV, Formula 차량 설계와 제작, 주행 테스트까지 전 과정에 참여한 장기 프로젝트입니다."
       },
-      "year": "2025",
+      "year": "2024",
       "tags": [
         "Mobility",
         "CATIA",
@@ -1508,43 +1644,32 @@ export const PORTFOLIO = {
       "rank": 5,
       "imgs": [
         {
-          "u": "/assets/notion-projects/handmade-car-cover.png",
+          "u": "/assets/notion-projects/handmade-car-cover.webp",
           "a": "자작차량 제작 프로젝트 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/handmade-car-intro.png",
+          "u": "/assets/notion-projects/handmade-car-intro.webp",
           "a": "자작차량 제작 소개 화면",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/handmade-car-workshop.jpg",
-          "a": "자작차량 제작 작업 현장",
-          "r": "gallery"
+          "u": "/assets/notion-projects/handmade-car-workshop.webp",
+          "a": "자작차량 주행 테스트 — 야외 코스를 달리는 포뮬러 차량",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/330faf73802f80c7b854e0317d7e8c56"
+          }
         },
         {
-          "u": "/assets/notion-projects/handmade-car-catia.jpg",
+          "u": "/assets/notion-projects/handmade-car-catia.webp",
           "a": "CATIA 기반 설계 장면",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/handmade-car-driving.jpg",
+          "u": "/assets/notion-projects/handmade-car-driving.webp",
           "a": "자작차량 주행 사진",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/handmade-car-build.jpg",
-          "a": "자작차량 조립 및 제작 장면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/handmade-car-chassis.jpg",
-          "a": "자작차량 차체 작업 장면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/handmade-car-workshop.jpg",
-          "a": "자작차량 제작 워크숍 장면",
           "r": "gallery"
         }
       ],
@@ -1608,12 +1733,13 @@ export const PORTFOLIO = {
       "rank": 6,
       "imgs": [
         {
-          "u": "/assets/generated/growth-corridor.png",
+          "u": "/assets/generated/growth-corridor.webp",
           "a": "GAN-TTS 프로젝트 대표 배경",
-          "r": "cover"
+          "r": "cover",
+          "concept": true
         },
         {
-          "u": "/assets/notion-projects/gantts-grid.png",
+          "u": "/assets/notion-projects/gantts-grid.webp",
           "a": "GAN-TTS TextGrid 결과 화면",
           "r": "gallery"
         }
@@ -1689,47 +1815,32 @@ export const PORTFOLIO = {
       "rank": 7,
       "imgs": [
         {
-          "u": "/assets/evidence/project-upcycle-1.jpg",
+          "u": "/assets/evidence/project-upcycle-1.webp",
           "a": "업사이클 프로젝트 대표 제품",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/jbmotors-upcycle-cover.png",
+          "u": "/assets/notion-projects/jbmotors-upcycle-cover.webp",
           "a": "전북현대모터스 FC 업사이클 프로젝트",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/givingplus-upcycle-cover.png",
+          "u": "/assets/notion-projects/givingplus-upcycle-cover.webp",
           "a": "기빙플러스 업사이클 프로젝트",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/coffee-box-cover.jpg",
+          "u": "/assets/notion-projects/coffee-box-cover.webp",
           "a": "커피박 상자 제작 프로젝트",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/upcycle-material.webp",
-          "a": "업사이클 소재 준비 장면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/upcycle-product-making.jpg",
-          "a": "업사이클 제품 제작 과정",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/upcycle-panel.jpg",
-          "a": "업사이클 패널 제작 결과",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/upcycle-coffee-box.jpg",
+          "u": "/assets/evidence/projects/upcycle-coffee-box.webp",
           "a": "커피박 업사이클 상자 결과물",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/upcycle-award-stage.jpg",
+          "u": "/assets/evidence/projects/upcycle-award-stage.webp",
           "a": "업사이클 프로젝트 발표 및 수상 장면",
           "r": "gallery"
         }
@@ -1784,9 +1895,45 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/iot-ring-cover.png",
+          "u": "/assets/notion-projects/iot-ring-cover.webp",
           "a": "스마트 IOT 링거폴대 커버",
           "r": "cover"
+        },
+        {
+          "u": "/assets/notion-extra/iot-note-1.webp",
+          "a": "회로 설계 — ESP32와 ADC를 통합한 스마트 링거폴대 회로도",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/332faf73802f80efa3f1eb4e3e1625da"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/iot-note-2.webp",
+          "a": "PCB 설계 — 60 × 35 mm 기판의 배선과 부품 배치 검토",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/332faf73802f800e9e15c2a9dff6075f"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/iot-note-3.webp",
+          "a": "실물 PCB 제작 — 기판 수령 후 전압·USB 인식·펌웨어 검수 기록",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/332faf73802f80538200ecfe0315b38b"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/iot-note-4.webp",
+          "a": "하우징 설계 — 배터리 스테이션과 본체 3D 설계 및 ADC 점검 기록",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/332faf73802f80d482a5d512651ba7cf"
+          }
         }
       ],
       "details": {
@@ -1833,22 +1980,22 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/farm-app-cover.png",
+          "u": "/assets/notion-projects/farm-app-cover.webp",
           "a": "농림축산식품 공공데이터 앱 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/farm-app-screen-1.png",
+          "u": "/assets/notion-projects/farm-app-screen-1.webp",
           "a": "농림축산식품 공공데이터 앱 화면 1",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/farm-app-screen-2.png",
+          "u": "/assets/notion-projects/farm-app-screen-2.webp",
           "a": "농림축산식품 공공데이터 앱 화면 2",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/farm-app-screen-3.png",
+          "u": "/assets/notion-projects/farm-app-screen-3.webp",
           "a": "농림축산식품 공공데이터 앱 화면 3",
           "r": "gallery"
         }
@@ -1893,12 +2040,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/projects/posture-detection-pose.png",
+          "u": "/assets/evidence/projects/posture-detection-pose.webp",
           "a": "자세 감지 앱 포즈 인식 화면",
           "r": "cover"
         },
         {
-          "u": "/assets/evidence/projects/posture-detection-flow.png",
+          "u": "/assets/evidence/projects/posture-detection-flow.webp",
           "a": "자세 감지 앱 분석 흐름",
           "r": "gallery"
         }
@@ -1945,27 +2092,27 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/ai-detector-cover.png",
+          "u": "/assets/notion-projects/ai-detector-cover.webp",
           "a": "AI 생성물 탐지기 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/evidence/projects/ai-detector-grid.png",
+          "u": "/assets/evidence/projects/ai-detector-grid.webp",
           "a": "AI 생성물 탐지 판단 구조 자료",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/ai-detector-worksheet.png",
+          "u": "/assets/evidence/projects/ai-detector-worksheet.webp",
           "a": "AI 생성물 탐지 분석 워크시트",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/ai-detector-emotion-board.png",
+          "u": "/assets/evidence/projects/ai-detector-emotion-board.webp",
           "a": "AI 생성물 탐지 감정 분석 보드",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/ai-detector-dataset.png",
+          "u": "/assets/evidence/projects/ai-detector-dataset.webp",
           "a": "AI 생성물 탐지 데이터셋 정리 화면",
           "r": "gallery"
         }
@@ -1982,10 +2129,6 @@ export const PORTFOLIO = {
         {
           "label": "Notion 원문",
           "url": "https://www.notion.so/333faf73802f8065a100d74d1503d5c4"
-        },
-        {
-          "label": "Demo",
-          "url": "https://3000-ii7n0v0uca8g55c0qrqox-583b4d74.sandbox.novita.ai"
         }
       ]
     },
@@ -2011,43 +2154,18 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/dontstarve-cover.png",
+          "u": "/assets/notion-projects/dontstarve-cover.webp",
           "a": "결식 아동 예약결제 서비스 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/dontstarve-map.png",
+          "u": "/assets/notion-projects/dontstarve-map.webp",
           "a": "결식 아동 예약결제 지도 화면",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/dontstarve-detail.png",
+          "u": "/assets/notion-projects/dontstarve-detail.webp",
           "a": "결식 아동 예약결제 상세 화면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/dontstarve-home.png",
-          "a": "결식 아동 예약결제 앱 홈 화면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/dontstarve-map.png",
-          "a": "결식 아동 예약결제 지도 탐색 화면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/dontstarve-reservation.png",
-          "a": "결식 아동 예약결제 예약 화면",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/dontstarve-erd.png",
-          "a": "결식 아동 예약결제 데이터베이스 ERD",
-          "r": "gallery"
-        },
-        {
-          "u": "/assets/evidence/projects/dontstarve-db-data.png",
-          "a": "결식 아동 예약결제 데이터베이스 화면",
           "r": "gallery"
         }
       ],
@@ -2066,6 +2184,12 @@ export const PORTFOLIO = {
         },
         {
           "label": "Video",
+          "url": "https://youtu.be/7oQWhoboMmE?si=scPsr8Ue6Lt67gqq"
+        }
+      ],
+      "videos": [
+        {
+          "title": "결식 아동을 위한 예약결제 서비스 APP 시연 영상",
           "url": "https://youtu.be/7oQWhoboMmE?si=scPsr8Ue6Lt67gqq"
         }
       ]
@@ -2092,12 +2216,12 @@ export const PORTFOLIO = {
       "rank": 8,
       "imgs": [
         {
-          "u": "/assets/notion-projects/kakao-fin-cover.png",
+          "u": "/assets/notion-projects/kakao-fin-cover.webp",
           "a": "kakao FIN:NEXT 프로젝트 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/kakao-fin-screen.png",
+          "u": "/assets/notion-projects/kakao-fin-screen.webp",
           "a": "kakao FIN:NEXT 화면",
           "r": "gallery"
         }
@@ -2113,6 +2237,16 @@ export const PORTFOLIO = {
           "프로젝트 상세 페이지와 자산 흐름 시각화",
           "Supabase 기반 인증/저장 구조",
           "Next.js 15 App Router 기반 서비스 구성"
+        ],
+        "문제 정의": "웹툰 창작자와 팬을 연결하고 투자·수익 분배의 흐름을 확인할 수 있는 플랫폼을 기획했습니다.",
+        "팀과 역할": [
+          "Art in Vest — 경영학 전공 2인, 컴퓨터공학 전공 1인",
+          "권용현: 프론트엔드 개발, Supabase 연동, UI/UX 구현"
+        ],
+        "서비스 흐름": [
+          "웹툰 목록과 프로젝트 상세 정보 탐색",
+          "로그인 후 투자 내역과 자산 현황 확인",
+          "수익률과 자산 변화를 그래프로 시각화"
         ]
       },
       "links": [
@@ -2126,6 +2260,12 @@ export const PORTFOLIO = {
         },
         {
           "label": "Video",
+          "url": "https://youtube.com/shorts/NZwp7W0fqdU?feature=share"
+        }
+      ],
+      "videos": [
+        {
+          "title": "kakao FIN:NEXT 프로젝트 시연 영상",
           "url": "https://youtube.com/shorts/NZwp7W0fqdU?feature=share"
         }
       ]
@@ -2152,22 +2292,22 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/climate-cover.png",
+          "u": "/assets/notion-projects/climate-cover.webp",
           "a": "영농 기후 기술 데이터 시각화 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/climate-screen-1.png",
+          "u": "/assets/notion-projects/climate-screen-1.webp",
           "a": "영농 기후 기술 데이터 시각화 화면 1",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/climate-screen-2.png",
+          "u": "/assets/notion-projects/climate-screen-2.webp",
           "a": "영농 기후 기술 데이터 시각화 화면 2",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/climate-screen-3.png",
+          "u": "/assets/notion-projects/climate-screen-3.webp",
           "a": "영농 기후 기술 데이터 시각화 화면 3",
           "r": "gallery"
         }
@@ -2219,12 +2359,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/retrofit-cover.png",
+          "u": "/assets/notion-projects/retrofit-cover.webp",
           "a": "레트로핏 윈도우 게임 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/retrofit-gameplay.jpg",
+          "u": "/assets/notion-projects/retrofit-gameplay.webp",
           "a": "레트로핏 윈도우 게임 화면",
           "r": "gallery"
         }
@@ -2259,6 +2399,12 @@ export const PORTFOLIO = {
           "label": "Video",
           "url": "https://youtu.be/PEcXeQw4Ipo"
         }
+      ],
+      "videos": [
+        {
+          "title": "레트로핏 윈도우 게임 시연 영상",
+          "url": "https://youtu.be/PEcXeQw4Ipo"
+        }
       ]
     },
     {
@@ -2282,32 +2428,32 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/rehab-game-cover.png",
+          "u": "/assets/notion-projects/rehab-game-cover.webp",
           "a": "스마트 헬스케어 재활 치료 게임 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/rehab-game-screen-1.png",
+          "u": "/assets/notion-projects/rehab-game-screen-1.webp",
           "a": "재활 치료 게임 화면 1",
           "r": "gallery"
         },
         {
-          "u": "/assets/notion-projects/rehab-game-screen-2.png",
+          "u": "/assets/notion-projects/rehab-game-screen-2.webp",
           "a": "재활 치료 게임 화면 2",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/rehab-game-motion.png",
+          "u": "/assets/evidence/projects/rehab-game-motion.webp",
           "a": "재활 동작 인식 게임 테스트 장면",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/rehab-app-login.png",
+          "u": "/assets/evidence/projects/rehab-app-login.webp",
           "a": "재활 치료 앱 로그인 화면",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/rehab-app-flow.png",
+          "u": "/assets/evidence/projects/rehab-app-flow.webp",
           "a": "재활 치료 앱 주요 화면 흐름",
           "r": "gallery"
         }
@@ -2348,12 +2494,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/ros2-cover.png",
+          "u": "/assets/notion-projects/ros2-cover.webp",
           "a": "ROS2 자율주행 스터디 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/ros2-gazebo.png",
+          "u": "/assets/notion-projects/ros2-gazebo.webp",
           "a": "Gazebo 자율주행 실습 화면",
           "r": "gallery"
         }
@@ -2386,7 +2532,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/pixhawk-cover.png",
+          "u": "/assets/notion-projects/pixhawk-cover.webp",
           "a": "픽스호크 자율주행 커버",
           "r": "cover"
         }
@@ -2419,7 +2565,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/carla-cover.png",
+          "u": "/assets/notion-projects/carla-cover.webp",
           "a": "자율주행 경진대회 커버",
           "r": "cover"
         }
@@ -2452,22 +2598,65 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/jbmotors-upcycle-cover.png",
+          "u": "/assets/notion-projects/jbmotors-upcycle-cover.webp",
           "a": "전북현대모터스 FC 업사이클 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/jbmotors-upcycle-1.png",
+          "u": "/assets/notion-projects/jbmotors-upcycle-1.webp",
           "a": "전북현대모터스 FC 업사이클 제품",
           "r": "gallery"
+        },
+        {
+          "u": "/assets/notion-extra/jbmotors-detail-3.webp",
+          "a": "Click to Green — 폐키보드 스위치를 활용한 전북현대 키캡 키링 제품 소개",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/330faf73802f808eb0caea4524c71e63"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/jbmotors-detail-2.webp",
+          "a": "Green Cycle — 폐키보드와 폐축구공의 자원 순환을 소개하는 캠페인 포스터",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/330faf73802f808eb0caea4524c71e63"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/jbmotors-detail-8.webp",
+          "a": "초기 키캡 굿즈 시제품과 키보드 회수·가공·제작 과정을 정리한 발표 자료",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/330faf73802f808eb0caea4524c71e63"
+          }
         }
       ],
       "links": [
         {
           "label": "Notion 원문",
           "url": "https://www.notion.so/330faf73802f808eb0caea4524c71e63"
+        },
+        {
+          "label": "원광대학교 RISE 프로젝트 자료",
+          "url": "https://wonrise.wku.ac.kr/?p=1200"
         }
-      ]
+      ],
+      "details": {
+        "프로젝트 개요": "폐키보드의 키캡과 스위치를 다시 가공해 팬들이 소장하는 키링으로 제작했습니다. 아이디어와 시제품에서 시작해 전북현대모터스FC 협업, 실제 판매까지 연결했습니다.",
+        "진행 과정": [
+          "지역 내 폐키보드 수거 및 부품 선별",
+          "키캡·스위치 기반 키링 디자인과 시제품 제작",
+          "전북특별자치도지사상 대상 수상",
+          "전북현대모터스FC 협업 및 제품 생산",
+          "2026.04.04 전주월드컵경기장 Green Cycle 팝업 판매"
+        ],
+        "시장 검증": "Notion 프로젝트 기록에 따르면 팝업 판매 시작 1시간 만에 준비 수량이 완판되었습니다. 판매 수익은 초록우산에 기부되는 구조로 환경적 가치를 사회적 가치로 연결했습니다.",
+        "배운 점": "원재료 확보, 디자인, 제작 가능성, 사용성, 가격과 기업의 브랜드 방향성을 함께 고려하며 아이디어를 실제 구매 가능한 제품으로 발전시켰습니다."
+      }
     },
     {
       "id": "project-upcycle-givingplus",
@@ -2490,12 +2679,12 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/givingplus-upcycle-cover.png",
+          "u": "/assets/notion-projects/givingplus-upcycle-cover.webp",
           "a": "기빙플러스 업사이클 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/notion-projects/givingplus-upcycle-1.jpg",
+          "u": "/assets/notion-projects/givingplus-upcycle-1.webp",
           "a": "기빙플러스 업사이클 제품",
           "r": "gallery"
         }
@@ -2528,9 +2717,10 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/generated/project-lab.png",
+          "u": "/assets/generated/project-lab.webp",
           "a": "수분 자가 발전응용 제습장치 대표 이미지",
-          "r": "cover"
+          "r": "cover",
+          "concept": true
         }
       ],
       "links": [
@@ -2561,7 +2751,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/personal-color-cover.png",
+          "u": "/assets/notion-projects/personal-color-cover.webp",
           "a": "퍼스널컬러 챗봇 커버",
           "r": "cover"
         }
@@ -2592,7 +2782,53 @@ export const PORTFOLIO = {
       ],
       "featured": false,
       "rank": 99,
-      "imgs": [],
+      "imgs": [
+        {
+          "u": "/assets/notion-extra/java-registration-courses.webp",
+          "a": "Java 수강신청 — 개설 과목 조회와 신청·취소 화면, 예시 데이터",
+          "r": "cover",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f8015abedf888b2a0fcc9"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/java-registration-dashboard.webp",
+          "a": "Java 수강신청 — 학생·교직원 페이지와 수강 학생 조회 화면, 예시 데이터",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f8015abedf888b2a0fcc9"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/java-registration-code.webp",
+          "a": "Java 수강신청 — Model·Service·View로 나눈 프로젝트 코드 구조",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f8015abedf888b2a0fcc9"
+          }
+        },
+        {
+          "u": "/assets/evidence/projects/dontstarve-erd.webp",
+          "a": "Java 수강신청 — 학생·교직원·신청 서비스의 클래스 관계도",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f8015abedf888b2a0fcc9"
+          }
+        },
+        {
+          "u": "/assets/evidence/projects/dontstarve-db-data.webp",
+          "a": "Java 수강신청 — SQLite 과목 및 수강 내역 테이블의 예시 데이터",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f8015abedf888b2a0fcc9"
+          }
+        }
+      ],
       "links": [
         {
           "label": "Notion 원문",
@@ -2619,7 +2855,35 @@ export const PORTFOLIO = {
       ],
       "featured": false,
       "rank": 99,
-      "imgs": [],
+      "imgs": [
+        {
+          "u": "/assets/notion-extra/chiangmai-detail-3.webp",
+          "a": "치앙마이 SW 교육 — 현지 참가자들과 아이디어를 공유하는 워크숍",
+          "r": "cover",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f80c69e73d5c189974e0a"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/chiangmai-detail-1.webp",
+          "a": "스마트 헬스케어 앱 콘셉트 — 프로필·증상 기록·AI 상담 화면",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f80c69e73d5c189974e0a"
+          }
+        },
+        {
+          "u": "/assets/notion-extra/chiangmai-detail-2.webp",
+          "a": "스마트 헬스케어 앱 콘셉트 — 시작·로그인·회원가입 화면",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f80c69e73d5c189974e0a"
+          }
+        }
+      ],
       "links": [
         {
           "label": "Notion 원문",
@@ -2647,9 +2911,18 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/robot-dog-cover.png",
+          "u": "/assets/notion-projects/robot-dog-cover.webp",
           "a": "4족보행 로봇 개발 커버",
           "r": "cover"
+        },
+        {
+          "u": "/assets/notion-extra/robot-dog-detail-1.webp",
+          "a": "4족보행 로봇 제작 — 서보모터와 출력 부품을 조립하는 작업 과정",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/333faf73802f805582b6e4b6970a187f"
+          }
         }
       ],
       "links": [
@@ -2707,7 +2980,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/ev-medical-cover.png",
+          "u": "/assets/notion-projects/ev-medical-cover.webp",
           "a": "EV 차량 개선안 커버",
           "r": "cover"
         }
@@ -2740,7 +3013,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/peltier-cover.jpg",
+          "u": "/assets/notion-projects/peltier-cover.webp",
           "a": "펠티어 노트북 쿨러 커버",
           "r": "cover"
         }
@@ -2773,7 +3046,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/clicker-cover.png",
+          "u": "/assets/notion-projects/clicker-cover.webp",
           "a": "발달장애 측정 클릭커 커버",
           "r": "cover"
         }
@@ -2806,7 +3079,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/coffee-box-cover.jpg",
+          "u": "/assets/notion-projects/coffee-box-cover.webp",
           "a": "커피박 업사이클 상자 제작 커버",
           "r": "cover"
         }
@@ -2839,17 +3112,17 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/evidence/projects/baekchul-sikhye-cover.png",
+          "u": "/assets/evidence/projects/baekchul-sikhye-cover.webp",
           "a": "발효 백출 식혜 제작 커버",
           "r": "cover"
         },
         {
-          "u": "/assets/evidence/projects/baekchul-risk-chart.png",
+          "u": "/assets/evidence/projects/baekchul-risk-chart.webp",
           "a": "백출 식혜 위해 인자 분석 자료",
           "r": "gallery"
         },
         {
-          "u": "/assets/evidence/projects/baekchul-fermentation-chart.png",
+          "u": "/assets/evidence/projects/baekchul-fermentation-chart.webp",
           "a": "발효 백출 식혜 발효 결과 분석 자료",
           "r": "gallery"
         }
@@ -2909,7 +3182,7 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/population-cover.png",
+          "u": "/assets/notion-projects/population-cover.webp",
           "a": "유동인구 데이터 시각화 커버",
           "r": "cover"
         }
@@ -2942,9 +3215,18 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/drone-soccer-cover.png",
+          "u": "/assets/notion-projects/drone-soccer-cover.webp",
           "a": "드론 축구 커버",
           "r": "cover"
+        },
+        {
+          "u": "/assets/notion-extra/drone-soccer-field.webp",
+          "a": "드론 축구 활동 — 실내 경기장에서 진행한 비행과 조종 연습",
+          "r": "gallery",
+          "credit": {
+            "label": "Notion 프로젝트 기록",
+            "url": "https://befitting-paper-753.notion.site/336faf73802f805eaf09f934e75304b1"
+          }
         }
       ],
       "links": [
@@ -2975,9 +3257,14 @@ export const PORTFOLIO = {
       "rank": 99,
       "imgs": [
         {
-          "u": "/assets/notion-projects/manual-ev-cover.jpg",
+          "u": "/assets/notion-projects/manual-ev-cover.webp",
           "a": "수동 제어 전기차량 커버",
           "r": "cover"
+        },
+        {
+          "u": "/assets/evidence/projects/upcycle-material.webp",
+          "a": "1인용 전기 차량 제작 — 완성 차량과 제작 팀",
+          "r": "gallery"
         }
       ],
       "links": [
@@ -3011,6 +3298,79 @@ export const PORTFOLIO = {
         {
           "label": "Notion 원문",
           "url": "https://www.notion.so/334faf73802f8030883bc17cc132f157"
+        }
+      ]
+    },
+    {
+      "id": "project-factline",
+      "type": "project",
+      "t": {
+        "ko": "LLM 기반 기록·증거 정리 서비스 — FACTLINE",
+        "en": "FACTLINE — an LLM service that turns records into a line of facts"
+      },
+      "s": {
+        "ko": "흩어진 일상 기록과 대화, 증거를 시간순 사실관계로 연결하는 서비스입니다. LLM 기반 질문과 자료 정리 흐름으로 상담 준비를 돕습니다.",
+        "en": "Links scattered everyday notes, conversations and evidence into a time-ordered account of the facts, and helps prepare for a consultation through LLM-led questions and organised material."
+      },
+      "year": "2026",
+      "tags": [
+        "LLM",
+        "Next.js",
+        "TypeScript",
+        "Vercel AI SDK",
+        "Prisma",
+        "PostgreSQL"
+      ],
+      "featured": true,
+      "rank": 4,
+      "imgs": [
+        {
+          "u": "/assets/factline/landing.webp",
+          "a": "FACTLINE 진입 화면 — 일상 기록을 사실관계로 연결하는 서비스 소개",
+          "r": "cover",
+          "credit": {
+            "label": "FACTLINE GitHub · 공식 README 화면",
+            "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/docs/screenshots/landing.png"
+          }
+        },
+        {
+          "u": "/assets/factline/dashboard.webp",
+          "a": "FACTLINE 기록 허브 — 다이어리와 대화, 사건 정리를 연결하는 대시보드",
+          "r": "gallery",
+          "credit": {
+            "label": "FACTLINE GitHub · 공식 README 화면",
+            "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/docs/screenshots/dashboard.png"
+          }
+        },
+        {
+          "u": "/assets/factline/self-record.webp",
+          "a": "FACTLINE 셀프 기록 — 관련 자료를 선택하고 후속 질문을 이어 가는 화면",
+          "r": "gallery",
+          "credit": {
+            "label": "FACTLINE GitHub · 공식 README 화면",
+            "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/docs/screenshots/self-record.png"
+          }
+        }
+      ],
+      "details": {
+        "프로젝트개요": "평소에는 다이어리처럼 생활을 기록하고, 필요한 순간에 관련 대화와 증거를 모아 사건의 흐름을 정리하는 모바일 우선 웹 애플리케이션입니다.",
+        "핵심기능": [
+          "일상 기록·대화·증거를 검색하고 시간순 타임라인으로 연결",
+          "답변의 단서를 따라 부족한 정보를 질문하고 누락·모순을 점검",
+          "사용자가 제공한 사실을 바탕으로 진술서 초안과 상담 준비 보고서 생성"
+        ],
+        "LLM 연결": "Vercel AI SDK·AI Gateway 연결과 로컬 OpenAI 호환 LLM 서버 연결을 지원합니다. 로컬 개발과 테스트에는 규칙 기반 Mock AI를 사용합니다.",
+        "구현원칙": "AI는 법적 판단을 내리지 않고 사용자가 제공한 사실을 구조화합니다. 증거 원문 대신 파일명·설명·해시·연결 이벤트를 관리합니다.",
+        "기술구성": "Next.js App Router, React, TypeScript, Prisma, PostgreSQL 기반으로 화면·도메인·AI 연결 계층을 구성했습니다."
+      },
+      "links": [
+        {
+          "label": "GitHub 프로젝트",
+          "url": "https://github.com/yhkwon2004/FACTLINE"
+        },
+        {
+          "label": "구현 내용 · README",
+          "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/README.md"
         }
       ]
     }

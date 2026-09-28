@@ -8,8 +8,9 @@
  * its rendered poster, and nothing is caught mid-animation. The DOM → SVG conversion is
  * dom-to-svg, run inside the page; this script then makes the result Figma-friendly:
  *
- *   · one font family per text run, the one the browser actually drew it in (Hangul → Noto
- *     Sans KR), since Figma takes a family list's first name and Geist has no Hangul
+ *   · one font family per text run, the one the browser actually drew it in, by the name Figma
+ *     knows it by: Figma takes a family list's first name, and Geist Mono has no Hangul — those
+ *     runs were drawn in Pretendard, so they are handed to Figma as Pretendard
  *   · gradient text (CSS background-clip: text) as a real gradient fill on the text
  *   · WebP images re-encoded as JPEG, which every SVG importer reads
  *   · the page's dark ground as each frame's first layer; @font-face blocks dropped
@@ -26,8 +27,16 @@ import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:f
 
 const base = process.argv[2] ?? "http://127.0.0.1:4321";
 const OUT = "design/figma";
-const BG = "#05060a";
+const BG = "#08080a";
 const SENTINEL = (k) => `rgb(1, 2, ${k + 3})`;
+/** The tokens file, read once: the board, the gradient fills and tokens.json all quote it. */
+const TOKENS = readFileSync("src/styles/tokens.css", "utf8");
+const token = (name) => TOKENS.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1].trim() ?? "";
+/** "linear-gradient(105deg, #fff 0%, #e4defe 30%)" → [{ color, position }] */
+const stops = (gradient) =>
+  [...gradient.matchAll(/(#[0-9a-f]{3,8})\s+([\d.]+)%/gi)].map((m) => ({ color: m[1], position: Number(m[2]) / 100 }));
+/** The pearl: the one gradient that is ever drawn in text. */
+const PEARL = stops(token("--pearl"));
 
 const lib = (
   await build({
@@ -56,8 +65,14 @@ const EXPORT_CSS = `
   .scrub .sw { opacity: 1 !important; }
   .stop { opacity: 1 !important; transform: none !important; }
   .tile-dots i { opacity: 0.85 !important; transform: none !important; }
-  .grain, .cursor, .cursor-ring, .progress, .loader, .skip, .hero-scroll { display: none !important; }
+  .grain, .cursor, .cursor-ring, .progress, .loader, .skip, .preview { display: none !important; }
   .aurora i { animation: none !important; }
+  /* SVG has no perspective: the product window is drawn square to the frame */
+  .win { transform: none !important; }
+  /* hover-only decorations: dom-to-svg ignores their background-size and overflow clip and
+     would draw them at full size — a headline under a white block, a sheen beside the button */
+  .btn-primary::after { display: none !important; }
+  .story-title a { background: none !important; }
 `;
 
 const browser = await chromium.launch({
@@ -131,14 +146,20 @@ async function grab(page, selector, prep) {
 }
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힯]/;
-const FAMILIES = ["Instrument Serif", "Geist Mono", "Noto Sans KR", "Geist"];
+/** CSS family → the family name Figma lists it under. */
+const FIGMA_NAME = {
+  "Pretendard Variable": "Pretendard",
+  Pretendard: "Pretendard",
+  "Geist Mono": "Geist Mono",
+  "Instrument Serif": "Instrument Serif",
+};
 
-/** The first real family in a CSS list, or Noto Sans KR where the run is Hangul and Geist would lack the glyphs. */
+/** The first real family in a CSS list — Pretendard where the run is Hangul and the mono face has none. */
 function family(list, textRun) {
-  const names = list.replace(/&quot;/g, '"').split(",").map((s) => s.trim().replace(/^"|"$/g, ""));
-  const first = names.find((n) => FAMILIES.includes(n)) ?? names[0];
-  if (HANGUL.test(textRun) && (first === "Geist" || first === "Geist Mono")) return "Noto Sans KR";
-  return first;
+  const names = list.replace(/&quot;/g, '"').split(",").map((s) => s.trim().replace(/^['"]|['"]$/g, ""));
+  const first = names.find((n) => n in FIGMA_NAME) ?? names[0];
+  if (HANGUL.test(textRun) && first === "Geist Mono") return "Pretendard";
+  return FIGMA_NAME[first] ?? first;
 }
 
 async function finish({ svg, grads }, file) {
@@ -160,12 +181,15 @@ async function finish({ svg, grads }, file) {
     .map(
       (g) =>
         `<linearGradient id="grad-text-${g.k}" gradientUnits="userSpaceOnUse" x1="${g.x1.toFixed(1)}" y1="${g.y1.toFixed(1)}" x2="${g.x2.toFixed(1)}" y2="${g.y2.toFixed(1)}">` +
-        `<stop offset="0" stop-color="#9d8cff"/><stop offset="0.6" stop-color="#57e6ff"/><stop offset="1" stop-color="#b8f7ff"/></linearGradient>`,
+        PEARL.map((p) => `<stop offset="${p.position}" stop-color="${p.color}"/>`).join("") +
+        `</linearGradient>`,
     )
     .join("");
   for (const g of grads) {
     const c = SENTINEL(g.k).replace(/[()]/g, "\\$&");
-    s = s.replace(new RegExp(`(fill|color)="${c}"`, "g"), (_, attr) => (attr === "fill" ? `fill="url(#grad-text-${g.k})"` : `color="#9d8cff"`));
+    s = s.replace(new RegExp(`(fill|color)="${c}"`, "g"), (_, attr) =>
+      attr === "fill" ? `fill="url(#grad-text-${g.k})"` : `color="${PEARL[1]?.color ?? "#ffffff"}"`,
+    );
   }
 
   // the frame's ground, and the gradient defs, as the first children
@@ -215,7 +239,8 @@ const navHome = `(() => {
   if (nav) document.body.prepend(nav);
 })()`;
 
-rmSync(OUT, { recursive: true, force: true });
+// Only what this script writes is cleared: the folder's README and preview are kept.
+for (const dir of ["desktop", "mobile"]) rmSync(`${OUT}/${dir}`, { recursive: true, force: true });
 mkdirSync(`${OUT}/desktop`, { recursive: true });
 mkdirSync(`${OUT}/mobile`, { recursive: true });
 
@@ -233,20 +258,21 @@ async function frames(dir, width, height, mobile) {
     await run("03-ai-intro", "#ai > .wrap", `${top("#ai")}; document.querySelector("#ai > .wrap").style.paddingBlock = "120px 40px"`);
     const n = await page.locator("#ai article.case").count();
     for (let i = 0; i < n; i++) {
-      // held at the third step: the stage, its HUD and the step list all mid-story
+      // held two-thirds of the way through: the stage, its HUD and the step list all mid-story
       await run(`0${4 + i}-case-${i + 1}`, `#ai article.case[data-n="${i}"] .case-pin`, top(`#ai article.case[data-n="${i}"]`, 0.62));
     }
   }
-  await run("07-skills", "#skills", top("#skills"));
+  await run("08-skills", "#skills", top("#skills"));
   if (mobile) {
-    // the full list is 38 cards long; the first eight show the pattern
-    await page.evaluate(() => document.querySelectorAll("#works .works-grid > li:nth-child(n+9)").forEach((li) => (li.style.display = "none")));
+    // the index is every work, 39 rows; the first eight show the pattern
+    await page.evaluate(() => document.querySelectorAll("#works .works-index > li:nth-child(n+9)").forEach((li) => (li.style.display = "none")));
   }
-  await run("08-works", "#works", top("#works"));
-  await run("09-awards", mobile ? "#awards" : ".awards-pin", top("#awards", mobile ? 0 : 0.001));
-  await run("10-journey", "#journey", top("#journey"));
-  await run("11-principles", "#principles", top("#principles"));
-  await run("12-contact", "#contact", top("#contact"));
+  await run("09-works", "#works", top("#works"));
+  await run("10-awards", "#awards", top("#awards"));
+  await run("11-press", "#press", top("#press"));
+  await run("12-journey", "#journey", top("#journey"));
+  await run("13-principles", "#principles", top("#principles"));
+  await run("14-contact", "#contact", top("#contact"));
   if (mobile) {
     await page.evaluate(() => window.scrollTo(0, 0));
     // a script click: with the export's z-index flattening, the hero sits over the bar
@@ -254,7 +280,7 @@ async function frames(dir, width, height, mobile) {
     await page.waitForTimeout(900);
     // the sheet is fixed full-screen inside a 72px bar; give the pair a box the size of the screen
     await run(
-      "13-menu",
+      "15-menu",
       "#menu-frame",
       `(() => {
         const f = document.createElement("div");
@@ -280,7 +306,7 @@ async function frames(dir, width, height, mobile) {
       s.style.overflow = "visible";
       s.style.transform = "none";
     })()`),
-    `${OUT}/${dir}/14-record-sheet.svg`,
+    `${OUT}/${dir}/16-record-sheet.svg`,
   );
   await sheet.close();
 }
@@ -301,7 +327,7 @@ console.log("design system");
       if (text) e.textContent = text;
       return e;
     };
-    const board = el("div", `position:absolute;left:0;top:0;z-index:9999;width:1440px;padding:88px 80px 120px;background:#05060a;display:grid;gap:80px;font-family:var(--font-sans);color:var(--color-fg)`);
+    const board = el("div", `position:absolute;left:0;top:0;z-index:9999;width:1440px;padding:88px 80px 120px;background:#08080a;display:grid;gap:80px;font-family:var(--font-sans);color:var(--color-fg)`);
     board.id = "ds-board";
     const section = (title, note) => {
       const s = el("section", "display:grid;gap:28px");
@@ -315,12 +341,12 @@ console.log("design system");
 
     // header
     const head = el("header", "display:grid;gap:14px");
-    head.append(el("p", "font-family:var(--font-mono);font-size:12px;letter-spacing:0.16em;color:var(--color-cyan)", "DESIGN SYSTEM — AI PORTFOLIO"));
+    head.append(el("p", "font-family:var(--font-mono);font-size:12px;letter-spacing:0.16em;color:var(--color-fg-3)", "DESIGN SYSTEM — AI PORTFOLIO"));
     const t = el("h1", "font-size:72px;font-weight:600;letter-spacing:-0.05em;line-height:1");
     t.append("권용현 ");
     t.append(el("span", "font-family:var(--font-serif);font-style:italic;font-weight:400;color:var(--color-fg-2)", "Yonghyun Kwon"));
     head.append(t);
-    head.append(el("p", "max-width:760px;color:var(--color-fg-3);font-size:17px;line-height:1.7", "연구실의 밤처럼 — 차가운 검정 위에 모델을 뜻하는 보라→시안 그라디언트 하나, 그리고 결과(수상 · 완료)에만 쓰는 라임 하나."));
+    head.append(el("p", "max-width:760px;color:var(--color-fg-3);font-size:17px;line-height:1.7", "밤의 갤러리처럼 — 푸른 기 없는 검정 위에, 빛을 받는 펄 한 줄과 모델을 뜻하는 아이리스→아이스, 그리고 결과(수상 · 등급)에만 쓰는 샴페인 하나."));
     board.append(head);
 
     // colours
@@ -328,7 +354,7 @@ console.log("design system");
       ["Ground", ["bg", "bg-2", "bg-3", "bg-4", "grid"]],
       ["Lines", ["line", "line-2", "line-3"]],
       ["Text", ["fg", "fg-2", "fg-3", "fg-4"]],
-      ["Brand", ["violet", "cyan", "lime"]],
+      ["Accent", ["violet", "cyan", "champagne"]],
       ["Diagram / status", ["rose", "amber", "green", "magenta"]],
     ];
     const colours = section("Colour", "tokens.css · @theme");
@@ -345,9 +371,9 @@ console.log("design system");
       }
       colours.append(row);
     }
-    const gRow = el("div", "display:grid;grid-template-columns:180px 1fr 1fr;gap:16px;align-items:start");
+    const gRow = el("div", "display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:16px;align-items:start");
     gRow.append(el("p", "font-size:15px;font-weight:500;padding-top:8px;color:var(--color-fg-2)", "Gradient"));
-    for (const k of ["--gradient", "--gradient-soft"]) {
+    for (const k of ["--pearl", "--gradient", "--gradient-soft"]) {
       const card = el("div", "display:grid;gap:10px");
       card.append(el("div", `height:96px;border-radius:14px;background:${v(k)};border:1px solid rgba(255,255,255,0.12)`));
       card.append(el("p", "font-size:14px;font-weight:500", k));
@@ -357,14 +383,15 @@ console.log("design system");
     colours.append(gRow);
 
     // type — measured off the live elements, so the board states what the page really uses
-    const type = section("Typography", "Geist · Noto Sans KR · Geist Mono · Instrument Serif");
+    const type = section("Typography", "Pretendard · Geist Mono · Instrument Serif");
     const samples = [
       ["Display / hero", ".hero-line", "현장의 문제를,"],
       ["H2 / section", ".shead h2", "근거로 세는 역량 지도"],
       ["H3 / case", ".case-title", "AirSim 자율주행 시뮬레이터"],
+      ["Index / row", ".wx-title", "실시간 포즈 · 구도 생성 서비스"],
       ["H3 / card", ".deck-body h3", "만들어서 검증한다"],
       ["Body", ".case-sum", "가상환경에서의 딥러닝 학습으로 조향과 주차 신호 인식을 다룬 AirSim 기반 자율주행 시뮬레이터입니다."],
-      ["Label / mono", ".label", "AI · 01 / 03 — EVIDENCE"],
+      ["Label / mono", ".case-idx .mono", "AI · 01 / 04 — EVIDENCE"],
       ["Serif italic (EN)", ".hero-name-en", "Yonghyun Kwon"],
     ];
     for (const [name, sel, text] of samples) {
@@ -388,8 +415,8 @@ console.log("design system");
     // components — cloned from the page itself
     const comps = section("Components", "cloned from the live page");
     const grid = el("div", "display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:28px;align-items:start");
-    const cell = (name, node, width = "auto") => {
-      const c = el("div", "display:grid;gap:14px;align-content:start");
+    const cell = (name, node, width = "auto", span = 1) => {
+      const c = el("div", `display:grid;gap:14px;align-content:start;grid-column:span ${span}`);
       c.append(el("p", "font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;color:var(--color-fg-3)", name));
       const holder = el("div", `width:${width};position:relative`);
       holder.append(node);
@@ -405,10 +432,22 @@ console.log("design system");
     cell("Chip / tag · honour · filter", chips);
     const pill = clone(".nav-pill");
     if (pill) cell("Nav / pill", pill);
-    const work = clone("#works .works-grid > li .work");
-    if (work) cell("Card / work (AI)", work, "420px");
-    const award = clone("#awards .award");
-    if (award) cell("Card / award", award, "260px");
+    const work = clone("#works .works-selected > li .feature");
+    if (work) cell("Card / selected work", work, "420px");
+    const story = clone("#press .press-grid .story");
+    if (story) cell("Card / press", story, "400px");
+    const row = el("ol", "list-style:none;border-top:1px solid var(--color-line-2)");
+    const wx = clone("#works .works-index > li");
+    if (wx) {
+      row.append(wx);
+      cell("Row / works index", row, "100%", 2);
+    }
+    const lg = clone("#awards .ledger-year li");
+    if (lg) {
+      const l = el("ol", "list-style:none;border-top:1px solid var(--color-line-2)");
+      l.append(lg);
+      cell("Row / awards ledger", l, "100%", 3);
+    }
     const steps = clone(".case-steps-wrap");
     if (steps) {
       steps.style.setProperty("--cp", "0.6");
@@ -431,6 +470,11 @@ console.log("design system");
     if (frame) {
       frame.style.width = "440px";
       cell("Stage / 3D frame + HUD", frame, "440px");
+    }
+    const screens = clone(".case-screens");
+    if (screens) {
+      screens.style.width = "440px";
+      cell("Stage / product window", screens, "440px");
     }
     comps.append(grid);
 
@@ -463,34 +507,36 @@ console.log("design system");
 
 // ── tokens, as W3C design-token JSON (Tokens Studio, Figma variables import) ─────────
 {
-  const css = readFileSync("src/styles/tokens.css", "utf8");
   const color = {};
-  for (const m of css.matchAll(/--color-([\w-]+):\s*([^;]+);/g)) color[m[1]] = { $type: "color", $value: m[2].trim() };
+  for (const m of TOKENS.matchAll(/--color-([\w-]+):\s*([^;]+);/g)) color[m[1]] = { $type: "color", $value: m[2].trim() };
+  const bezier = (name) => (token(name).match(/cubic-bezier\(([^)]+)\)/)?.[1] ?? "").split(",").map(Number);
+  const iris = token("--color-violet");
+  const ice = token("--color-cyan");
   const tokens = {
     $description: "권용현 AI Portfolio — design tokens, from src/styles/tokens.css",
     color,
     gradient: {
-      brand: { $type: "gradient", $value: [{ color: "#9d8cff", position: 0 }, { color: "#57e6ff", position: 0.6 }, { color: "#b8f7ff", position: 1 }] },
+      pearl: { $type: "gradient", $value: PEARL },
+      model: { $type: "gradient", $value: [{ color: iris, position: 0 }, { color: ice, position: 1 }] },
     },
     font: {
-      sans: { $type: "fontFamily", $value: ["Geist", "Noto Sans KR"] },
-      kr: { $type: "fontFamily", $value: ["Noto Sans KR"] },
-      mono: { $type: "fontFamily", $value: ["Geist Mono"] },
+      sans: { $type: "fontFamily", $value: ["Pretendard"] },
+      mono: { $type: "fontFamily", $value: ["Geist Mono", "Pretendard"] },
       serif: { $type: "fontFamily", $value: ["Instrument Serif"] },
     },
     radius: {
-      lg: { $type: "dimension", $value: "22px" },
-      sm: { $type: "dimension", $value: "14px" },
+      lg: { $type: "dimension", $value: token("--radius") },
+      sm: { $type: "dimension", $value: token("--radius-sm") },
       pill: { $type: "dimension", $value: "999px" },
     },
     size: {
-      "nav-h": { $type: "dimension", $value: "72px" },
-      maxw: { $type: "dimension", $value: "1440px" },
+      "nav-h": { $type: "dimension", $value: token("--nav-h") },
+      maxw: { $type: "dimension", $value: token("--maxw") },
     },
     easing: {
-      out: { $type: "cubicBezier", $value: [0.16, 1, 0.3, 1] },
-      "in-out": { $type: "cubicBezier", $value: [0.65, 0, 0.35, 1] },
-      spring: { $type: "cubicBezier", $value: [0.34, 1.56, 0.64, 1] },
+      out: { $type: "cubicBezier", $value: bezier("--ease-out") },
+      "in-out": { $type: "cubicBezier", $value: bezier("--ease-in-out") },
+      spring: { $type: "cubicBezier", $value: bezier("--ease-spring") },
     },
   };
   writeFileSync(`${OUT}/tokens.json`, `${JSON.stringify(tokens, null, 2)}\n`);

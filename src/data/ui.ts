@@ -8,6 +8,11 @@ import type { Bi } from "@/lib/types";
  * records, their summaries, the details — live in src/data/portfolio.ts and are never
  * paraphrased here. A figure in this copy is interpolated from the records, never typed.
  */
+/** Counted things read better as words: "네 가지", "Four problems". */
+const KO_N = ["영", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+const EN_N = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+const cap = (w: string) => w.charAt(0).toUpperCase() + w.slice(1);
+
 export const UI = {
   // ── chrome ──
   brand: "YONGHYUN KWON",
@@ -34,6 +39,7 @@ export const UI = {
     works: { ko: "작업", en: "Works" },
     skills: { ko: "역량", en: "Skills" },
     awards: { ko: "수상", en: "Awards" },
+    press: { ko: "보도", en: "Press" },
     journey: { ko: "여정", en: "Journey" },
     contact: { ko: "연락", en: "Contact" },
   } satisfies Record<string, Bi>,
@@ -45,6 +51,9 @@ export const UI = {
   heroCta: { ko: "AI 대표작 보기", en: "See the AI work" } satisfies Bi,
   heroCta2: { ko: "전체 작업", en: "All works" } satisfies Bi,
   heroScroll: { ko: "스크롤", en: "Scroll" } satisfies Bi,
+  // The author's own two lines from their cinematic site (public/cinematic/content.js).
+  heroRole: { ko: "개발자 · 메이커 · 문제 해결자", en: "Developer · Maker · Problem solver" } satisfies Bi,
+  heroPlace: { ko: "대한민국", en: "Based in South Korea" } satisfies Bi,
   heroBeat: {
     ko: "뉴런이 레이어가 되듯 — 문제에서 모델로, 모델에서 제품으로.",
     en: "As neurons become layers — problem to model, model to product.",
@@ -61,13 +70,14 @@ export const UI = {
 
   // ── AI work ──
   aiIdx: { ko: "AI 대표작", en: "Selected AI work" } satisfies Bi,
-  aiTitleA: { ko: "AI로 푼", en: "Three problems," } satisfies Bi,
-  aiTitleB: { ko: "세 가지 현장 문제", en: "answered with AI" } satisfies Bi,
+  aiTitleA: { ko: "AI로 푼", en: `${cap(EN_N[stats.ai] ?? String(stats.ai))} problems,` } satisfies Bi,
+  aiTitleB: { ko: `${KO_N[stats.ai] ?? stats.ai} 가지 현장 문제`, en: "answered with AI" } satisfies Bi,
   aiNote: {
     ko: "스크롤하면 각 작품의 작동 방식이 3D로 한 단계씩 재생됩니다.",
     en: "Scroll, and each work plays out how it works, step by step, in 3D.",
   } satisfies Bi,
   aiOpen: { ko: "케이스 스터디", en: "Case study" } satisfies Bi,
+  realScreens: { ko: "실제 서비스 화면", en: "Real product screens" } satisfies Bi,
   aiSteps: { ko: "작동 순서", en: "How it runs" } satisfies Bi,
 
   // ── skills ──
@@ -98,15 +108,37 @@ export const UI = {
   featured: { ko: "대표작", en: "Featured" } satisfies Bi,
   open: { ko: "열기", en: "Open" } satisfies Bi,
   shown: { ko: "개 표시", en: "shown" } satisfies Bi,
+  selected: { ko: "대표 작업", en: "Selected" } satisfies Bi,
+  index: { ko: "전체 목록", en: "Index" } satisfies Bi,
+  colTitle: { ko: "작업", en: "Work" } satisfies Bi,
+  colField: { ko: "분야", en: "Field" } satisfies Bi,
+  colYear: { ko: "연도", en: "Year" } satisfies Bi,
 
   // ── awards ──
   awardsIdx: { ko: "수상", en: "Awards" } satisfies Bi,
   awardsTitleA: { ko: `${stats.awardYears}년 동안`, en: `${stats.awardYears} years,` } satisfies Bi,
   awardsTitleB: { ko: `${stats.awards}번의 수상`, en: `${stats.awards} awards` } satisfies Bi,
   awardsNote: {
-    ko: "스크롤하면 상장이 옆으로 흐릅니다. 누르면 원본 스캔이 열립니다.",
-    en: "Scroll to run the certificates sideways. Select one for the original scan.",
+    ko: "해마다 받은 상을 날짜순으로 모았습니다. 한 줄을 누르면 상장 원본이 열립니다.",
+    en: "Every award, year by year and date by date. Select a line for the original certificate.",
   } satisfies Bi,
+  colDate: { ko: "날짜", en: "Date" } satisfies Bi,
+  colGrade: { ko: "등급", en: "Grade" } satisfies Bi,
+  colAward: { ko: "대회", en: "Competition" } satisfies Bi,
+
+  // ── press ──
+  pressIdx: { ko: "보도", en: "Press" } satisfies Bi,
+  pressTitleA: { ko: "기사로 남은", en: "On the record," } satisfies Bi,
+  pressTitleB: { ko: "현장의 기록", en: "in the press" } satisfies Bi,
+  pressNote: {
+    ko: "대학과 기관이 직접 낸 보도만 모았습니다. 카드 제목은 요약이고, 원문 제목은 그 아래에 있습니다.",
+    en: "Only reports published by the university or institution itself. Card titles are summaries; the publisher's own headline sits beneath.",
+  } satisfies Bi,
+  relDirect: { ko: "직접 소개", en: "Features the author" } satisfies Bi,
+  relRelated: { ko: "행사 보도", en: "Event coverage" } satisfies Bi,
+  readArticle: { ko: "기사 원문", en: "Read the article" } satisfies Bi,
+  photoBy: { ko: "사진", en: "Photo" } satisfies Bi,
+  relatedRecord: { ko: "관련 기록", en: "Related record" } satisfies Bi,
 
   // ── journey ──
   journeyIdx: { ko: "여정", en: "Journey" } satisfies Bi,
@@ -141,4 +173,9 @@ export const UI = {
   renders: { ko: "콘셉트 렌더", en: "Concept renders" } satisfies Bi,
   gallery: { ko: "기록 사진", en: "Gallery" } satisfies Bi,
   links: { ko: "링크", en: "Links" } satisfies Bi,
+  videos: { ko: "시연 영상", en: "Demo videos" } satisfies Bi,
+  playVideo: { ko: "영상 재생", en: "Play video" } satisfies Bi,
+  pressLabel: { ko: "관련 보도", en: "In the press" } satisfies Bi,
+  conceptVisual: { ko: "콘셉트 이미지", en: "Concept visual" } satisfies Bi,
+  source: { ko: "출처", en: "Source" } satisfies Bi,
 } as const;

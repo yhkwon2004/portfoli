@@ -13,7 +13,7 @@ test.describe("the page", () => {
 
   test("carries every section, each labelled by its own heading", async ({ page }) => {
     await visit(page);
-    for (const id of ["about", "ai", "skills", "works", "awards", "journey", "principles", "contact"]) {
+    for (const id of ["about", "ai", "skills", "works", "awards", "press", "journey", "principles", "contact"]) {
       const section = page.locator(`section#${id}`);
       await expect(section, id).toHaveCount(1);
       const labelledBy = await section.getAttribute("aria-labelledby");
@@ -24,10 +24,13 @@ test.describe("the page", () => {
 
   test("is fully present as text in the static HTML, before any script runs", async ({ request }) => {
     const html = await (await request.get("/")).text();
-    // The three AI works lead, and every one of them is in the document as text.
+    // The four AI works lead, and every one of them is in the document as text.
     expect(html).toContain("학교폭력 증거 정리 AI 서비스");
     expect(html).toContain("AirSim 자율주행 시뮬레이터");
     expect(html).toContain("실시간 포즈");
+    expect(html).toContain("FACTLINE");
+    // So is the press, with the original headline it reports.
+    expect(html).toContain("WON+PBL");
     // Honours as the author states them.
     expect(html).toContain("HUSS AI 경진대회");
     expect(html).toContain("미래자동차 경진대회");

@@ -1,16 +1,21 @@
 @layer components {
   /* ─────────────────────────────  AI CASE STUDIES  ─────────────────────────────
    * Each case is 320vh with its stage pinned for the middle of it. `--cp` (0 → 1) is the
-   * pinned progress, written by AiWorks.tsx; the step bars and the HUD bar read it directly.
+   * pinned progress, written by AiWorks.tsx; `--steps` is how many steps the case has. The
+   * step lines and the HUD bar read both directly.
    */
   .ai {
     position: relative;
-    padding-top: clamp(96px, 14vh, 180px);
+    padding-top: clamp(112px, 16vh, 200px);
   }
   .case {
     --cp: 0;
+    --steps: 4;
     position: relative;
     height: 320vh;
+  }
+  .case[data-stage="screens"] {
+    height: 260vh;
   }
   .case-pin {
     position: sticky;
@@ -23,76 +28,78 @@
   }
   .case-grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
-    gap: clamp(28px, 4vw, 64px);
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.4fr);
+    gap: clamp(32px, 5vw, 96px);
     align-items: center;
   }
-  .case[data-n="1"] .case-copy {
+  .case:nth-of-type(even) .case-copy {
     order: 2;
   }
-  .case[data-n="1"] .case-grid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+  .case:nth-of-type(even) .case-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.86fr);
   }
   .case-copy {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.4rem;
     align-content: center;
   }
   .case-idx {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.7rem;
-    font-size: 0.8rem;
+    gap: 0.75rem;
+    font-size: 0.74rem;
   }
   .case-idx .mono:first-child {
-    color: var(--color-cyan);
+    color: var(--color-fg);
+    letter-spacing: 0.08em;
   }
-  .case-of {
+  .case-of,
+  .case-year {
     color: var(--color-fg-4);
   }
   .case-title {
-    font-size: clamp(1.9rem, 3.3vw, 3.2rem);
+    font-size: clamp(2rem, 3.4vw, 3.3rem);
     line-height: 1.08;
     letter-spacing: -0.045em;
   }
   .case-title:lang(ko) {
-    letter-spacing: -0.06em;
-    line-height: 1.2;
+    letter-spacing: -0.05em;
+    line-height: 1.18;
   }
   .case-sum {
     font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-fg-2);
+    line-height: 1.8;
+    color: var(--color-fg-3);
     max-width: 34rem;
   }
   .case-steps-wrap {
     display: grid;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
   .case-steps {
     list-style: none;
     display: grid;
-    gap: 0.15rem;
   }
   .case-steps li {
     position: relative;
     display: grid;
-    grid-template-columns: 2.3rem minmax(0, 1fr);
+    grid-template-columns: 2.4rem minmax(0, 1fr);
     align-items: baseline;
-    padding: 0.6rem 0 0.68rem;
+    padding: 0.72rem 0 0.8rem;
     color: var(--color-fg-4);
     transition:
-      color 0.4s,
-      transform 0.5s var(--ease-spring);
+      color 0.5s var(--ease-out),
+      transform 0.7s var(--ease-out);
   }
   .case-steps b {
     font-weight: 400;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
+  /* each step's line fills as the case plays through its share of the run */
   .case-steps li i {
     position: absolute;
-    left: 2.3rem;
+    left: 2.4rem;
     right: 0;
     bottom: 0;
     height: 1px;
@@ -103,19 +110,19 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--gradient);
+    background: var(--color-fg-2);
     transform-origin: left;
-    transform: scaleX(clamp(0, calc(var(--cp) * 4 - var(--k)), 1));
+    transform: scaleX(clamp(0, calc(var(--cp) * var(--steps) - var(--k)), 1));
   }
   .case-steps li[data-done="true"] {
-    color: var(--color-fg-2);
+    color: var(--color-fg-3);
   }
   .case-steps li[data-on="true"] {
     color: var(--color-fg);
-    transform: translateX(8px);
+    transform: translateX(6px);
   }
   .case-steps li[data-on="true"] b {
-    color: var(--color-cyan);
+    color: var(--color-fg);
   }
   .case-foot {
     display: flex;
@@ -123,6 +130,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    padding-top: 0.4rem;
   }
   .case-tags {
     list-style: none;
@@ -131,20 +139,23 @@
     gap: 0.4rem;
   }
 
+  /* ── the stage ── */
   .case-stage {
     display: grid;
-    gap: 0.8rem;
+    gap: 0.9rem;
   }
   .case-frame {
     position: relative;
     aspect-ratio: 16 / 10;
-    max-height: calc(100svh - var(--nav-h) - 90px);
+    max-height: calc(100svh - var(--nav-h) - 96px);
     width: 100%;
     border-radius: var(--radius);
     overflow: hidden;
-    border: 1px solid var(--color-line-2);
     background: var(--color-bg);
-    box-shadow: 0 40px 120px -40px rgba(87, 230, 255, 0.25);
+    box-shadow:
+      0 0 0 1px var(--color-line-2),
+      0 50px 120px -50px rgba(0, 0, 0, 0.9),
+      0 30px 90px -60px rgba(179, 167, 255, 0.25);
   }
   .case-frame::after {
     content: "";
@@ -153,7 +164,7 @@
     z-index: 2;
     pointer-events: none;
     border-radius: inherit;
-    background: radial-gradient(120% 90% at 50% 0%, transparent 62%, rgba(5, 6, 10, 0.55));
+    background: radial-gradient(120% 90% at 50% 10%, transparent 60%, rgba(8, 8, 10, 0.6));
   }
   .case-media {
     position: absolute;
@@ -173,19 +184,103 @@
     width: 100% !important;
     height: 100% !important;
     opacity: 0;
-    transition: opacity 0.9s var(--ease-out);
+    transition: opacity 1.2s var(--ease-out);
   }
   .case-frame[data-ready="true"] .case-canvas {
     opacity: 1;
   }
 
+  /* ── the screens window: the product itself, one screen per step ── */
+  .case-screens {
+    background:
+      radial-gradient(90% 70% at 70% 0%, rgba(179, 167, 255, 0.12), transparent 60%),
+      radial-gradient(70% 60% at 10% 100%, rgba(158, 233, 255, 0.08), transparent 60%),
+      var(--color-bg-2);
+    display: grid;
+    place-items: center;
+  }
+  .win {
+    position: relative;
+    width: 84%;
+    height: 80%;
+    margin-top: 2%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.14),
+      0 40px 80px -30px rgba(0, 0, 0, 0.8);
+    transform: perspective(1400px) rotateX(calc(4deg - var(--cp) * 4deg)) translateY(calc(10px - var(--cp) * 10px));
+  }
+  .win-bar {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    background: rgba(246, 246, 248, 0.94);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .win-bar i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #d9d9de;
+  }
+  .win-bar span {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2px 14px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 0.62rem;
+    color: #6b6b75;
+    letter-spacing: 0.04em;
+  }
+  .win-body {
+    position: absolute;
+    inset: 30px 0 0 0;
+  }
+  .win-shot {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(6%) scale(0.985);
+    transition:
+      opacity 0.8s var(--ease-out),
+      transform 1s var(--ease-out);
+  }
+  .win-shot[data-past="true"] {
+    opacity: 0;
+    transform: translateY(-4%) scale(0.985);
+  }
+  .win-shot[data-on="true"] {
+    opacity: 1;
+    transform: none;
+  }
+  .win-shot img {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: top;
+    /* read down the screen while it is the current step */
+    transform: translateY(calc(clamp(0, calc(var(--cp) * var(--steps) - var(--k)), 1) * -18%));
+  }
+
+  /* ── the HUD over either stage ── */
   .case-hud {
     position: absolute;
     inset: 0;
     z-index: 3;
     pointer-events: none;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
   }
   .case-hud > span {
     position: absolute;
@@ -198,17 +293,21 @@
   .case-hud-tr {
     right: 24px;
     top: 20px;
-    color: var(--color-cyan);
+    color: var(--color-fg);
+  }
+  .case-screens .case-hud-tl,
+  .case-screens .case-hud-tr {
+    top: 14px;
   }
   .case-hud-bl {
     left: 22px;
-    bottom: 28px;
-    padding: 0.42rem 0.8rem;
+    bottom: 26px;
+    padding: 0.45rem 0.85rem;
     border-radius: 999px;
-    background: rgba(5, 6, 10, 0.72);
-    border: 1px solid var(--color-line-2);
-    backdrop-filter: blur(10px);
-    letter-spacing: 0;
+    background: rgba(8, 8, 10, 0.7);
+    box-shadow: 0 0 0 1px var(--color-line-2);
+    backdrop-filter: blur(12px);
+    letter-spacing: -0.005em;
     font-size: 0.8rem;
     color: var(--color-fg);
   }
@@ -216,23 +315,22 @@
     left: 22px;
     right: 22px;
     bottom: 14px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 2px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
     overflow: hidden;
   }
   .case-bar i {
     position: absolute;
     inset: 0;
-    background: var(--gradient);
+    background: var(--color-fg);
     transform-origin: left;
     transform: scaleX(var(--cp));
   }
   .case-corner {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 0 solid rgba(255, 255, 255, 0.55);
+    width: 14px;
+    height: 14px;
+    border: 0 solid rgba(255, 255, 255, 0.4);
   }
   .c1 {
     left: 10px;
@@ -258,17 +356,27 @@
     border-left-width: 1px;
     border-bottom-width: 1px;
   }
+  .case-screens .case-corner {
+    display: none;
+  }
   .case-note {
     text-transform: none;
     letter-spacing: 0.04em;
-    font-size: 0.66rem;
+    font-size: 0.64rem;
     color: var(--color-fg-4);
+  }
+  .case-note a {
+    color: var(--color-fg-3);
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-3);
+    text-underline-offset: 3px;
   }
 
   @media (max-width: 860px) {
-    .case {
+    .case,
+    .case[data-stage="screens"] {
       height: auto;
-      padding-block: 56px;
+      padding-block: 64px;
     }
     .case-pin {
       position: relative;
@@ -276,17 +384,17 @@
       padding-top: 0;
     }
     .case-grid,
-    .case[data-n="1"] .case-grid {
+    .case:nth-of-type(even) .case-grid {
       grid-template-columns: minmax(0, 1fr);
     }
     .case-copy,
-    .case[data-n="1"] .case-copy {
+    .case:nth-of-type(even) .case-copy {
       order: 2;
     }
     .case-frame {
       aspect-ratio: 16 / 11;
     }
-    /* Not pinned, so nothing drives the steps: all four read as the finished sequence. */
+    /* Not pinned, so nothing drives the steps: all of them read as the finished sequence. */
     .case-steps li {
       color: var(--color-fg-2);
     }
@@ -296,6 +404,17 @@
     .case-hud-tr,
     .case-bar {
       display: none;
+    }
+    .win {
+      width: 90%;
+      transform: none;
+    }
+    .win-shot:first-child {
+      opacity: 1;
+      transform: none;
+    }
+    .win-shot img {
+      transform: none;
     }
   }
 }

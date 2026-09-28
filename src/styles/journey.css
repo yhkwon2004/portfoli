@@ -22,10 +22,9 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(var(--color-violet), var(--color-cyan));
+    background: linear-gradient(var(--color-fg-3), var(--color-fg));
     transform-origin: top;
     transform: scaleY(var(--tp));
-    box-shadow: 0 0 12px rgba(87, 230, 255, 0.6);
   }
   .tl-group {
     margin: 0 0 1rem -34px;
@@ -68,13 +67,14 @@
       border-color 0.4s;
   }
   .stop[data-lit="true"] .stop-dot {
-    border-color: var(--color-cyan);
-    background: var(--color-cyan);
-    box-shadow: 0 0 0 5px rgba(87, 230, 255, 0.15);
+    border-color: var(--color-fg);
+    background: var(--color-fg);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.08);
   }
   .stop-year {
-    font-size: 0.74rem;
-    color: var(--color-cyan);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--color-fg-4);
   }
   .stop-title {
     font-size: clamp(1.15rem, 1.7vw, 1.45rem);

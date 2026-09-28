@@ -15,6 +15,7 @@ export const SECTIONS = [
   { id: "skills", label: UI.nav.skills },
   { id: "works", label: UI.nav.works },
   { id: "awards", label: UI.nav.awards },
+  { id: "press", label: UI.nav.press },
   { id: "journey", label: UI.nav.journey },
   { id: "contact", label: UI.nav.contact },
 ] as const;
