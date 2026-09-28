@@ -5,11 +5,12 @@ export function workPose(distance, width) {
 }
 
 // Native scroll remains the timeline; drag and keys seek it without trapping wheel or touch input.
-export function createHomeMotion({onWork}) {
+export function createHomeMotion({onWork,onPractice}) {
   const home=document.querySelector('#home-page'),works=document.querySelector('#works');
   const cards=[...document.querySelectorAll('.work-card')],vision=document.querySelector('#vision'),contact=document.querySelector('#contact');
-  const quotes=[...document.querySelectorAll('.quote-frame')],preference=matchMedia('(prefers-reduced-motion: reduce)');
-  let position=0,active=-1,raf=0,lastTime=0,drag=null,clickBlockedUntil=0,snapTimer=0,seekFrame=0;
+  const quotes=[...document.querySelectorAll('.quote-frame')],practice=document.querySelector('#practice'),preference=matchMedia('(prefers-reduced-motion: reduce)');
+  const practiceCount=document.querySelectorAll('[data-practice]').length;
+  let position=0,active=-1,activePractice=0,raf=0,lastTime=0,drag=null,clickBlockedUntil=0,snapTimer=0,seekFrame=0;
   const bounds=element=>({start:element.offsetTop,end:element.offsetTop+Math.max(1,element.offsetHeight-innerHeight)});
   const fraction=element=>{const b=bounds(element);return clamp((scrollY-b.start)/(b.end-b.start));};
   const visible=element=>{const b=element.getBoundingClientRect();return b.bottom>0&&b.top<innerHeight;};
@@ -22,6 +23,10 @@ export function createHomeMotion({onWork}) {
   }
   function goToWork(index){const b=bounds(works);seek(b.start+clamp(index,0,cards.length-1)/(cards.length-1)*(b.end-b.start));}
   function goToQuote(index){const b=bounds(vision);seek(b.start+clamp(index,0,quotes.length-1)/(quotes.length-1)*(b.end-b.start));}
+  function goToPractice(index){
+    if(innerHeight<=650){activePractice=index;onPractice(index);return;}
+    const b=bounds(practice);seek(b.start+clamp(index,0,practiceCount-1)/(practiceCount-1)*(b.end-b.start));
+  }
   function render(now){
     raf=0;if(home.hidden)return;
     const target=fraction(works)*(cards.length-1),dt=Math.min((now-lastTime)||16,50);lastTime=now;
@@ -51,6 +56,9 @@ export function createHomeMotion({onWork}) {
     about.style.setProperty('--chapter-in',String(preference.matches?1:ap));
     const c=contact.getBoundingClientRect(),cp=clamp(1-c.top/innerHeight),hold=fraction(contact);
     contact.style.setProperty('--contact-in',String(preference.matches?1:cp));contact.style.setProperty('--contact-progress',String(hold));
+    const servicePosition=fraction(practice)*(practiceCount-1),serviceIndex=Math.round(servicePosition);
+    if(innerHeight>650&&visible(practice)&&serviceIndex!==activePractice){activePractice=serviceIndex;onPractice(activePractice);}
+    practice.style.setProperty('--service-turn',String(preference.matches?0:servicePosition-activePractice));
     if(position!==target)raf=requestAnimationFrame(render);
   }
   function update(){if(!raf){lastTime=0;raf=requestAnimationFrame(render);}}
@@ -68,6 +76,7 @@ export function createHomeMotion({onWork}) {
     area.addEventListener('dragstart',event=>event.preventDefault());
     area.addEventListener('pointerdown',event=>{
       if(!event.isPrimary||event.button!==0||event.target.closest('button,input,select'))return;
+      if(area.closest('section')===practice&&innerHeight<=650)return;
       cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);
       drag={id:event.pointerId,x:event.clientX,y:event.clientY,scroll:scrollY,area,section:area.closest('section'),moved:false,touch:event.pointerType==='touch'};
     });
@@ -81,7 +90,8 @@ export function createHomeMotion({onWork}) {
     drag.moved=true;drag.area.classList.add('is-dragging');
     if(!drag.area.hasPointerCapture(event.pointerId))drag.area.setPointerCapture(event.pointerId);
     const horizontal=Math.abs(dx)>=Math.abs(dy),delta=horizontal?-dx:-dy,b=bounds(drag.section);
-    const steps=drag.section===works?cards.length-1:drag.section===vision?quotes.length-1:1;
+    if(drag.section===practice&&innerHeight<=650)return;
+    const steps=drag.section===works?cards.length-1:drag.section===vision?quotes.length-1:drag.section===practice?practiceCount-1:1;
     const travel=(b.end-b.start)/steps;
     scrollTo({top:clamp(drag.scroll+delta/Math.max(240,innerWidth*.48)*travel,b.start,b.end),behavior:'instant'});
   },{passive:true});
@@ -89,7 +99,7 @@ export function createHomeMotion({onWork}) {
     if(!drag||drag.id!==event.pointerId)return;
     const finished=drag;drag=null;finished.area.classList.remove('is-dragging');
     if(finished.area.hasPointerCapture(event.pointerId))finished.area.releasePointerCapture(event.pointerId);
-    if(finished.moved){clickBlockedUntil=performance.now()+400;if(event.type!=='pointercancel'){if(finished.section===works)goToWork(Math.round(fraction(works)*(cards.length-1)));if(finished.section===vision)goToQuote(Math.round(fraction(vision)*(quotes.length-1)));}}
+    if(finished.moved){clickBlockedUntil=performance.now()+400;if(event.type!=='pointercancel'){if(finished.section===works)goToWork(Math.round(fraction(works)*(cards.length-1)));if(finished.section===vision)goToQuote(Math.round(fraction(vision)*(quotes.length-1)));if(finished.section===practice&&innerHeight>650)goToPractice(Math.round(fraction(practice)*(practiceCount-1)));}}
   }
   addEventListener('pointerup',release);addEventListener('pointercancel',release);
   home.addEventListener('click',event=>{if(performance.now()<clickBlockedUntil){event.preventDefault();event.stopImmediatePropagation();}},true);
@@ -98,5 +108,5 @@ export function createHomeMotion({onWork}) {
   document.querySelector('.quote-controls').addEventListener('click',event=>{const button=event.target.closest('[data-quote]');if(button)goToQuote(Number(button.dataset.quote));});
   preference.addEventListener('change',()=>{stop();update();});
   function stop(){cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);if(drag)release({pointerId:drag.id,type:'pointercancel'});}
-  return {update,goToWork,stop};
+  return {update,goToWork,goToPractice,stop};
 }

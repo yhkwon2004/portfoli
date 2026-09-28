@@ -13,14 +13,14 @@ export async function createScene(canvas, wordmark) {
   camera.position.set(0, 0, 6);
   const uniforms = {
     time: { value: 0 }, resolution: { value: new THREE.Vector2() },
-    progress: { value: 0 }, pointer: { value: new THREE.Vector2() }, quiet: { value: 0 },
+    progress: { value: 0 }, pointer: { value: new THREE.Vector2() }, quiet: { value: 0 }, wordMap: {value:null},
   };
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(50, 35), new THREE.ShaderMaterial({
     uniforms, depthWrite: false,
     vertexShader: 'void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
     fragmentShader: `
       uniform float time; uniform vec2 resolution; uniform float progress;
-      uniform vec2 pointer; uniform float quiet;
+      uniform vec2 pointer; uniform float quiet; uniform sampler2D wordMap;
       float grid(vec2 p, float width) {
         vec2 line=abs(fract(p-.5)-.5)/max(fwidth(p),vec2(.0001));
         return 1.-min(min(line.x,line.y)/width,1.);
@@ -28,20 +28,23 @@ export async function createScene(canvas, wordmark) {
       void main(){
         vec2 uv=gl_FragCoord.xy/resolution;
         vec2 p=uv-.5;p.x*=resolution.x/resolution.y;p+=pointer*.012;
-        vec2 curved=vec2(atan(p.x*1.05)*1.22,p.y/sqrt(1.+p.x*p.x*.82));
+        vec2 curved=vec2(atan(p.x*.9)*1.3,p.y/sqrt(1.+p.x*p.x*.7));
         curved.y+=progress*.014;
         float fine=grid(curved*48.,.5),medium=grid(curved*12.,.7),major=grid(curved*3.,.8);
         vec2 v=(p-vec2(-.24,.02))*vec2(1.8,2.5),b=(p-vec2(.28,-.2))*vec2(2.4,2.8);
         float violet=exp(-dot(v,v)),blue=exp(-dot(b,b));
         float breath=.93+.07*sin(time*.16);
-        vec3 color=vec3(.014,.015,.021);
-        color+=(vec3(.025,.013,.09)*violet+vec3(.003,.028,.043)*blue)*breath*(1.-quiet*.45);
+        vec3 color=vec3(.006,.008,.011);
+        color+=(vec3(.011,.016,.033)*violet+vec3(.002,.021,.023)*blue)*breath*(1.-quiet*.65);
+        vec2 reflected=vec2(curved.x*.62+curved.y*.5+.5,curved.y*.9+.5+sin(time*.035)*.06);
+        float reflection=texture2D(wordMap,fract(reflected)).a;
+        color+=vec3(.16,.17,.18)*reflection*(1.-smoothstep(.2,2.2,progress))*(1.-quiet);
         float falloff=1.-smoothstep(.28,1.45,length(p));
-        color+=vec3(.17,.18,.2)*(fine*.105+medium*.12)*falloff;
-        color*=1.-major*.55;
+        color+=vec3(.23,.25,.27)*(fine*.16+medium*.25)*max(.35,falloff);
+        color*=1.-major*.68;
         vec2 cell=abs(fract(curved*3.+.5)-.5);
         float cross=(1.-smoothstep(.003,.006,min(cell.x,cell.y)))*(1.-smoothstep(.012,.022,max(cell.x,cell.y)));
-        color+=vec3(.2,.22,.25)*cross*.55*falloff;
+        color+=vec3(.3,.32,.34)*cross*.7*falloff;
         color*=1.-smoothstep(.36,1.5,length(p))*.66;
         gl_FragColor=vec4(color,1.);
       }`,
@@ -55,19 +58,20 @@ export async function createScene(canvas, wordmark) {
   scene.add(new THREE.AmbientLight(0xf1f4ff, .8));
   const key = new THREE.DirectionalLight(0xffffff, 4.2); key.position.set(-3, 5, 4); scene.add(key);
   const fill = new THREE.DirectionalLight(0xf2f7ff, 2.2); fill.position.set(3, -2, 4); scene.add(fill);
-  const violet = new THREE.PointLight(0x7861ff, 8, 15, 2); violet.position.set(-2.5, -.5, 1.5); scene.add(violet);
-  const rim = new THREE.PointLight(0x94deff, 12, 15, 2); rim.position.set(2, 2, 1); scene.add(rim);
+  const violet = new THREE.PointLight(0xad9fff, 5, 15, 2); violet.position.set(-2.5, -.5, 1.5); scene.add(violet);
+  const rim = new THREE.PointLight(0xd9f2ff, 10, 15, 2); rim.position.set(2, 2, 1); scene.add(rim);
   const glass = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff, metalness: .025, roughness: .035, transmission: 1, thickness: .14,
-    ior: 1.46, dispersion: .1, iridescence: .22, iridescenceIOR: 1.3,
+    color: 0xffffff, metalness: .05, roughness: .085, transmission: 1, thickness: .35,
+    ior: 1.5, dispersion: .12, iridescence: .1, iridescenceIOR: 1.3,
     iridescenceThicknessRange: [140, 360], clearcoat: 1, clearcoatRoughness: .04,
-    envMapIntensity: 2.15, side: THREE.FrontSide,
+    envMapIntensity: 2.8, side: THREE.FrontSide,
   });
   glass.onBeforeCompile = shader => {
     shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `
       #include <normal_fragment_maps>
       float ripple=sin(vViewPosition.y*32.+sin(vViewPosition.x*19.)*.8);
-      normal=normalize(normal+vec3(ripple*.004,sin(vViewPosition.x*46.)*.003,0.));
+      float frost=fract(sin(dot(vViewPosition.xy,vec2(127.1,311.7)))*43758.5453)-.5;
+      normal=normalize(normal+vec3(ripple*.008+frost*.018,sin(vViewPosition.x*46.)*.007,0.));
     `);
   };
   const geometry = gltf.scene.getObjectByName('Alche_A').geometry.clone();
@@ -106,10 +110,11 @@ export async function createScene(canvas, wordmark) {
   typeCanvas.width = 2048; typeCanvas.height = 650;
   const context = typeCanvas.getContext('2d');
   context.fillStyle = '#f7f7fb'; context.textAlign = 'center'; context.textBaseline = 'middle';
-  context.font = '600 540px Arial';
+  context.font = '700 540px Arial';
   context.translate(1024,340); context.scale(1900/Math.max(1,context.measureText(wordmark).width),1);
   context.fillText(wordmark,0,0);
   const typeTexture = new THREE.CanvasTexture(typeCanvas); typeTexture.colorSpace = THREE.SRGBColorSpace;
+  uniforms.wordMap.value=typeTexture;
   // Keep type opaque and alpha-tested so it exists in the glass transmission buffer.
   const titleMaterial = new THREE.MeshBasicMaterial({ map: typeTexture, alphaTest: .1, depthWrite: false });
   const title = new THREE.Mesh(new THREE.PlaneGeometry(1,1),titleMaterial);
@@ -137,10 +142,10 @@ export async function createScene(canvas, wordmark) {
     camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
     uniforms.resolution.value.set(canvas.width,canvas.height);
     const worldHeight = 2*Math.tan(THREE.MathUtils.degToRad(20))*6;
-    const safeTop = mobile?172:innerHeight*.13;
-    const safeBottom = mobile?Math.max(safeTop+170,innerHeight-235):innerHeight*.9;
+    const safeTop = innerHeight*(mobile?.23:.11);
+    const safeBottom = innerHeight*(mobile?.70:.81);
     const availableHeight = Math.min(innerHeight*.78,safeBottom-safeTop);
-    heroScale = Math.min(worldHeight*availableHeight/innerHeight/logoSize.y,worldHeight*camera.aspect*(mobile?.8:.64)/logoSize.x);
+    heroScale = Math.min(worldHeight*availableHeight/innerHeight/logoSize.y,worldHeight*camera.aspect*(mobile?.98:.65)/logoSize.x);
     heroY = (.5-(safeTop+safeBottom)/(innerHeight*2))*worldHeight;
     titleY = heroY*1.25;
     titleWidth = worldHeight*1.25*camera.aspect*(mobile?.99:.96);
@@ -199,13 +204,13 @@ export async function createScene(canvas, wordmark) {
     const leave=1-THREE.MathUtils.smoothstep(scrollPosition,visionBottom-innerHeight*.3,visionBottom);
     infinity.visible=isHome&&emerge*leave>.005;
     if(infinity.visible){
-      infinityMaterial.opacity=emerge*leave*.24;infinity.scale.setScalar(mobile?1.25:2.25);
-      infinity.position.set(Math.sin(aboutProgress*.4)*.3,-.08,-3.3);
+      infinityMaterial.opacity=emerge*leave*.18;infinity.scale.setScalar(mobile?1.6:2.8);
+      infinity.position.set(Math.sin(aboutProgress*.4)*.8+.6,-.08,-3.3);
       infinity.rotation.set(.4+Math.sin(t*.6)*.1,t*.25,.15+aboutProgress*.2);
     }
     dust.rotation.y=p.x*.02;dust.rotation.x=p.y*.015;
     dust.material.uniforms.strength.value=isHome||isMotion?.42:.12;
-    violet.intensity=8+Math.sin(t*.65)*1.5;
+    violet.intensity=5+Math.sin(t*.65)*1.5;
     renderer.render(scene,camera);
   }
   renderer.setAnimationLoop(render);

@@ -37,22 +37,18 @@ $('#news-list').innerHTML=content.news.map(item=>`<a href="${item.target}"><time
 if($('#home-press'))$('#home-press').innerHTML=press.slice(0,3).map(pressCard).join('');
 $('#work-track').innerHTML=featured.map((item,index)=>`<a class="work-card" href="${itemPath(item)}" aria-label="${e(item.title)} 프로젝트 자세히 보기">${visual(item,{eager:true})}<span class="card-label">${String(index+1).padStart(2,'0')} / ${e(item.category.toUpperCase())}</span><span class="card-open" aria-hidden="true">↗</span></a>`).join('');
 $('.work-scrubber').innerHTML=featured.map((item,index)=>`<button type="button" data-work-index="${index}" aria-label="${index+1}. ${e(item.title)}" aria-pressed="false"><span></span></button>`).join('');
-const practiceForms=[
-  '<path d="m90 14 58 34v68l-58 34-58-34V48Z M32 48l58 34 58-34 M90 82v68 M61 31l58 34v68 M32 82l58 34 58-34 M61 133V65l58-34"/><circle cx="90" cy="82" r="5" fill="currentColor" stroke="none"/>',
-  '<path d="M12 82h156 M90 8v148 M12 82c26-92 52-92 78 0s52 92 78 0 M12 82c26 54 52 54 78 0s52-54 78 0"/><circle cx="90" cy="82" r="66"/><circle cx="90" cy="82" r="5" fill="currentColor" stroke="none"/>',
-  '<ellipse cx="90" cy="82" rx="76" ry="29"/><ellipse cx="90" cy="82" rx="76" ry="29" transform="rotate(60 90 82)"/><ellipse cx="90" cy="82" rx="76" ry="29" transform="rotate(120 90 82)"/><circle cx="90" cy="82" r="13"/><circle cx="166" cy="82" r="4" fill="currentColor" stroke="none"/>'
-];
 $('#practice-grid').innerHTML=content.practice.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-panel" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>${item.number}</span><strong>${e(item.title)}</strong><small>${e(item.subtitle)}</small><b aria-hidden="true">↗</b></button>`).join('');
 function selectPractice(index){
  const item=content.practice[index],project=projects.find(project=>project.id===item.projectId);
  document.querySelectorAll('[data-practice]').forEach((button,i)=>{button.setAttribute('aria-selected',String(i===index));button.tabIndex=i===index?0:-1;});
  const panel=$('#practice-panel');panel.setAttribute('aria-labelledby',`practice-tab-${index}`);
- panel.innerHTML=`<div class="practice-process"><svg class="practice-visual" viewBox="0 0 180 164" fill="none" stroke="currentColor" stroke-width=".65" aria-hidden="true">${practiceForms[index]}</svg><div><p>${e(item.text)}</p><ol>${item.steps.map(step=>`<li>${e(step)}</li>`).join('')}</ol><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div></div></div><a class="practice-proof" href="${itemPath(project)}"><div>${visual(project)}</div><span><small>EXPLORE THE OUTCOME</small><strong>${e(project.title)}</strong></span><b>↗</b></a>`;
+ panel.innerHTML=`<a class="practice-object" href="${itemPath(project)}" aria-label="${e(project.title)} 자세히 보기">${visual(project,{full:true})}<span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">0${index+1} / HOW I WORK</span><h3>${e(item.title)}</h3><h4>${e(item.subtitle)}</h4><p>${e(item.text)}</p><ol>${item.steps.map(step=>`<li>${e(step)}</li>`).join('')}</ol><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div><a class="practice-proof" href="${itemPath(project)}"><span><small>EXPLORE THE OUTCOME</small><strong>${e(project.title)}</strong></span><b aria-hidden="true">↗</b></a></div>`;
+
  if(!reducedMotion)panel.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:450,easing:'ease-out'});
 }
 selectPractice(0);
-$('#practice-grid').addEventListener('click',event=>{const button=event.target.closest('[data-practice]');if(button)selectPractice(Number(button.dataset.practice));});
-$('#practice-grid').addEventListener('keydown',event=>{if(!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const i=Number(event.target.dataset.practice),next=event.key==='Home'?0:event.key==='End'?2:(i+(['ArrowDown','ArrowRight'].includes(event.key)?1:2))%3;selectPractice(next);document.querySelectorAll('[data-practice]')[next].focus();});
+$('#practice-grid').addEventListener('click',event=>{const button=event.target.closest('[data-practice]');if(button)homeMotion.goToPractice(Number(button.dataset.practice));});
+$('#practice-grid').addEventListener('keydown',event=>{if(!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const i=Number(event.target.dataset.practice),next=event.key==='Home'?0:event.key==='End'?2:(i+(['ArrowDown','ArrowRight'].includes(event.key)?1:2))%3;homeMotion.goToPractice(next);document.querySelectorAll('[data-practice]')[next].focus();});
 $('.section-rail [data-section="about"]').href='./#about';
 $('.footer-nav a').href='works/';
 const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.08});
@@ -140,9 +136,9 @@ document.addEventListener('click',event=>{
   navigate(url);
 });
 
-const homeMotion=createHomeMotion({onWork(index){
+const homeMotion=createHomeMotion({onPractice:selectPractice,onWork(index){
  activeWork=index;const item=featured[index];
- text('#active-work-title',item.title);text('#active-work-subtitle',item.tags.join(' / '));text('#active-work-type',`${item.year} / ${item.category.toUpperCase()}`);$('#active-work-title').href=itemPath(item);
+ text('#active-work-title',item.title);$('#active-work-subtitle').innerHTML=item.tags.map(tag=>`<span>${e(tag)}</span>`).join('');text('#active-work-type',`${item.year} / ${item.category.toUpperCase()}`);$('#active-work-title').href=itemPath(item);
  document.querySelectorAll('[data-work-index]').forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
  const atmosphere=$('.work-atmosphere img'),image=cover(item);atmosphere.hidden=!image;if(image)atmosphere.src=image.thumb;
  text('#work-index',`${String(index+1).padStart(2,'0')} / ${String(featured.length).padStart(2,'0')}`);text('.work-count',`${String(index+1).padStart(2,'0')} — ${String(featured.length).padStart(2,'0')}`);

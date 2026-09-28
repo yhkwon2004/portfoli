@@ -28,7 +28,7 @@ export function visual(item, { full=false, eager=false }={}) {
   return image ? `<img src="${e(full?image.src:image.thumb)}" alt="${e(image.alt)}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async">${image.illustrative?'<span class="concept-label">CONCEPT VISUAL</span>':''}` : `<div class="type-visual" aria-hidden="true"><span>${e(item.category)}</span><b>${e(item.tags[0]||item.category)}</b><small>${e(item.year)} / KWON</small></div>`;
 }
 export function projectCard(item, index=0) {
-  return `<a class="project-card" href="${itemPath(item)}"><div class="project-image">${visual(item)}<span class="project-open">↗</span></div><div class="project-caption"><span>${number(index+1)} / ${e(item.category)}</span><span>${e(item.year)}</span></div><h2>${e(item.title)}</h2><p>${e(item.summary)}</p>${tags(item)}</a>`;
+  return `<a class="project-card" href="${itemPath(item)}"><div class="project-image">${visual(item)}<span class="project-open">↗</span></div><div class="project-caption"><span>${e(item.year)}</span><span>[ ${e(item.category)} ]</span></div><h2>${e(item.title)}</h2><p>${e(item.summary)}</p>${tags(item)}</a>`;
 }
 function pageHeading(kicker, title, text='') {
   return `<div class="page-heading"><p class="eyebrow">${e(kicker)}</p><h1>${title}</h1>${text?`<p class="page-intro">${e(text)}</p>`:''}</div>`;
