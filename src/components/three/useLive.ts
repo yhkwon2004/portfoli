@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useMotion } from "@/components/site/MotionContext";
-import { createDrive, hasWebGL, type Drive } from "@/components/three/core";
+import { createDrive, webGL, type Drive, type GL } from "@/components/three/core";
 
 export type StageMode = "poster" | "video" | "3d";
 
@@ -12,8 +12,9 @@ export type StageMode = "poster" | "video" | "3d";
  *   drive   the (p, t) object the scene reads; the caller sets `drive.target` from scroll
  *   active  whether the stage is near the viewport — off-screen stages stop drawing
  *   mode    what the stage can afford to be:
- *             3d      motion on, WebGL present, a wide enough screen
- *             video   motion on but a phone or no WebGL: the pre-rendered loop instead
+ *             3d      motion on, WebGL on a GPU, a wide enough screen
+ *             video   motion on but a phone, no WebGL, or WebGL drawn in software: the
+ *                     pre-rendered loop instead (see `webGL` in core.ts)
  *             poster  motion off: one still frame, nothing moving
  *
  * The server always renders the poster; the mode is decided after mount, so the static HTML
@@ -26,11 +27,11 @@ export function useLive(
   const { motion } = useMotion();
   const drive = useRef<Drive>(createDrive()).current;
   const [active, setActive] = useState(false);
-  const [env, setEnv] = useState<{ webgl: boolean; narrow: boolean } | null>(null);
+  const [env, setEnv] = useState<{ gl: GL; narrow: boolean } | null>(null);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() =>
-      setEnv({ webgl: hasWebGL(), narrow: window.matchMedia("(max-width: 860px)").matches }),
+      setEnv({ gl: webGL(), narrow: window.matchMedia("(max-width: 860px)").matches }),
     );
     return () => cancelAnimationFrame(raf);
   }, []);
@@ -64,6 +65,6 @@ export function useLive(
     };
   }, [ref, motion, drive]);
 
-  const mode: StageMode = !env || !motion ? "poster" : env.webgl && (!env.narrow || opts.mobile3d) ? "3d" : "video";
+  const mode: StageMode = !env || !motion ? "poster" : env.gl === "gpu" && (!env.narrow || opts.mobile3d) ? "3d" : "video";
   return { drive, active, mode, lite: !!env?.narrow };
 }

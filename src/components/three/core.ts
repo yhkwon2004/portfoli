@@ -158,15 +158,32 @@ export function dotTexture(): THREE.CanvasTexture {
   });
 }
 
-/** Is WebGL usable here at all? Checked once; a failure means the poster stands in. */
-let webgl: boolean | null = null;
-export function hasWebGL(): boolean {
-  if (webgl !== null) return webgl;
+export type GL = "none" | "software" | "gpu";
+
+/**
+ * What draws WebGL here, checked once: nothing, a software rasteriser, or a GPU.
+ *
+ * A software rasteriser (SwiftShader, llvmpipe — what a browser falls back to when its GPU is
+ * blocklisted, and what CI runs) can draw these scenes, but the first frame of each compiles
+ * its shaders and filters its reflections in seconds rather than milliseconds, freezing the
+ * page mid-scroll. Such a visitor is better served by the same scene pre-rendered as video.
+ * Where the renderer is not reported (a privacy setting), a GPU is assumed.
+ */
+let gl: GL | null = null;
+export function webGL(): GL {
+  if (gl !== null) return gl;
   try {
     const c = document.createElement("canvas");
-    webgl = !!(c.getContext("webgl2") || c.getContext("webgl"));
+    const ctx = (c.getContext("webgl2") ?? c.getContext("webgl")) as WebGLRenderingContext | null;
+    if (!ctx) gl = "none";
+    else {
+      const info = ctx.getExtension("WEBGL_debug_renderer_info");
+      const name = String(ctx.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : ctx.RENDERER) ?? "");
+      gl = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name) ? "software" : "gpu";
+      ctx.getExtension("WEBGL_lose_context")?.loseContext();
+    }
   } catch {
-    webgl = false;
+    gl = "none";
   }
-  return webgl;
+  return gl;
 }
