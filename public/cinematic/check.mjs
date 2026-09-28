@@ -4,6 +4,18 @@ import { records, content, projects, awards, press, featured, categories, filter
 import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds } from './pages.js';
 import { institutions } from './media.js';
 import { workPose, clamp } from './home-motion.js';
+import { animatePageTransition } from './page-transition.js';
+assert.deepEqual(animatePageTransition(null,null,true,true),[],'Reduced motion must not start animations');
+const motionCalls=[];
+const motionElement={animate(frames,options){motionCalls.push({frames,options});return {finished:Promise.resolve()};},querySelector(){return this;}};
+for(const entering of [true,false]){
+  motionCalls.length=0;
+  const animations=animatePageTransition(motionElement,motionElement,entering,false);
+  await Promise.all(animations.map(animation=>animation.finished));
+  assert.equal(animations.length,3,'Curtain, graphic and page must move together');
+  assert.equal(motionCalls[0].frames[entering?1:0].transform,'translateY(0)','DOM swap must be fully covered');
+  assert.equal(motionCalls[2].frames.at(-1).opacity,entering?.35:1,'Incoming content must finish fully visible');
+}
 const local=path=>new URL(path,import.meta.url);
 assert.equal(new Set(records.map(item=>item.id)).size,records.length,'Record IDs must be unique');
 assert(featured.every(item=>item?.type==='project'),'Featured projects must resolve');

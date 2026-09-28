@@ -1,6 +1,7 @@
 import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js';
 import { createScene } from './scene.js';
 import { createHomeMotion } from './home-motion.js';
+import { animatePageTransition } from './page-transition.js';
 import { institutions } from './media.js';
 import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js';
 
@@ -13,6 +14,7 @@ const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
 const e = escapeHTML;
 const home = $('#home-page'), view = $('#page-view'), loader = $('#page-loader');
 let currentPage, scene, navigation = 0, activeWork = -1, framePending = false;
+let routeAnimations=[];
 const scrollPositions=new Map();
 let entryKey=history.state?.entryKey||crypto.randomUUID();
 history.replaceState({...history.state,entryKey},'',location.href);
@@ -90,12 +92,15 @@ function resetMotionControls(){scene?.setMotion({material:'glass',speed:1,paused
 async function navigate(url,{pop=false,initial=false}={}) {
   homeMotion.stop();
   const token=++navigation;
+  routeAnimations.forEach(animation=>animation.cancel());routeAnimations=[];
+  loader.classList.toggle('route-transition',!initial);
   const next=resolvePage(pathOf(url),url.searchParams);
   if(pop){scrollPositions.set(entryKey,scrollY);entryKey=history.state?.entryKey||crypto.randomUUID();}
   const saved=pop?(scrollPositions.get(entryKey)??history.state?.scroll??0):0;
   if(!initial&&!pop){saveScroll();entryKey=crypto.randomUUID();history.pushState({entryKey,scroll:0},'',url);}
   showLoader(next.item?.title||next.title,initial,next.item&&cover(next.item));
-  await Promise.all([loadPageAssets(next,token,initial),...loader.getAnimations().map(animation=>animation.finished.catch(()=>{}))]);
+  if(!initial)routeAnimations=animatePageTransition(loader,currentPage?.kind==='home'?home:view,true,reducedMotion);
+  await Promise.all([loadPageAssets(next,token,initial),...(initial?loader.getAnimations():routeAnimations).map(animation=>animation.finished.catch(()=>{}))]);
   if(token!==navigation)return;
   if(lightbox.open)lightbox.close(); closeMenu();
   currentPage=next;
@@ -114,11 +119,16 @@ async function navigate(url,{pop=false,initial=false}={}) {
   scrollTo({top:saved,behavior:'instant'});
   if(url.hash&&!pop){try{document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView({behavior:'instant'});}catch{}}
   text('#loader-percent','100%'); $('.loader-progress i').style.transform='scaleX(1)';
-  document.body.classList.remove('booting','is-loading'); loader.classList.remove('active');
+  routeAnimations.forEach(animation=>animation.cancel());
+  if(!initial)routeAnimations=animatePageTransition(loader,isHome?home:view,false,reducedMotion);
+  document.body.classList.remove('booting');
   document.body.classList.add('has-entered');
-  if(!isHome&&!reducedMotion)view.animate([{opacity:0,transform:'translateY(20px)'},{opacity:1,transform:'translateY(0)'}],{duration:650,easing:'cubic-bezier(.2,.7,.2,1)'});
-  home.removeAttribute('aria-busy');view.removeAttribute('aria-busy');
   observeReveals(); updatePage();
+  await Promise.all(routeAnimations.map(animation=>animation.finished.catch(()=>{})));
+  if(token!==navigation)return;
+  loader.classList.remove('active');document.body.classList.remove('is-loading');
+  routeAnimations.forEach(animation=>animation.cancel());routeAnimations=[];
+  home.removeAttribute('aria-busy');view.removeAttribute('aria-busy');
   if(!initial){(isHome?$('#hero-title'):view).setAttribute('tabindex','-1');(isHome?$('#hero-title'):view).focus({preventScroll:true});}
 }
 addEventListener('popstate',()=>navigate(new URL(location.href),{pop:true}));
