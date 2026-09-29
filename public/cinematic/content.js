@@ -1,5 +1,5 @@
 import { records } from './data.js';
-import { pressImages } from './media.js';
+import { pressImages } from './media.js?v=20260929-chapters';
 // 개인 소개와 대표 프로젝트 순서는 여기서, 전체 프로젝트는 data.js에서 수정합니다.
 export { records };
 export const projects = records.filter(item => item.type === 'project');
@@ -20,8 +20,8 @@ export const content = {
  name:'권용현', englishName:'Yonghyun Kwon', wordmark:'KWON',
  role:'Developer · Maker · Problem solver', location:'Based in South Korea', email:'yhkwon2004@gmail.com',
  intro:['현장의 문제를 발견하고,','동작하는 제품으로 답합니다.'],
- about:{heading:['현장을 이해하고,','가능성을 구현합니다.'],english:'From real-world problems to working products.',description:'컴퓨터 소프트웨어와 스마트 모빌리티를 공부하며 하드웨어 제작, 펌웨어, AI와 창업을 연결합니다. 문제의 시급성과 중요성을 판단하고, 직접 만들고 검증하는 과정에서 다음 해답을 찾습니다.'},
- quotes:[{line:'모래시계는 굵기와 위치에 따라|떨어지는 속도가 다릅니다.',note:'작은 차이가 시간의 흐름을 바꾸듯.'},{line:'일에도, 시간을 흘려보낼|순서가 필요합니다.',note:'모든 일을 같은 속도로 할 필요는 없습니다.'},{line:'시급함과 중요함을 정리하고,|필요한 일에 먼저 집중합니다.',note:'일의 시급성과 중요도를 정리하여 업무의 효율을 올리는 개발자입니다.'}],
+ about:{heading:['기술의 가능성을,','사람에게 필요한 변화로.'],english:'Turn possibilities into something that matters.',description:'현장에서 문제를 발견하고, 하드웨어와 소프트웨어로 답을 만듭니다. 작동하는 시제품에서 실제로 쓰이는 제품까지. 배우고, 만들고, 검증하는 과정으로 다음 가능성을 열어갑니다.'},
+ quotes:[{line:'모래시계는 굵기와 위치에 따라|떨어지는 속도가 다릅니다.',note:'작은 차이를 읽는 시선이, 시간의 가치를 바꿉니다.'},{line:'일에도, 시간을 흘려보낼|순서가 필요합니다.',note:'속도보다 먼저 방향을 정하고, 중요한 일에 시간을 씁니다.'},{line:'시급함과 중요함을 정리하고,|집중을 성과로 연결합니다.',note:'일의 시급성과 중요도를 정리하여 업무의 효율을 올리는 개발자입니다.',awardIds:['award-driveup','award-gangneung']}],
  vision:{heading:['경험과 도전은,','나눔에서 이루어집니다.'],english:['Build. Learn. Share.','And make the next possibility real.']},
  news:[{date:'2026.04',title:'전북현대모터스FC × Re:cap, 아이디어에서 실제 판매까지',target:'works/project-upcycle-jbmotors/'},{date:'2026',title:'스마트 IoT 링거폴대 — 회로와 제품 설계',target:'works/project-iot-ring/'},{date:'2025.08',title:'Drive Up 창업캠프 대상 · 전북도지사 표창',target:'records/award-driveup/'}],
  practice:[

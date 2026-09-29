@@ -1,9 +1,9 @@
-import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js';
+import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20260929-chapters';
 import { createScene } from './scene.js';
-import { createHomeMotion } from './home-motion.js';
+import { createHomeMotion } from './home-motion.js?v=20260929-chapters';
 import { animatePageTransition } from './page-transition.js';
-import { institutions } from './media.js';
-import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js';
+import { institutions } from './media.js?v=20260929-chapters';
+import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20260929-chapters';
 
 const $ = selector => document.querySelector(selector);
 const text = (selector, value) => { $(selector).textContent = value; };
@@ -28,9 +28,11 @@ text('#footer-role',content.role); text('#copyright-name',content.name); text('#
 text('#year',new Date().getFullYear());
 lines('#intro-copy',content.intro); lines('#about-title',content.about.heading);
 text('#about-english',content.about.english); text('#about-description',content.about.description);
-$('#quote-stage').innerHTML=content.quotes.map((quote,index)=>`<div class="quote-frame" aria-hidden="${index!==0}"><span class="eyebrow">THOUGHT / 0${index+1}</span><p class="quote-line">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-word">${e(word)}</span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p></div>`).join('');
+$('#quote-stage').innerHTML=content.quotes.map((quote,index)=>`<div class="quote-frame" aria-hidden="${index!==0}"><span class="eyebrow">${index===2?'FOCUS INTO IMPACT':'MY PERSPECTIVE'} / 0${index+1}</span><p class="quote-line" aria-label="${e(quote.line.replaceAll('|',' '))}">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-mask" aria-hidden="true"><span class="quote-word">${e(word)}</span></span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p>${quote.awardIds?`<div class="vision-awards">${quote.awardIds.map(id=>{const award=awards.find(item=>item.id===id);return `<a href="${itemPath(award)}"><span>${e(award.year)} / RECOGNITION</span><strong>${e(award.title)}</strong><b aria-hidden="true">↗</b></a>`;}).join('')}</div>`:''}</div>`).join('');
 $('.quote-controls').innerHTML=content.quotes.map((quote,index)=>`<button data-quote="${index}" aria-label="문장 ${index+1}" aria-pressed="${index===0}"><span></span></button>`).join('');
-$('#institution-logos').innerHTML=institutions.map(item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${item.name==='AWS'?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`).join('');
+const logoGroup=institutions.map(item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${['AWS','전남대학교'].includes(item.name)?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`).join('');
+$('#institution-logos').innerHTML=`<div class="logo-group">${logoGroup}</div><div class="logo-group" aria-hidden="true" inert>${logoGroup}</div>`;
+$('.logo-pause').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));$('.institution-marquee').classList.toggle('is-paused',paused);event.currentTarget.textContent=paused?'로고 움직임 재생 ▷':'로고 움직임 멈추기 Ⅱ';});
 $('#email-link').href=`mailto:${content.email}`;
 $('#email-link').innerHTML=`${e(content.email)} <span>↗</span>`;
 $('#contact-socials').innerHTML=externalLinks(content.links);
@@ -39,16 +41,20 @@ $('#news-list').innerHTML=content.news.map(item=>`<a href="${item.target}"><time
 if($('#home-press'))$('#home-press').innerHTML=press.slice(0,3).map(pressCard).join('');
 $('#work-track').innerHTML=featured.map((item,index)=>`<a class="work-card" href="${itemPath(item)}" aria-label="${e(item.title)} 프로젝트 자세히 보기">${visual(item,{eager:true})}<span class="card-label">${String(index+1).padStart(2,'0')} / ${e(item.category.toUpperCase())}</span><span class="card-open" aria-hidden="true">↗</span></a>`).join('');
 $('.work-scrubber').innerHTML=featured.map((item,index)=>`<button type="button" data-work-index="${index}" aria-label="${index+1}. ${e(item.title)}" aria-pressed="false"><span></span></button>`).join('');
-$('#practice-grid').innerHTML=content.practice.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-panel" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>${item.number}</span><strong>${e(item.title)}</strong><small>${e(item.subtitle)}</small><b aria-hidden="true">↗</b></button>`).join('');
+$('#practice-grid').innerHTML=content.practice.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-card-${index}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>${item.number}</span><strong>${e(item.title)}</strong></button>`).join('');
+$('#practice-panel').innerHTML=content.practice.map((item,index)=>{
+ const project=projects.find(project=>project.id===item.projectId),institution=institutions.find(logo=>logo.name===(index===2?'전북현대모터스FC':'원광대학교'));
+ const result=index===1?`<a class="practice-result" href="${e(press[0].url)}" target="_blank" rel="noopener noreferrer"><span>RECOGNITION / 2026</span>리걸 AI 개발 · 창업아이디어 경진대회 수상 ↗</a>`:index===2?'<a class="practice-result" href="records/award-driveup/"><span>RECOGNITION / 2025</span>Drive-UP 창업캠프 대상 · 전북도지사 표창 ↗</a>':'';
+ return `<article class="practice-card" id="practice-card-${index}" role="tabpanel" aria-labelledby="practice-tab-${index}" aria-hidden="${index!==0}"><div class="practice-card-header"><a class="practice-partner" href="${e(institution.url)}" target="_blank" rel="noopener noreferrer"><img src="${e(institution.logo)}" alt="${e(institution.name)}"><span>${index===2?'PROJECT COLLABORATION':'LEARNING & MAKING'}</span></a><span>0${index+1} — 03</span></div><a class="practice-object" href="${itemPath(project)}" aria-label="${e(project.title)} 자세히 보기">${visual(project,{full:true})}<span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">0${index+1} / HOW I WORK</span><h3>${e(item.title)}</h3><h4>${e(item.subtitle)}</h4><p>${e(item.text)}</p><ol>${item.steps.map(step=>`<li>${e(step)}</li>`).join('')}</ol><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div>${result}<a class="practice-proof" href="${itemPath(project)}"><span><small>EXPLORE THE OUTCOME</small><strong>${e(project.title)}</strong></span><b aria-hidden="true">↗</b></a></div></article>`;
+}).join('');
 function selectPractice(index){
- const item=content.practice[index],project=projects.find(project=>project.id===item.projectId);
  document.querySelectorAll('[data-practice]').forEach((button,i)=>{button.setAttribute('aria-selected',String(i===index));button.tabIndex=i===index?0:-1;});
- const panel=$('#practice-panel');panel.setAttribute('aria-labelledby',`practice-tab-${index}`);
- panel.innerHTML=`<a class="practice-object" href="${itemPath(project)}" aria-label="${e(project.title)} 자세히 보기">${visual(project,{full:true})}<span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">0${index+1} / HOW I WORK</span><h3>${e(item.title)}</h3><h4>${e(item.subtitle)}</h4><p>${e(item.text)}</p><ol>${item.steps.map(step=>`<li>${e(step)}</li>`).join('')}</ol><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div><a class="practice-proof" href="${itemPath(project)}"><span><small>EXPLORE THE OUTCOME</small><strong>${e(project.title)}</strong></span><b aria-hidden="true">↗</b></a></div>`;
-
- if(!reducedMotion)panel.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:450,easing:'ease-out'});
+ document.querySelectorAll('.practice-card').forEach((card,i)=>{card.setAttribute('aria-hidden',String(i!==index));card.inert=i!==index;});
+ text('#practice-count',`0${index+1} / 03`);$('#previous-practice').disabled=index===0;$('#next-practice').disabled=index===content.practice.length-1;
 }
 selectPractice(0);
+$('#previous-practice').addEventListener('click',()=>homeMotion.goToPractice(Number($('.practice-tab[aria-selected="true"]').dataset.practice)-1));
+$('#next-practice').addEventListener('click',()=>homeMotion.goToPractice(Number($('.practice-tab[aria-selected="true"]').dataset.practice)+1));
 $('#practice-grid').addEventListener('click',event=>{const button=event.target.closest('[data-practice]');if(button)homeMotion.goToPractice(Number(button.dataset.practice));});
 $('#practice-grid').addEventListener('keydown',event=>{if(!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const i=Number(event.target.dataset.practice),next=event.key==='Home'?0:event.key==='End'?2:(i+(['ArrowDown','ArrowRight'].includes(event.key)?1:2))%3;homeMotion.goToPractice(next);document.querySelectorAll('[data-practice]')[next].focus();});
 $('.section-rail [data-section="about"]').href='./#about';

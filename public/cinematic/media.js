@@ -17,7 +17,10 @@ export const institutions = [
  {name:'AWS',url:'https://aws.amazon.com/',logo:'assets/logos/aws.svg'},
  {name:'전북창조경제혁신센터',url:'https://ccei.creativekorea.or.kr/jeonbuk/',logo:'assets/logos/ccei.png'},
  {name:'한국자동차공학회',url:'https://www.ksae.org/',logo:'assets/logos/ksae.png'},
- {name:'캠틱종합기술원',url:'http://www.camtic.co.kr/camtic',logo:'assets/logos/camtic.png'}
+ {name:'캠틱종합기술원',url:'http://www.camtic.co.kr/camtic',logo:'assets/logos/camtic.png'},
+ {name:'전북현대모터스FC',url:'https://hyundai-motorsfc.com/',logo:'assets/logos/jbfc.png'},
+ {name:'GIST',url:'https://www.gist.ac.kr/',logo:'assets/logos/gist.png'},
+ {name:'전남대학교',url:'https://www.jnu.ac.kr/',logo:'assets/logos/jnu.png'}
 ];
 
 // Logo sources (unaltered files, or the AWS homepage's inline SVG):
@@ -27,3 +30,6 @@ export const institutions = [
 // CCEI: https://ccei.creativekorea.or.kr/jeonbuk/resources/images/common/logo_jeonbuk.png
 // KSAE: https://www.ksae.org/image/common/header_logo.png
 // CAMTIC: http://www.camtic.co.kr/images/camtic/logo.png
+// JBFC: https://hyundai-motorsfc.com/img/logo.533b784e.png
+// GIST: https://www.gist.ac.kr/en/img/common/logo.png
+// JNU: https://www.jnu.ac.kr/images/common/logo.png

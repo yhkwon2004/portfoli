@@ -3,7 +3,13 @@ import { readFile, access } from 'node:fs/promises';
 import { records, content, projects, awards, press, featured, categories, filterProjects, youtubeId, itemPath } from './content.js';
 import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds } from './pages.js';
 import { institutions } from './media.js';
-import { workPose, clamp } from './home-motion.js';
+import { workPose, clamp, dragPosition } from './home-motion.js';
+for(const width of [320,390,1440])for(let start=0;start<6;start++){
+  assert.equal(dragPosition(start,10000,width,6),Math.min(5,start+1),'Long drag must advance only one card');
+  assert.equal(dragPosition(start,-10000,width,6),Math.max(0,start-1),'Reverse drag must retreat only one card');
+  assert.equal(dragPosition(start,0,width,6),start);
+}
+assert.equal(dragPosition(1.25,0,1440,6),1.25,'Grabbing a moving card must not jump');
 import { animatePageTransition } from './page-transition.js';
 assert.deepEqual(animatePageTransition(null,null,true,true),[],'Reduced motion must not start animations');
 const motionCalls=[];
@@ -45,7 +51,8 @@ assert.equal(youtubeId('javascript:alert(1)'),null);
 assert.equal(escapeHTML('<img onerror="x">'), '&lt;img onerror=&quot;x&quot;&gt;');
 const assets=new Set(['app.js','content.js','data.js','pages.js','scene.js','style.css','pages.css','assets/scene.glb',...['px','nx','py','ny','pz','nz'].map(side=>`assets/env-${side}.png`),'vendor/three.module.js','vendor/three.core.js','vendor/GLTFLoader.js','vendor/BufferGeometryUtils.js']);
 for(const path of ['media.js','home-motion.js','home-motion.css','detail-updates.css'])assets.add(path);
-assert.equal(institutions.length,6);
+assert.equal(institutions.length,9);
+for(const quote of content.quotes)for(const id of quote.awardIds||[])assert(awards.some(award=>award.id===id),'Vision achievements must use actual award records');
 for(const institution of institutions){assert(['https:','http:'].includes(new URL(institution.url).protocol));assert(institution.name);assets.add(institution.logo);}
 for(const item of content.practice)assert(projects.some(project=>project.id===item.projectId)&&item.steps.length===3);
 assert.equal(new Set(press.map(article=>article.id)).size,press.length,'Press IDs must be unique');
