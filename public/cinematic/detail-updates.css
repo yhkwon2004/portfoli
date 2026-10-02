@@ -72,3 +72,47 @@
 @media(max-width:900px){.archive{grid-template-columns:28% 1fr;gap:4%}.project-grid{gap:45px 22px}.archive-search{max-width:185px}.category-tabs button{font-size:13px}}
 @media(max-width:650px){[data-page=works] .page-heading{padding:160px 5% 30px}[data-page=works] .page-heading h1{font-size:58px}.archive{display:block;padding:0 5% 65px}.archive-toolbar{position:static;max-width:none;padding:0 0 28px}.category-tabs{flex-direction:row;flex-wrap:wrap;gap:6px 15px}.category-tabs button{font-size:12px;padding:7px 0}.category-tabs button sup{font-size:7px;margin-left:4px}.archive-search{display:flex;max-width:none;gap:13px;margin-top:20px}.archive-search>label:first-child{flex:1;min-width:0}.archive-search input{width:100%}.results-line{position:static;padding:0 0 22px;min-height:0}.project-grid{grid-template-columns:1fr;gap:40px}.project-image{aspect-ratio:16/9}.project-open{opacity:1}.project-caption{font-size:9px;margin-top:15px}.project-card h2{font-size:20px;margin-top:9px}.detail-heading h2{font-size:30px;line-height:1.45}.detail-summary{font-size:13px}.detail-hero{width:100%}.detail-body{padding-top:45px}.detail-gallery{gap:30px}}
 @media(max-height:650px){.archive-toolbar{position:static}}
+
+/* Project context and native, mutually exclusive developer case studies. */
+.detail-aside .project-idea{font-size:14px;line-height:1.9;color:#f0f1f4;word-break:keep-all}
+.project-team strong{display:block;font-size:19px;font-weight:500;color:var(--acid);margin-bottom:10px}
+.project-team>span{display:block;color:#a6adb9;line-height:1.8;word-break:keep-all}
+[data-page=lab] .page-heading{padding-bottom:80px}
+[data-page=lab] .page-heading h1{font-size:clamp(80px,11vw,175px);line-height:.92;letter-spacing:-.065em}
+[data-page=lab] .page-intro{max-width:510px;line-height:2;margin-top:35px;color:#a6adb9;word-break:keep-all}
+.lab-intro{margin:0 var(--gutter) 85px;padding:35px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1.6fr auto;gap:25px;align-items:center}
+.lab-intro>p{font-size:clamp(24px,2.6vw,38px);font-weight:400;line-height:1.6;letter-spacing:-.04em;margin:0;word-break:keep-all}
+.lab-intro>.eyebrow{font-size:9px;line-height:1.8;color:var(--acid)}
+.lab-cases{margin:0 var(--gutter) 100px}
+.lab-case{border-top:1px solid #ffffff30;scroll-margin-top:115px}
+.lab-case:last-child{border-bottom:1px solid #ffffff30}
+.lab-case>summary{display:flex;align-items:center;gap:40px;cursor:pointer;list-style:none;padding:35px 0;min-height:122px}
+.lab-case>summary::-webkit-details-marker{display:none}
+.lab-case>summary:focus-visible{outline:1px solid var(--acid);outline-offset:8px}
+.lab-number{font:12px var(--mono);color:#a6adb9;align-self:start;padding-top:7px}
+.lab-case-title{display:flex;flex-direction:column;gap:13px;flex:1}
+.lab-case-title>small{font:9px var(--mono);letter-spacing:.05em;color:#a6adb9}
+.lab-case-title>strong{font-size:clamp(24px,2.8vw,42px);font-weight:400;line-height:1.4;letter-spacing:-.035em;word-break:keep-all;overflow-wrap:anywhere}
+.lab-toggle{display:grid;place-items:center;width:44px;height:44px;border:1px solid #ffffff35;border-radius:50%;flex-shrink:0;font-size:25px;transition:transform .3s,color .3s,border-color .3s}
+.lab-case[open] .lab-toggle{transform:rotate(45deg);color:var(--acid);border-color:var(--acid)}
+.lab-case-content{display:grid;grid-template-columns:1.05fr 1fr;gap:7%;padding:10px 0 60px;animation:lab-enter .45s ease-out}
+.lab-image{display:block;position:sticky;top:135px;align-self:start;border:1px solid #ffffff20;background:#0a0f14;border-radius:12px;overflow:hidden}
+.lab-image>img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block}
+.lab-image>.type-visual{min-height:300px;aspect-ratio:4/3;padding:40px}
+.lab-image>span:last-child{display:flex;justify-content:space-between;padding:18px 24px;font:9px var(--mono);border-top:1px solid var(--line);color:var(--acid)}
+.lab-process>section{padding:20px 0 26px;border-bottom:1px solid var(--line)}
+.lab-process>section:first-child{padding-top:0}
+.lab-process>section>span{font:9px var(--mono);color:var(--acid)}
+.lab-process h2{font-size:23px;font-weight:400;letter-spacing:-.035em;margin:17px 0 12px}
+.lab-process p{font-size:13px;line-height:2;word-break:keep-all;color:#a6adb9;margin:0}
+.lab-evidence{display:flex;flex-direction:column;gap:14px;padding-top:26px}
+.lab-evidence>span{font:9px var(--mono);color:#a6adb9}
+.lab-evidence>b{font-size:13px;font-weight:400;color:var(--acid)}
+.lab-closing{display:block;margin:0 var(--gutter) 100px;padding:50px 0;border-top:1px solid var(--line)}
+.lab-closing h2{font-size:clamp(35px,5vw,76px);font-weight:400;letter-spacing:-.05em;line-height:1.4;margin:30px 0}
+.lab-closing>span:last-child{font:11px var(--mono);color:var(--acid)}
+@keyframes lab-enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(max-width:900px){.lab-intro{grid-template-columns:1fr 2fr}.lab-intro>.underlined-link{grid-column:2}.lab-case-content{gap:5%}.lab-case>summary{gap:24px}.lab-case-title>strong{font-size:27px}}
+@media(max-width:650px){.detail-aside .project-idea{font-size:12px}.project-team strong{font-size:16px;margin-bottom:5px}[data-page=lab] .page-heading{padding-bottom:45px}[data-page=lab] .page-heading h1{font-size:76px}[data-page=lab] .page-intro{font-size:13px;line-height:2;margin-top:25px}.lab-intro{display:block;margin-bottom:45px;padding:25px 0}.lab-intro>p{font-size:27px;margin:20px 0 25px}.lab-cases{margin-bottom:55px}.lab-case>summary{gap:15px;padding:26px 0;min-height:105px}.lab-number{font-size:9px;padding-top:4px}.lab-case-title{gap:10px}.lab-case-title>small{font-size:7px}.lab-case-title>strong{font-size:22px}.lab-toggle{width:33px;height:33px;font-size:21px}.lab-case-content{display:block;padding:0 0 35px}.lab-image{position:static;margin-bottom:30px}.lab-image>img{aspect-ratio:16/10}.lab-image>.type-visual{min-height:220px;aspect-ratio:16/10;padding:25px}.lab-image>span:last-child{padding:16px 20px;font-size:8px}.lab-process h2{font-size:21px}.lab-process p{font-size:12px}.lab-process>section{padding-bottom:22px}.lab-evidence>b{font-size:12px}.lab-closing{margin-bottom:60px;padding-top:35px}.lab-closing h2{font-size:39px;margin:25px 0}}
+@media(max-height:750px){.lab-image{position:static}}
+@media(prefers-reduced-motion:reduce){.lab-case-content{animation:none}.lab-toggle{transition:none}}

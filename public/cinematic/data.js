@@ -1,4 +1,4 @@
-// GitHub portfolio content, supplemented with the supplied Notion pages.
+// GitHub portfolio content, supplemented with the supplied Notion pages and official articles.
 export const records = [
   {
     "id": "profile-main",
@@ -3338,6 +3338,108 @@ export const records = [
       {
         "label": "구현 내용 · README",
         "url": "https://github.com/yhkwon2004/FACTLINE/blob/main/README.md"
+      }
+    ],
+    "videos": []
+  },
+  {
+    "id": "award-huss-ai-2026",
+    "type": "award",
+    "title": "2026 HUSS AI 경진대회 · 전국 2위 / 우수상",
+    "summary": "학교폭력 피해학생을 위한 AI 상담 서비스 방안을 제안해 HUSS 융합캠프 AI 경진대회에서 우수상을 수상했습니다.",
+    "year": "2026",
+    "tags": [
+      "전국 2위",
+      "우수상",
+      "AI",
+      "공공문제 해결"
+    ],
+    "featured": true,
+    "rank": 1,
+    "category": "Recognition",
+    "images": [
+      {
+        "src": "assets/portfolio/press/huss-ai-2026.jpg",
+        "thumb": "assets/portfolio/press/huss-ai-2026.jpg",
+        "alt": "2026 HUSS 융합캠프 AI 경진대회와 해커톤 우수상 수상팀 공식 사진",
+        "role": "cover",
+        "illustrative": false,
+        "source": {
+          "label": "원광대학교",
+          "url": "https://www.wku.ac.kr/k-컬처-사업단-2026-huss-융합캠프서-우수한-성적-거둬원광대.html"
+        }
+      }
+    ],
+    "details": {
+      "활동기간": "2026년 6월 30일–7월 3일 · 경주 HUSS 융합캠프",
+      "협업": [
+        "권용현",
+        "김나현",
+        "유현경",
+        "한서윤"
+      ],
+      "한줄소개": "AI로 학교폭력 피해학생의 상담과 지원을 연결하는 서비스 제안",
+      "문제정의": "학교폭력 피해학생을 지원하는 공공수요 문제를 AI 상담 서비스로 해결하는 방안을 모색했습니다.",
+      "성과": "HUSS AI 경진대회 전국 2위 · 한국연구재단 이사장상 우수상",
+      "공식보도": "대학 공식 기사는 권용현을 포함한 4인 팀의 AI 상담 서비스 발표와 우수상 수상을 소개합니다. 전국 2위는 포트폴리오의 기존 성과 기록에 따릅니다."
+    },
+    "links": [
+      {
+        "label": "원광대학교 공식 보도",
+        "url": "https://www.wku.ac.kr/k-컬처-사업단-2026-huss-융합캠프서-우수한-성적-거둬원광대.html"
+      }
+    ],
+    "videos": []
+  },
+  {
+    "id": "award-capstone-iot-2025",
+    "type": "award",
+    "title": "WON+UP 캡스톤디자인 경진대회 · 대상 (총장상)",
+    "summary": "인퓨테크팀이 병원 링거 폴대에 탈부착하는 IoT 장치를 개발해 수액 상태를 실시간 모니터링하는 시스템으로 대상을 받았습니다.",
+    "year": "2025-11-27",
+    "tags": [
+      "대상",
+      "총장상",
+      "IoT",
+      "스마트 헬스케어"
+    ],
+    "featured": true,
+    "rank": 2,
+    "category": "Recognition",
+    "images": [
+      {
+        "src": "assets/portfolio/press/capstone-2025.jpg",
+        "thumb": "assets/portfolio/press/capstone-2025.jpg",
+        "alt": "WON+UP 캡스톤디자인 대상 수상패를 든 인퓨테크팀",
+        "role": "cover",
+        "illustrative": false,
+        "source": {
+          "label": "원광대학교",
+          "url": "https://www.wku.ac.kr/wonpbl-교과-캡스톤디자인-경진대회서-성과-입증원광대.html"
+        }
+      }
+    ],
+    "details": {
+      "협업": [
+        "권용현",
+        "정익상",
+        "최이지",
+        "한우진"
+      ],
+      "역할": [
+        "3D 설계",
+        "PCB / 회로 설계",
+        "회계 관리"
+      ],
+      "한줄소개": "기존 링거 폴대에 부착해 수액 상태를 확인하는 IoT 지능형 시스템",
+      "문제정의": "수액 투여 과정의 관리 부담과 임의 조작 위험을 줄이고, 의료진이 상태를 실시간 확인하도록 돕는 장치를 설계했습니다.",
+      "성과": "2025년 11월 27일 WON+UP 챌린지 캡스톤디자인 경진대회 대상 · 총장상",
+      "공식보도": "원광대학교 공식 기사는 인퓨테크팀의 IoT 지능형 링거 폴대와 대상을 소개합니다. 참여자와 권용현의 역할은 기존 프로젝트 기록을 기준으로 정리했습니다."
+    },
+    "links": [
+      {
+        "label": "원광대학교 공식 보도",
+        "url": "https://www.wku.ac.kr/wonpbl-교과-캡스톤디자인-경진대회서-성과-입증원광대.html"
       }
     ],
     "videos": []

@@ -1,15 +1,24 @@
 import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
 import { records, content, projects, awards, press, featured, categories, filterProjects, youtubeId, itemPath } from './content.js';
-import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds } from './pages.js';
+import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds, projectFacts } from './pages.js';
 import { institutions } from './media.js';
-import { workPose, clamp, dragPosition } from './home-motion.js';
+import { workPose, clamp, dragPosition, wheelGesture, gestureIndex } from './home-motion.js';
 for(const width of [320,390,1440])for(let start=0;start<6;start++){
   assert.equal(dragPosition(start,10000,width,6),Math.min(5,start+1),'Long drag must advance only one card');
   assert.equal(dragPosition(start,-10000,width,6),Math.max(0,start-1),'Reverse drag must retreat only one card');
   assert.equal(dragPosition(start,0,width,6),start);
 }
 assert.equal(dragPosition(1.25,0,1440,6),1.25,'Grabbing a moving card must not jump');
+for(const delta of [8,30,10000]){assert.equal(gestureIndex(2,delta,6),3);assert.equal(gestureIndex(2,-delta,6),1);}
+assert.equal(gestureIndex(2,5,6),2,'Clicks must not advance a card');
+const wheel={last:-Infinity,until:0,total:0,used:false};
+assert.equal(wheelGesture(wheel,6,0),0);assert.equal(wheelGesture(wheel,12,10),1);
+for(const time of [30,100,300,800])assert.equal(wheelGesture(wheel,500,time),0,'Momentum must not skip another card');
+assert.equal(wheelGesture(wheel,-30,1200),-1,'New gestures can move back');
+const lab=resolvePage('motion/');assert.equal(lab.kind,'lab');assert.equal((lab.html.match(/class="lab-case"/g)||[]).length,4);assert(!lab.html.includes('data-material'));
+assert.equal(projectFacts(projects.find(item=>item.id==='project-iot-ring')).participants,'4명');
+for(const project of projects){const html=resolvePage(itemPath(project)).html;for(const field of ['IDEA / 한 줄 소개','TEAM / 참여 인원','MY ROLE / 역할'])assert(html.includes(field));}
 import { animatePageTransition } from './page-transition.js';
 assert.deepEqual(animatePageTransition(null,null,true,true),[],'Reduced motion must not start animations');
 const motionCalls=[];
@@ -54,7 +63,6 @@ for(const path of ['media.js','home-motion.js','home-motion.css','detail-updates
 assert.equal(institutions.length,9);
 for(const quote of content.quotes)for(const id of quote.awardIds||[])assert(awards.some(award=>award.id===id),'Vision achievements must use actual award records');
 for(const institution of institutions){assert(['https:','http:'].includes(new URL(institution.url).protocol));assert(institution.name);assets.add(institution.logo);}
-for(const item of content.practice)assert(projects.some(project=>project.id===item.projectId)&&item.steps.length===3);
 assert.equal(new Set(press.map(article=>article.id)).size,press.length,'Press IDs must be unique');
 for(const [index,article] of press.entries()){
   assert(article.title&&article.publisher&&article.summary,`Incomplete article: ${article.id}`);

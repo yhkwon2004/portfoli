@@ -1,9 +1,9 @@
-import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20260929-chapters';
-import { createScene } from './scene.js';
-import { createHomeMotion } from './home-motion.js?v=20260929-chapters';
+import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261002-recognition';
+import { createScene } from './scene.js?v=20261002-recognition';
+import { createHomeMotion } from './home-motion.js?v=20261002-recognition';
 import { animatePageTransition } from './page-transition.js';
-import { institutions } from './media.js?v=20260929-chapters';
-import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20260929-chapters';
+import { institutions } from './media.js?v=20261002-recognition';
+import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261002-recognition';
 
 const $ = selector => document.querySelector(selector);
 const text = (selector, value) => { $(selector).textContent = value; };
@@ -28,29 +28,40 @@ text('#footer-role',content.role); text('#copyright-name',content.name); text('#
 text('#year',new Date().getFullYear());
 lines('#intro-copy',content.intro); lines('#about-title',content.about.heading);
 text('#about-english',content.about.english); text('#about-description',content.about.description);
-$('#quote-stage').innerHTML=content.quotes.map((quote,index)=>`<div class="quote-frame" aria-hidden="${index!==0}"><span class="eyebrow">${index===2?'FOCUS INTO IMPACT':'MY PERSPECTIVE'} / 0${index+1}</span><p class="quote-line" aria-label="${e(quote.line.replaceAll('|',' '))}">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-mask" aria-hidden="true"><span class="quote-word">${e(word)}</span></span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p>${quote.awardIds?`<div class="vision-awards">${quote.awardIds.map(id=>{const award=awards.find(item=>item.id===id);return `<a href="${itemPath(award)}"><span>${e(award.year)} / RECOGNITION</span><strong>${e(award.title)}</strong><b aria-hidden="true">↗</b></a>`;}).join('')}</div>`:''}</div>`).join('');
+const caseStudies=[
+ {id:'project-iot-ring',problem:'수액 상태를 확인하는 의료진의 반복 업무',solution:'탈부착 구조와 회로를 설계해 기존 폴대에 연결',proof:'시제품 제작 · 캡스톤디자인 대상'},
+ {id:'project-factline',problem:'흩어진 기록 속에서 사실관계를 찾기 어려운 상황',solution:'LLM으로 기록과 증거를 구조화',proof:'기록·증거 정리 서비스 구현'},
+ {id:'project-upcycle-jbmotors',problem:'버려지는 키보드와 지속 가능한 구단 굿즈',solution:'폐키캡을 팬들이 쓰는 키링으로 제작',proof:'구단 입점 · 판매 시작 1시간 만에 완판'}
+];
+$('#quote-stage').innerHTML=content.quotes.map((quote,index)=>{
+ const story=caseStudies[index],project=projects.find(item=>item.id===story.id);
+ return `<div class="quote-frame" aria-hidden="${index!==0}"><div class="quote-thought"><span class="eyebrow">PROBLEM INTO POSSIBILITY / 0${index+1}</span><p class="quote-line" aria-label="${e(quote.line.replaceAll('|',' '))}">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-mask" aria-hidden="true"><span class="quote-word">${e(word)}</span></span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p></div><a class="quote-case" href="${itemPath(project)}">${visual(project)}<div><span class="eyebrow">0${index+1} / ${e(project.title)}</span><ol><li><span>DEFINE</span>${e(story.problem)}</li><li><span>BUILD</span>${e(story.solution)}</li><li><span>PROVE</span>${e(story.proof)}</li></ol><span class="case-link">과정 자세히 보기 ↗</span></div></a></div>`;
+}).join('');
 $('.quote-controls').innerHTML=content.quotes.map((quote,index)=>`<button data-quote="${index}" aria-label="문장 ${index+1}" aria-pressed="${index===0}"><span></span></button>`).join('');
-const logoGroup=institutions.map(item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${['AWS','전남대학교'].includes(item.name)?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`).join('');
-$('#institution-logos').innerHTML=`<div class="logo-group">${logoGroup}</div><div class="logo-group" aria-hidden="true" inert>${logoGroup}</div>`;
+$('.mission-memory').innerHTML=featured.map((item,index)=>`<img src="${e(cover(item).thumb)}" alt="" style="--memory-delay:${index*1.8}s" loading="lazy">`).join('');
+$('.memory-toggle').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));event.currentTarget.textContent=paused?'PROJECT MEMORIES ▷':'PROJECT MEMORIES Ⅱ';$('.chapter-sticky').classList.toggle('memory-paused',paused);});
+const logoHTML=item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${['AWS','전남대학교','캠틱종합기술원'].includes(item.name)?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`;
+$('#institution-logos').innerHTML=[0,1].map(row=>{const logos=institutions.filter((_,index)=>index%2===row).map(logoHTML).join('');return `<div class="institution-logos"><div class="logo-group">${logos}</div><div class="logo-group" aria-hidden="true" inert>${logos}</div></div>`;}).join('');
 $('.logo-pause').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));$('.institution-marquee').classList.toggle('is-paused',paused);event.currentTarget.textContent=paused?'로고 움직임 재생 ▷':'로고 움직임 멈추기 Ⅱ';});
 $('#email-link').href=`mailto:${content.email}`;
 $('#email-link').innerHTML=`${e(content.email)} <span>↗</span>`;
 $('#contact-socials').innerHTML=externalLinks(content.links);
 $('#home-stats').innerHTML=`<a href="works/"><b>${projects.length}</b><span>PROJECTS</span></a><a href="news/"><b>${awards.length}</b><span>AWARDS</span></a>`;
 $('#news-list').innerHTML=content.news.map(item=>`<a href="${item.target}"><time>${e(item.date)}</time><p>${e(item.title)}</p></a>`).join('');
-if($('#home-press'))$('#home-press').innerHTML=press.slice(0,3).map(pressCard).join('');
+if($('#home-press'))$('#home-press').innerHTML=['huss-ai-2026','capstone-2025','innovation-league-2025'].map(id=>press.find(article=>article.id===id)).map(pressCard).join('');
 $('#work-track').innerHTML=featured.map((item,index)=>`<a class="work-card" href="${itemPath(item)}" aria-label="${e(item.title)} 프로젝트 자세히 보기">${visual(item,{eager:true})}<span class="card-label">${String(index+1).padStart(2,'0')} / ${e(item.category.toUpperCase())}</span><span class="card-open" aria-hidden="true">↗</span></a>`).join('');
 $('.work-scrubber').innerHTML=featured.map((item,index)=>`<button type="button" data-work-index="${index}" aria-label="${index+1}. ${e(item.title)}" aria-pressed="false"><span></span></button>`).join('');
-$('#practice-grid').innerHTML=content.practice.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-card-${index}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>${item.number}</span><strong>${e(item.title)}</strong></button>`).join('');
-$('#practice-panel').innerHTML=content.practice.map((item,index)=>{
- const project=projects.find(project=>project.id===item.projectId),institution=institutions.find(logo=>logo.name===(index===2?'전북현대모터스FC':'원광대학교'));
- const result=index===1?`<a class="practice-result" href="${e(press[0].url)}" target="_blank" rel="noopener noreferrer"><span>RECOGNITION / 2026</span>리걸 AI 개발 · 창업아이디어 경진대회 수상 ↗</a>`:index===2?'<a class="practice-result" href="records/award-driveup/"><span>RECOGNITION / 2025</span>Drive-UP 창업캠프 대상 · 전북도지사 표창 ↗</a>':'';
- return `<article class="practice-card" id="practice-card-${index}" role="tabpanel" aria-labelledby="practice-tab-${index}" aria-hidden="${index!==0}"><div class="practice-card-header"><a class="practice-partner" href="${e(institution.url)}" target="_blank" rel="noopener noreferrer"><img src="${e(institution.logo)}" alt="${e(institution.name)}"><span>${index===2?'PROJECT COLLABORATION':'LEARNING & MAKING'}</span></a><span>0${index+1} — 03</span></div><a class="practice-object" href="${itemPath(project)}" aria-label="${e(project.title)} 자세히 보기">${visual(project,{full:true})}<span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">0${index+1} / HOW I WORK</span><h3>${e(item.title)}</h3><h4>${e(item.subtitle)}</h4><p>${e(item.text)}</p><ol>${item.steps.map(step=>`<li>${e(step)}</li>`).join('')}</ol><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div>${result}<a class="practice-proof" href="${itemPath(project)}"><span><small>EXPLORE THE OUTCOME</small><strong>${e(project.title)}</strong></span><b aria-hidden="true">↗</b></a></div></article>`;
+const recognition=['award-huss-ai-2026','award-capstone-iot-2025','award-driveup'].map(id=>awards.find(item=>item.id===id));
+const awardPlaces=['2nd.','Grand Prize.','Grand Prize.'],awardNames=['HUSS AI','CAPSTONE','DRIVE UP'],awardProjects=['project-ai-evidence','project-iot-ring','project-upcycle-jbmotors'];
+$('#practice-grid').innerHTML=recognition.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-card-${index}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>0${index+1}</span><strong>${awardNames[index]}</strong></button>`).join('');
+$('#practice-panel').innerHTML=recognition.map((item,index)=>{
+ const project=projects.find(project=>project.id===awardProjects[index]),institution=institutions.find(logo=>logo.name===(index===2?'전북현대모터스FC':'원광대학교'));
+ return `<article class="practice-card" id="practice-card-${index}" data-award-id="${e(item.id)}" role="tabpanel" aria-labelledby="practice-tab-${index}" aria-hidden="${index!==0}"><div class="practice-card-header"><a class="practice-partner" href="${e(institution.url)}" target="_blank" rel="noopener noreferrer"><img src="${e(institution.logo)}" alt="${e(institution.name)}"><span>RECOGNITION / ${e(item.year.slice(0,4))}</span></a><span>0${index+1} — 03</span></div><a class="practice-object" href="${itemPath(item)}" aria-label="${e(item.title)} 수상 기록">${visual(item,{full:true})}<span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">${e(item.year)} / SELECTED RECOGNITION</span><h3>${awardPlaces[index]}</h3><h4>${e(item.title)}</h4><p>${e(item.summary)}</p><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div><a class="practice-result" href="${itemPath(item)}"><span>AWARD RECORD</span>수상 기록과 공식 보도 보기 ↗</a><a class="practice-proof" href="${itemPath(project)}"><span><small>THE PROJECT BEHIND THE AWARD</small><strong>${e(project.title)}</strong></span><b aria-hidden="true">↗</b></a></div></article>`;
 }).join('');
 function selectPractice(index){
  document.querySelectorAll('[data-practice]').forEach((button,i)=>{button.setAttribute('aria-selected',String(i===index));button.tabIndex=i===index?0:-1;});
  document.querySelectorAll('.practice-card').forEach((card,i)=>{card.setAttribute('aria-hidden',String(i!==index));card.inert=i!==index;});
- text('#practice-count',`0${index+1} / 03`);$('#previous-practice').disabled=index===0;$('#next-practice').disabled=index===content.practice.length-1;
+ text('#practice-count',`0${index+1} / 03`);$('#previous-practice').disabled=index===0;$('#next-practice').disabled=index===recognition.length-1;
 }
 selectPractice(0);
 $('#previous-practice').addEventListener('click',()=>homeMotion.goToPractice(Number($('.practice-tab[aria-selected="true"]').dataset.practice)-1));
@@ -94,7 +105,6 @@ async function loadPageAssets(page, token, initial) {
 }
 function pathOf(url) {return decodeURIComponent(url.pathname.slice(root.pathname.length));}
 function saveScroll(){scrollPositions.set(entryKey,scrollY);history.replaceState({...history.state,entryKey,scroll:scrollY},'',location.href);}
-function resetMotionControls(){scene?.setMotion({material:'glass',speed:1,paused:reducedMotion,reset:true});}
 async function navigate(url,{pop=false,initial=false}={}) {
   homeMotion.stop();
   const token=++navigation;
@@ -118,10 +128,10 @@ async function navigate(url,{pop=false,initial=false}={}) {
   document.title=isHome?next.title:`${next.title} — ${content.name}`;
   document.querySelector('meta[name="description"]').content=next.item?.summary||'권용현의 자율주행, IoT, AI, 웹 개발, 업사이클링 프로젝트와 수상 기록.';
   document.querySelectorAll('.desktop-nav a').forEach(link=>{
-    const active=next.kind==='detail'?link.getAttribute('href')===(next.item.type==='project'?'works/':'news/'):link.getAttribute('href')===`${next.kind}/`;
+    const active=next.kind==='detail'?link.getAttribute('href')===(next.item.type==='project'?'works/':'news/'):link.getAttribute('href')===`${next.kind==='lab'?'motion':next.kind}/`;
     if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
   });
-  scene?.setView(next.kind); if(next.kind==='motion'){resetMotionControls();syncMotion();if(!scene)$('.motion-fallback').hidden=false;}
+  scene?.setView(next.kind);
   scrollTo({top:saved,behavior:'instant'});
   if(url.hash&&!pop){try{document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView({behavior:'instant'});}catch{}}
   text('#loader-percent','100%'); $('.loader-progress i').style.transform='scaleX(1)';
@@ -227,18 +237,12 @@ function updateFilters({reset=false}={}){
   history.replaceState({...history.state,scroll:scrollY},'',url);
 }
 view.addEventListener('submit',event=>{if(event.target.matches('.archive-search')){event.preventDefault();updateFilters();}});
-view.addEventListener('input',event=>{if(event.target.name==='q')updateFilters();if(event.target.id==='motion-speed'){text('#speed-value',`${Number(event.target.value).toFixed(1)}×`);scene?.setMotion({speed:Number(event.target.value)});}});
+view.addEventListener('input',event=>{if(event.target.name==='q')updateFilters();});
 view.addEventListener('change',event=>{if(event.target.name==='year')updateFilters();});
-let motionState={material:'glass',paused:reducedMotion};
 motionPreference.addEventListener('change',event=>{
   reducedMotion=event.matches;homeMotion.stop();
-  if(reducedMotion){motionState.paused=true;scene?.setMotion({paused:true});const button=$('#motion-pause');if(button){button.setAttribute('aria-pressed','true');button.textContent='Play ▷';}}
   observeReveals();scheduleUpdate();
 });
-function syncMotion(){
-  motionState={material:'glass',paused:reducedMotion};
-  const button=$('#motion-pause');if(button){button.setAttribute('aria-pressed',String(reducedMotion));button.textContent=reducedMotion?'Play ▷':'Pause Ⅱ';}
-}
 view.addEventListener('click',async event=>{
   const target=event.target.closest('button');if(!target)return;
   if(target.hasAttribute('data-related-step')){const rail=target.closest('.related-projects').querySelector('.related-rail');rail.scrollBy({left:Number(target.dataset.relatedStep)*(rail.querySelector('.related-card').getBoundingClientRect().width+parseFloat(getComputedStyle(rail).gap)),behavior:reducedMotion?'instant':'smooth'});}
@@ -251,9 +255,6 @@ view.addEventListener('click',async event=>{
   if(target.hasAttribute('data-share')){
     try{await navigator.clipboard.writeText(location.href);target.textContent='Link copied ✓';text('#announcement','프로젝트 링크를 복사했습니다.');}catch{target.textContent='주소 표시줄에서 링크를 복사해 주세요.';}
   }
-  if(target.dataset.material){motionState.material=target.dataset.material;scene?.setMotion({material:motionState.material});document.querySelectorAll('[data-material]').forEach(button=>button.setAttribute('aria-pressed',String(button===target)));}
-  if(target.id==='motion-pause'){motionState.paused=!motionState.paused;scene?.setMotion({paused:motionState.paused});target.setAttribute('aria-pressed',String(motionState.paused));target.textContent=motionState.paused?'Play ▷':'Pause Ⅱ';}
-  if(target.id==='motion-reset'){resetMotionControls();syncMotion();$('#motion-speed').value='1';text('#speed-value','1.0×');document.querySelectorAll('[data-material]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.material==='glass')));}
 });
 // Broken media leaves a usable retry control, including when a static host is temporarily unavailable.
 document.addEventListener('error',event=>{
@@ -274,5 +275,5 @@ async function setSound(enabled){
 }
 $('.sound-toggle').addEventListener('click',()=>setSound(!soundEnabled));
 document.addEventListener('visibilitychange',()=>{if(audioGain)audioGain.gain.setTargetAtTime(!document.hidden&&soundEnabled ? .12 : 0,audioContext.currentTime,.2);});
-const sceneReady=createScene($('#scene'),content.wordmark).then(result=>{scene=result;scene.setView(currentPage?.kind||resolvePage(pathOf(new URL(location.href))).kind);if(currentPage?.kind==='motion'){resetMotionControls();$('.motion-fallback').hidden=true;}}).catch(error=>{console.warn('3D unavailable; using static background.',error);$('#scene').hidden=true;document.body.classList.remove('scene-ready');});
+const sceneReady=createScene($('#scene'),content.wordmark).then(result=>{scene=result;scene.setView(currentPage?.kind||resolvePage(pathOf(new URL(location.href))).kind);}).catch(error=>{console.warn('3D unavailable; using static background.',error);$('#scene').hidden=true;document.body.classList.remove('scene-ready');});
 navigate(new URL(location.href),{initial:true});

@@ -3,12 +3,22 @@ export function dragPosition(start, delta, width, count) {
   const anchor=Math.round(start);
   return clamp(anchor+clamp(start-anchor+delta/Math.max(240,width*.48),-1,1),0,count-1);
 }
+export function wheelGesture(state, delta, now) {
+  if(now-state.last>220&&now>=state.until){state.used=false;state.total=0;}
+  state.last=now;
+  if(state.used)return 0;
+  state.total+=delta;
+  if(Math.abs(state.total)<18)return 0;
+  state.used=true;state.until=now+850;
+  return Math.sign(state.total);
+}
+export const gestureIndex=(start,delta,count)=>clamp(Math.round(start)+(Math.abs(delta)>=8?Math.sign(delta):0),0,count-1);
 export function workPose(distance, width) {
   const angle=clamp(distance,-2.5,2.5)*.76;
   return {x:Math.sin(angle)*width*.91,y:distance*width*.038,z:(Math.cos(angle)-1)*width*.58,rotation:-angle*180/Math.PI*.66,opacity:1-clamp((Math.abs(distance)-1.1)/1.4),scale:1-clamp(Math.abs(distance))*.12};
 }
 
-// Native scroll remains the timeline; drag and keys seek it without trapping wheel or touch input.
+// Native scroll remains the timeline; each wheel or drag gesture seeks one work card.
 export function createHomeMotion({onWork,onPractice}) {
   const home=document.querySelector('#home-page'),works=document.querySelector('#works');
   const cards=[...document.querySelectorAll('.work-card')],vision=document.querySelector('#vision'),contact=document.querySelector('#contact');
@@ -16,6 +26,7 @@ export function createHomeMotion({onWork,onPractice}) {
   const practiceCount=document.querySelectorAll('[data-practice]').length;
   const practiceCards=[...document.querySelectorAll('.practice-card')];
   let position=0,servicePosition=0,active=-1,activePractice=0,activeQuote=-1,manualPractice=0,raf=0,lastTime=0,drag=null,clickBlockedUntil=0,snapTimer=0,seekFrame=0;
+  const wheel={last:-Infinity,until:0,total:0,used:false};
   const bounds=element=>({start:element.offsetTop,end:element.offsetTop+Math.max(1,element.offsetHeight-innerHeight)});
   const fraction=element=>{const b=bounds(element);return clamp((scrollY-b.start)/(b.end-b.start));};
   const visible=element=>{const b=element.getBoundingClientRect();return b.bottom>0&&b.top<innerHeight;};
@@ -35,10 +46,11 @@ export function createHomeMotion({onWork,onPractice}) {
   }
   function render(now){
     raf=0;if(home.hidden)return;
-    const target=fraction(works)*(cards.length-1),dt=Math.min((now-lastTime)||16,50);lastTime=now;
+    const target=fraction(works)*(cards.length-1),dt=lastTime?now-lastTime:16;lastTime=now;
     position=preference.matches?target:position+(target-position)*(1-Math.exp(-dt/105));
     if(Math.abs(position-target)<.0002)position=target;
     const selected=Math.round(position),rect=works.getBoundingClientRect();
+    works.querySelector('[data-drag-scene]').style.touchAction=rect.top<=1&&rect.bottom>=innerHeight-1?'pinch-zoom':'pan-y pinch-zoom';
     works.style.setProperty('--work-progress',String(position/(cards.length-1)));
     works.style.setProperty('--work-entry',String(preference.matches?1:clamp(1-rect.top/innerHeight)));
     cards.forEach((card,index)=>{
@@ -62,6 +74,7 @@ export function createHomeMotion({onWork,onPractice}) {
     document.querySelector('#quote-count').textContent=`0${qIndex+1} / 0${quotes.length}`;
     const about=document.querySelector('#about'),a=about.getBoundingClientRect(),ap=clamp(1-a.top/innerHeight);
     about.style.setProperty('--chapter-in',String(preference.matches?1:ap));
+    about.querySelector('.chapter-sticky').classList.toggle('is-memory-playing',visible(about));
     const c=contact.getBoundingClientRect(),cp=clamp(1-c.top/innerHeight),hold=fraction(contact);
     contact.style.setProperty('--contact-in',String(preference.matches?1:cp));contact.style.setProperty('--contact-progress',String(hold));
     const serviceTarget=innerHeight<=800?manualPractice:fraction(practice)*(practiceCount-1);
@@ -80,10 +93,20 @@ export function createHomeMotion({onWork,onPractice}) {
   function update(){if(!raf){lastTime=0;raf=requestAnimationFrame(render);}}
   function scheduleSnap(){
     clearTimeout(snapTimer);if(preference.matches||home.hidden||drag||seekFrame)return;
-    snapTimer=setTimeout(()=>{for(const [section,count,go] of [[works,cards.length,goToWork],[vision,quotes.length,goToQuote],[practice,practiceCount,goToPractice]]){const b=bounds(section);if((section===practice&&innerHeight<=800)||(section===vision&&innerHeight<=650))continue;if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(section)*(count-1);if(Math.abs(p-Math.round(p))>.012)go(Math.round(p));break;}}},320);
+    snapTimer=setTimeout(()=>{for(const [section,count,go] of [[works,cards.length,goToWork],[practice,practiceCount,goToPractice]]){const b=bounds(section);if(section===practice&&innerHeight<=800)continue;if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(section)*(count-1);if(Math.abs(p-Math.round(p))>.012)go(Math.round(p));break;}}},320);
   }
   addEventListener('scroll',()=>{update();scheduleSnap();},{passive:true});addEventListener('resize',update);
-  addEventListener('wheel',()=>{cancelAnimationFrame(seekFrame);seekFrame=0;},{passive:true});
+  addEventListener('wheel',event=>{
+    if(home.hidden||event.ctrlKey||event.target.closest('dialog,input,select,textarea'))return;
+    const b=bounds(works),delta=(Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY)*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
+    if(scrollY<b.start-2||scrollY>b.end+2){cancelAnimationFrame(seekFrame);seekFrame=0;return;}
+    const index=Math.max(0,active);
+    if(!wheel.used&&((index===0&&delta<0)||(index===cards.length-1&&delta>0)))return;
+    const now=performance.now();
+    if(now-wheel.last>220&&now>=wheel.until){wheel.used=false;wheel.total=0;if((index===0&&delta<0)||(index===cards.length-1&&delta>0))return;}
+    event.preventDefault();clearTimeout(snapTimer);
+    const direction=wheelGesture(wheel,delta,now);if(direction)goToWork(index+direction);
+  },{passive:false});
   addEventListener('keydown',event=>{
     if(home.hidden||!document.querySelector('#mobile-menu').hidden||document.querySelector('dialog[open]')||event.target.closest('input,textarea,select,[role="tab"]'))return;
     if(['ArrowLeft','ArrowRight'].includes(event.key)&&visible(works)&&Math.abs(works.getBoundingClientRect().top)<works.offsetHeight-innerHeight){event.preventDefault();goToWork(active+(event.key==='ArrowRight'?1:-1));}
@@ -97,7 +120,7 @@ export function createHomeMotion({onWork,onPractice}) {
       if(rect.top>1||rect.bottom<innerHeight-1)return;
       cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);
       const count=section===works?cards.length:section===vision?quotes.length:section===practice?practiceCount:2;
-      drag={id:event.pointerId,x:event.clientX,y:event.clientY,start:fraction(section)*(count-1),count,delta:0,axis:null,area,section,moved:false,touch:event.pointerType==='touch'};
+      drag={id:event.pointerId,x:event.clientX,y:event.clientY,start:section===works?Math.max(0,active):fraction(section)*(count-1),count,delta:0,axis:null,area,section,moved:false,touch:event.pointerType==='touch'};
     });
   }
   addEventListener('pointermove',event=>{
@@ -105,7 +128,7 @@ export function createHomeMotion({onWork,onPractice}) {
     const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
     if(!drag.moved&&Math.hypot(dx,dy)<8)return;
     // Touch keeps native vertical scrolling; horizontal gestures seek the pinned scene.
-    if(drag.touch&&!drag.moved&&Math.abs(dy)>Math.abs(dx)){drag=null;return;}
+    if(drag.touch&&drag.section!==works&&!drag.moved&&Math.abs(dy)>Math.abs(dx)){drag=null;return;}
     drag.moved=true;drag.area.classList.add('is-dragging');
     if(!drag.area.hasPointerCapture(event.pointerId))drag.area.setPointerCapture(event.pointerId);
     drag.axis??=Math.abs(dx)>=Math.abs(dy)?'x':'y';
@@ -122,8 +145,9 @@ export function createHomeMotion({onWork,onPractice}) {
     if(finished.moved){
       clickBlockedUntil=performance.now()+400;
       if(event.type!=='pointercancel'){
-        const next=clamp(Math.round(finished.start)+(Math.abs(finished.delta)>=Math.min(90,innerWidth*.15)?Math.sign(finished.delta):0),0,finished.count-1);
-        const b=bounds(finished.section);seek(b.start+next/(finished.count-1)*(b.end-b.start));
+        const next=gestureIndex(finished.start,finished.delta,finished.count),b=bounds(finished.section);
+        const leaving=finished.touch&&finished.section===works&&((Math.round(finished.start)===0&&finished.delta<0)||(Math.round(finished.start)===finished.count-1&&finished.delta>0));
+        seek(leaving?(finished.delta>0?b.end+innerHeight*.65:b.start-innerHeight*.65):b.start+next/(finished.count-1)*(b.end-b.start));
       }
     }
   }

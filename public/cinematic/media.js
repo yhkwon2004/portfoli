@@ -1,6 +1,9 @@
-// Official article photographs, fetched from their publishers on 2026-09-27.
+// Official article photographs, fetched from their publishers on 2026-09-27 and 2026-10-02.
 // Local copies keep the cards available when an external image server is slow.
 export const pressImages = {
+ 'huss-ai-2026': {src:'assets/portfolio/press/huss-ai-2026.jpg',alt:'2026 HUSS 융합캠프 AI 경진대회와 해커톤 우수상 수상팀 공식 사진',source:{label:'원광대학교',url:'https://www.wku.ac.kr/k-컬처-사업단-2026-huss-융합캠프서-우수한-성적-거둬원광대.html'}},
+ 'capstone-2025': {src:'assets/portfolio/press/capstone-2025.jpg',alt:'WON+UP 캡스톤디자인 대상 수상패를 든 인퓨테크팀',source:{label:'원광대학교',url:'https://www.wku.ac.kr/wonpbl-교과-캡스톤디자인-경진대회서-성과-입증원광대.html'}},
+ 'innovation-league-2025': {src:'assets/portfolio/press/innovation-league-2025.jpg',alt:'2025 생활혁신 아이디어리그 최우수상을 받은 권용현',source:{label:'원광대학교',url:'https://www.wku.ac.kr/컴퓨터소프트웨어공학과-권용현-학생-생활혁신-아.html'}},
  'won-pbl-2026': {src:'assets/portfolio/press/won-pbl-2026.jpg',alt:'WON+PBL 창업아이디어 경진대회 수상 현장',source:{label:'원광대학교',url:'https://www.wku.ac.kr/wonpbl-교과-창업아이디어-경진대회-수상-결실원광대학.html'}},
  'recap-soldout-2026': {src:'assets/portfolio/press/recap-soldout-2026.jpg',alt:'전북현대 경기장 판매 부스에서 Re:CAP의 업사이클링 키링을 소개하는 현장',source:{label:'원광대학교 RISE사업단',url:'https://rise.wku.ac.kr/?p=3811'}},
  'recap-store-2026': {src:'assets/portfolio/press/recap-store-2026.jpg',alt:'전북현대모터스FC 입점 기사에 소개된 Green Cycle 업사이클링 키링',source:{label:'원광대학교',url:'https://www.wku.ac.kr/학생-창업동아리-recap팀-업사이클링-제품-전북현대모.html'}},
