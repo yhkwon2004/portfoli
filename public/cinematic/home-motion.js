@@ -17,6 +17,10 @@ export function workPose(distance, width) {
   const angle=clamp(distance,-2.5,2.5)*.76;
   return {x:Math.sin(angle)*width*.91,y:distance*width*.038,z:(Math.cos(angle)-1)*width*.58,rotation:-angle*180/Math.PI*.66,opacity:1-clamp((Math.abs(distance)-1.1)/1.4),scale:1-clamp(Math.abs(distance))*.12};
 }
+export function awardPose(distance) {
+  const d=clamp(distance,-2,2),depth=Math.abs(d);
+  return {x:d*22,y:depth*3,rotation:-d*12,scale:1-depth*.08,opacity:1-depth*.23};
+}
 
 // Native scroll remains the timeline; each wheel or drag gesture seeks one work card.
 export function createHomeMotion({onWork,onPractice}) {
@@ -83,10 +87,11 @@ export function createHomeMotion({onWork,onPractice}) {
     const serviceIndex=Math.round(servicePosition);
     if(serviceIndex!==activePractice){activePractice=serviceIndex;onPractice(activePractice);}
     practiceCards.forEach((card,index)=>{
-      const d=index-servicePosition;
-      card.style.transform=preference.matches?'none':`translate3d(${d*110}%,0,${-Math.abs(d)*70}px) rotateY(${clamp(d,-1,1)*-5}deg)`;
-      card.style.opacity=preference.matches?(index===serviceIndex?'1':'0'):String(1-clamp(Math.abs(d)*.72));
-      card.style.visibility=Math.abs(d)>1.15?'hidden':'visible';
+      const d=index-servicePosition,p=awardPose(d),certificate=card.querySelector('.practice-object');
+      card.style.zIndex=String(10-Math.round(Math.abs(d)*2));
+      card.style.visibility=Math.abs(d)>2.1||(preference.matches&&index!==serviceIndex)?'hidden':'visible';
+      certificate.style.transform=preference.matches?'none':`translate3d(${p.x}%,${p.y}%,${-Math.abs(d)*60}px) rotateZ(${p.rotation}deg) scale(${p.scale})`;
+      certificate.style.opacity=String(preference.matches?1:p.opacity);
     });
     if(position!==target||servicePosition!==serviceTarget)raf=requestAnimationFrame(render);
   }

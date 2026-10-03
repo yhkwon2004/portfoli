@@ -3,7 +3,7 @@ import { readFile, access } from 'node:fs/promises';
 import { records, content, projects, awards, press, featured, categories, filterProjects, youtubeId, itemPath } from './content.js';
 import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds, projectFacts } from './pages.js';
 import { institutions } from './media.js';
-import { workPose, clamp, dragPosition, wheelGesture, gestureIndex } from './home-motion.js';
+import { workPose, awardPose, clamp, dragPosition, wheelGesture, gestureIndex } from './home-motion.js';
 for(const width of [320,390,1440])for(let start=0;start<6;start++){
   assert.equal(dragPosition(start,10000,width,6),Math.min(5,start+1),'Long drag must advance only one card');
   assert.equal(dragPosition(start,-10000,width,6),Math.max(0,start-1),'Reverse drag must retreat only one card');
@@ -34,8 +34,11 @@ for(const entering of [true,false]){
 const local=path=>new URL(path,import.meta.url);
 assert.equal(new Set(records.map(item=>item.id)).size,records.length,'Record IDs must be unique');
 assert(featured.every(item=>item?.type==='project'),'Featured projects must resolve');
-assert.equal(featured[4].id,'project-factline');
-assert.equal(featured[5].id,'project-self-powered-dehumidifier');
+assert.deepEqual(featured.slice(0,4).map(item=>item.id),['project-factline','project-handmade-car','project-autonomous','project-iot-ring']);
+assert.deepEqual(projects.slice(0,6).map(item=>item.id),featured.map(item=>item.id),'The archive must share featured project priority');
+assert.equal(records.find(item=>item.id==='award-national-scholar').images.length,0,'Unrelated Drive-Up certificate must not be shown as scholarship evidence');
+assert.deepEqual(awardPose(0),{x:0,y:0,rotation:-0,scale:1,opacity:1});
+for(const d of [.5,1,2]){const a=awardPose(-d),b=awardPose(d);assert.equal(a.x,-b.x);assert.equal(a.rotation,-b.rotation);assert.equal(a.opacity,b.opacity);assert(b.scale>0&&b.opacity>0);}
 assert.equal(clamp(-1),0);assert.equal(clamp(2),1);
 assert.deepEqual(workPose(0,1000),{x:0,y:0,z:0,rotation:-0,opacity:1,scale:1});
 for(const d of [.2,1,2,3]){const left=workPose(-d,1000),right=workPose(d,1000);assert.equal(left.x,-right.x);assert.equal(left.z,right.z);assert(right.opacity>=0&&right.opacity<=1);assert(right.z<=0);}

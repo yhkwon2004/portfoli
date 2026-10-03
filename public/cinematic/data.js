@@ -875,25 +875,17 @@ export const records = [
     "id": "award-national-scholar",
     "type": "award",
     "title": "국가우수 이공계 장학생",
-    "summary": "정보통신부장관 명의 국가우수 이공계 장학생으로 선정되며 학업과 프로젝트 성과를 공식적으로 인정받았습니다.",
+    "summary": "국가우수 이공계 장학생으로 선정된 기록입니다.",
     "year": "2025-01-01",
     "tags": [
       "국가장학",
       "장학생",
       "대표수상"
     ],
-    "featured": true,
-    "rank": 1,
+    "featured": false,
+    "rank": 99,
     "category": "Recognition",
-    "images": [
-      {
-        "src": "assets/portfolio/full/evidence/award-national-scholarship.webp",
-        "thumb": "assets/portfolio/thumb/evidence/award-national-scholarship.webp",
-        "alt": "국가우수 이공계 장학생 상장",
-        "role": "certificate",
-        "illustrative": false
-      }
-    ],
+    "images": [],
     "details": {},
     "links": [],
     "videos": []

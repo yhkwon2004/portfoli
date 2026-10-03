@@ -1,11 +1,11 @@
-import { records } from './data.js?v=20261002-recognition';
-import { pressImages } from './media.js?v=20261002-recognition';
+import { records } from './data.js?v=20261003-honors';
+import { pressImages } from './media.js?v=20261003-honors';
 // 개인 소개와 대표 프로젝트 순서는 여기서, 전체 프로젝트는 data.js에서 수정합니다.
 export { records };
-export const projects = records.filter(item => item.type === 'project');
+export const featuredIds = ['project-factline', 'project-handmade-car', 'project-autonomous', 'project-iot-ring', 'project-self-powered-dehumidifier', 'project-upcycle'];
+export const projects = records.filter(item => item.type === 'project').sort((a,b)=>(featuredIds.indexOf(a.id)+1 || featuredIds.length+1)-(featuredIds.indexOf(b.id)+1 || featuredIds.length+1));
 export const awards = records.filter(item => item.type === 'award');
 export const categories = ['All', 'Mobility', 'Hardware', 'AI & Data', 'Software', 'Product'];
-export const featuredIds = ['project-upcycle', 'project-autonomous', 'project-handmade-car', 'project-iot-ring', 'project-factline', 'project-self-powered-dehumidifier'];
 export const featured = featuredIds.map(id => projects.find(item => item.id === id));
 // Article summaries are original paraphrases. Sources identify the person/team or the related event.
 export const press = [
@@ -26,7 +26,7 @@ export const content = {
  about:{heading:['기술의 가능성을,','사람에게 필요한 변화로.'],english:'Turn possibilities into something that matters.',description:'현장에서 문제를 발견하고, 하드웨어와 소프트웨어로 답을 만듭니다. 작동하는 시제품에서 실제로 쓰이는 제품까지. 배우고, 만들고, 검증하는 과정으로 다음 가능성을 열어갑니다.'},
  quotes:[{line:'모래시계는 굵기와 위치에 따라|떨어지는 속도가 다릅니다.',note:'작은 차이를 읽는 시선이, 시간의 가치를 바꿉니다.'},{line:'일에도, 시간을 흘려보낼|순서가 필요합니다.',note:'속도보다 먼저 방향을 정하고, 중요한 일에 시간을 씁니다.'},{line:'시급함과 중요함을 정리하고,|집중을 성과로 연결합니다.',note:'일의 시급성과 중요도를 정리하여 업무의 효율을 올리는 개발자입니다.',awardIds:['award-driveup','award-gangneung']}],
  vision:{heading:['경험과 도전은,','나눔에서 이루어집니다.'],english:['Build. Learn. Share.','And make the next possibility real.']},
- news:[{date:'2026.04',title:'전북현대모터스FC × Re:cap, 아이디어에서 실제 판매까지',target:'works/project-upcycle-jbmotors/'},{date:'2026',title:'스마트 IoT 링거폴대 — 회로와 제품 설계',target:'works/project-iot-ring/'},{date:'2025.08',title:'Drive Up 창업캠프 대상 · 전북도지사 표창',target:'records/award-driveup/'}],
+ news:[{date:'2026',title:'FACTLINE — LLM으로 기록과 증거를 연결하는 AI 서비스',target:'works/project-factline/'},{date:'2026',title:'스마트 IoT 링거폴대 — 회로와 제품 설계',target:'works/project-iot-ring/'},{date:'2024—2025',title:'자율주행 — ROS2 · CARLA 기반 주행 로직 검증',target:'works/project-autonomous/'}],
  links:[{label:'Instagram',url:'https://www.instagram.com/dydgus_.0802'},{label:'GitHub',url:'https://github.com/yhkwon2004'},{label:'Notion',url:'https://befitting-paper-753.notion.site/PR-75bfaf73802f835f948881f5ba22bdc4?pvs=74'},{label:'Blog',url:'https://blog.naver.com/procmd'}]
 };
 export const detailLabels={프로젝트개요:'프로젝트 개요',프로젝트설명:'프로젝트 설명',핵심포인트:'핵심 포인트',배운점:'배운 점',활동기간:'활동 기간',주요기술활동:'주요 기술 활동',문제해결과리더십:'문제 해결과 리더십',진행타임라인:'진행 타임라인',막혔던부분과해결:'막혔던 부분과 해결',환경구축메모:'환경 구축 메모',핵심축:'핵심 축',대표프로젝트:'대표 프로젝트',문제정의:'문제 정의',진행포인트:'진행 포인트',핵심기능:'핵심 기능',기술스택:'기술 스택',분석모듈:'분석 모듈',한줄소개:'한 줄 소개'};

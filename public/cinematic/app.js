@@ -1,9 +1,9 @@
-import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261002-recognition';
-import { createScene } from './scene.js?v=20261002-recognition';
-import { createHomeMotion } from './home-motion.js?v=20261002-recognition';
+import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261003-honors';
+import { createScene } from './scene.js?v=20261003-honors';
+import { createHomeMotion } from './home-motion.js?v=20261003-honors';
 import { animatePageTransition } from './page-transition.js';
-import { institutions } from './media.js?v=20261002-recognition';
-import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261002-recognition';
+import { institutions } from './media.js?v=20261003-honors';
+import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-honors';
 
 const $ = selector => document.querySelector(selector);
 const text = (selector, value) => { $(selector).textContent = value; };
@@ -51,12 +51,13 @@ $('#news-list').innerHTML=content.news.map(item=>`<a href="${item.target}"><time
 if($('#home-press'))$('#home-press').innerHTML=['huss-ai-2026','capstone-2025','innovation-league-2025'].map(id=>press.find(article=>article.id===id)).map(pressCard).join('');
 $('#work-track').innerHTML=featured.map((item,index)=>`<a class="work-card" href="${itemPath(item)}" aria-label="${e(item.title)} 프로젝트 자세히 보기">${visual(item,{eager:true})}<span class="card-label">${String(index+1).padStart(2,'0')} / ${e(item.category.toUpperCase())}</span><span class="card-open" aria-hidden="true">↗</span></a>`).join('');
 $('.work-scrubber').innerHTML=featured.map((item,index)=>`<button type="button" data-work-index="${index}" aria-label="${index+1}. ${e(item.title)}" aria-pressed="false"><span></span></button>`).join('');
-const recognition=['award-huss-ai-2026','award-capstone-iot-2025','award-driveup'].map(id=>awards.find(item=>item.id===id));
-const awardPlaces=['2nd.','Grand Prize.','Grand Prize.'],awardNames=['HUSS AI','CAPSTONE','DRIVE UP'],awardProjects=['project-ai-evidence','project-iot-ring','project-upcycle-jbmotors'];
+const recognition=['award-driveup','award-jeonju-startup-2025','award-gangneung'].map(id=>awards.find(item=>item.id===id));
+const awardPlaces=['대상.','최우수상.','대상.'],awardNames=['GOVERNOR','SME OFFICE','MAYOR'],awardProjects=['project-upcycle-jbmotors','project-coffee-box',null];
+const awardIssuers=['전북특별자치도지사상','전북지방중소벤처기업청장상','강릉시장상'];
 $('#practice-grid').innerHTML=recognition.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-card-${index}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>0${index+1}</span><strong>${awardNames[index]}</strong></button>`).join('');
 $('#practice-panel').innerHTML=recognition.map((item,index)=>{
- const project=projects.find(project=>project.id===awardProjects[index]),institution=institutions.find(logo=>logo.name===(index===2?'전북현대모터스FC':'원광대학교'));
- return `<article class="practice-card" id="practice-card-${index}" data-award-id="${e(item.id)}" role="tabpanel" aria-labelledby="practice-tab-${index}" aria-hidden="${index!==0}"><div class="practice-card-header"><a class="practice-partner" href="${e(institution.url)}" target="_blank" rel="noopener noreferrer"><img src="${e(institution.logo)}" alt="${e(institution.name)}"><span>RECOGNITION / ${e(item.year.slice(0,4))}</span></a><span>0${index+1} — 03</span></div><a class="practice-object" href="${itemPath(item)}" aria-label="${e(item.title)} 수상 기록">${visual(item,{full:true})}<span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">${e(item.year)} / SELECTED RECOGNITION</span><h3>${awardPlaces[index]}</h3><h4>${e(item.title)}</h4><p>${e(item.summary)}</p><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div><a class="practice-result" href="${itemPath(item)}"><span>AWARD RECORD</span>수상 기록과 공식 보도 보기 ↗</a><a class="practice-proof" href="${itemPath(project)}"><span><small>THE PROJECT BEHIND THE AWARD</small><strong>${e(project.title)}</strong></span><b aria-hidden="true">↗</b></a></div></article>`;
+ const project=projects.find(project=>project.id===awardProjects[index]),institution=institutions.find(logo=>logo.name===(index===0?'전북현대모터스FC':'원광대학교'));
+ return `<article class="practice-card" id="practice-card-${index}" data-award-id="${e(item.id)}" role="tabpanel" aria-labelledby="practice-tab-${index}" aria-hidden="${index!==0}"><div class="practice-card-header"><a class="practice-partner ${index===0?'is-crest':''}" href="${e(institution.url)}" target="_blank" rel="noopener noreferrer"><img src="${e(institution.logo)}" alt="${e(institution.name)}"><span>RECOGNITION / ${e(item.year.slice(0,4))}</span></a><span>0${index+1} — 03</span></div><a class="practice-object" href="${itemPath(item)}" aria-label="${e(item.title)} 원본 상장과 수상 기록">${visual(item,{full:true})}<span class="award-media-label">ORIGINAL CERTIFICATE / 0${index+1}</span><span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">${e(item.year)} / SELECTED RECOGNITION</span><p class="award-issuer">${awardIssuers[index]}</p><h3>${awardPlaces[index]}</h3><h4>${e(item.title)}</h4><p>${e(item.summary)}</p><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div><a class="practice-result" href="${itemPath(item)}"><span>AWARD RECORD</span>원본 상장과 수상 기록 보기 ↗</a><a class="practice-proof" href="${project?itemPath(project):'news/'}"><span><small>${project?'THE PROJECT BEHIND THE AWARD':'THE COMPLETE RECOGNITION ARCHIVE'}</small><strong>${project?e(project.title):`${awards.length}개 수상 기록 모두 보기`}</strong></span><b aria-hidden="true">↗</b></a></div></article>`;
 }).join('');
 function selectPractice(index){
  document.querySelectorAll('[data-practice]').forEach((button,i)=>{button.setAttribute('aria-selected',String(i===index));button.tabIndex=i===index?0:-1;});
