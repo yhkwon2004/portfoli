@@ -1,4 +1,4 @@
-import { content, records, projects, awards, press, categories, cover, itemPath, detailLabels, youtubeId, filterProjects } from './content.js?v=20261003-honors';
+import { content, records, projects, awards, press, categories, cover, itemPath, detailLabels, youtubeId, filterProjects } from './content.js?v=20261003-flow';
 
 export const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const e = escapeHTML;

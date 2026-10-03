@@ -1,9 +1,9 @@
-import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261003-honors';
-import { createScene } from './scene.js?v=20261003-honors';
-import { createHomeMotion } from './home-motion.js?v=20261003-honors';
+import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261003-flow';
+import { createScene } from './scene.js?v=20261003-flow';
+import { createHomeMotion } from './home-motion.js?v=20261003-flow';
 import { animatePageTransition } from './page-transition.js';
-import { institutions } from './media.js?v=20261003-honors';
-import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-honors';
+import { institutions } from './media.js?v=20261003-flow';
+import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-flow';
 
 const $ = selector => document.querySelector(selector);
 const text = (selector, value) => { $(selector).textContent = value; };
@@ -28,24 +28,28 @@ text('#footer-role',content.role); text('#copyright-name',content.name); text('#
 text('#year',new Date().getFullYear());
 lines('#intro-copy',content.intro); lines('#about-title',content.about.heading);
 text('#about-english',content.about.english); text('#about-description',content.about.description);
-const caseStudies=[
- {id:'project-iot-ring',problem:'수액 상태를 확인하는 의료진의 반복 업무',solution:'탈부착 구조와 회로를 설계해 기존 폴대에 연결',proof:'시제품 제작 · 캡스톤디자인 대상'},
- {id:'project-factline',problem:'흩어진 기록 속에서 사실관계를 찾기 어려운 상황',solution:'LLM으로 기록과 증거를 구조화',proof:'기록·증거 정리 서비스 구현'},
- {id:'project-upcycle-jbmotors',problem:'버려지는 키보드와 지속 가능한 구단 굿즈',solution:'폐키캡을 팬들이 쓰는 키링으로 제작',proof:'구단 입점 · 판매 시작 1시간 만에 완판'}
-];
 $('#quote-stage').innerHTML=content.quotes.map((quote,index)=>{
- const story=caseStudies[index],project=projects.find(item=>item.id===story.id);
- return `<div class="quote-frame" aria-hidden="${index!==0}"><div class="quote-thought"><span class="eyebrow">PROBLEM INTO POSSIBILITY / 0${index+1}</span><p class="quote-line" aria-label="${e(quote.line.replaceAll('|',' '))}">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-mask" aria-hidden="true"><span class="quote-word">${e(word)}</span></span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p></div><a class="quote-case" href="${itemPath(project)}">${visual(project)}<div><span class="eyebrow">0${index+1} / ${e(project.title)}</span><ol><li><span>DEFINE</span>${e(story.problem)}</li><li><span>BUILD</span>${e(story.solution)}</li><li><span>PROVE</span>${e(story.proof)}</li></ol><span class="case-link">과정 자세히 보기 ↗</span></div></a></div>`;
+ return `<div class="quote-frame" aria-hidden="${index!==0}"><div class="quote-thought"><span class="eyebrow">PROBLEM INTO POSSIBILITY / 0${index+1}</span><p class="quote-line" aria-label="${e(quote.line.replaceAll('|',' '))}">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-mask" aria-hidden="true"><span class="quote-word">${e(word)}</span></span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p></div></div>`;
 }).join('');
 $('.quote-controls').innerHTML=content.quotes.map((quote,index)=>`<button data-quote="${index}" aria-label="문장 ${index+1}" aria-pressed="${index===0}"><span></span></button>`).join('');
 $('.mission-memory').innerHTML=featured.map((item,index)=>`<img src="${e(cover(item).thumb)}" alt="" style="--memory-delay:${index*1.8}s" loading="lazy">`).join('');
-$('.memory-toggle').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));event.currentTarget.textContent=paused?'PROJECT MEMORIES ▷':'PROJECT MEMORIES Ⅱ';$('.chapter-sticky').classList.toggle('memory-paused',paused);});
+$('.memory-toggle').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));event.currentTarget.textContent=paused?'PROJECT MEMORIES ▷':'PROJECT MEMORIES Ⅱ';home.classList.toggle('memory-paused',paused);});
 const logoHTML=item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${['AWS','전남대학교','캠틱종합기술원'].includes(item.name)?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`;
 $('#institution-logos').innerHTML=[0,1].map(row=>{const logos=institutions.filter((_,index)=>index%2===row).map(logoHTML).join('');return `<div class="institution-logos"><div class="logo-group">${logos}</div><div class="logo-group" aria-hidden="true" inert>${logos}</div></div>`;}).join('');
-$('.logo-pause').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));$('.institution-marquee').classList.toggle('is-paused',paused);event.currentTarget.textContent=paused?'로고 움직임 재생 ▷':'로고 움직임 멈추기 Ⅱ';});
 $('#email-link').href=`mailto:${content.email}`;
 $('#email-link').innerHTML=`${e(content.email)} <span>↗</span>`;
 $('#contact-socials').innerHTML=externalLinks(content.links);
+const socialIcons=[
+ '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".75" fill="currentColor" stroke="none"/>',
+ '<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.7-4.57 4.95.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>',
+ '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V7l8 10V7" stroke-width="2"/>',
+ '<path d="M5 3h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8l-6 3v-3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M9 7h4a2 2 0 0 1 0 4H9V7Zm0 4h4a2 2 0 0 1 0 4H9v-4Z"/>'
+];
+$('#contact-socials').querySelectorAll('a').forEach((link,index)=>{
+ const label=content.links[index].label;
+ link.setAttribute('aria-label',`${label} 새 창에서 열기`);
+ link.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${socialIcons[index]}</svg><span class="social-name">${e(label)}</span>`;
+});
 $('#home-stats').innerHTML=`<a href="works/"><b>${projects.length}</b><span>PROJECTS</span></a><a href="news/"><b>${awards.length}</b><span>AWARDS</span></a>`;
 $('#news-list').innerHTML=content.news.map(item=>`<a href="${item.target}"><time>${e(item.date)}</time><p>${e(item.title)}</p></a>`).join('');
 if($('#home-press'))$('#home-press').innerHTML=['huss-ai-2026','capstone-2025','innovation-league-2025'].map(id=>press.find(article=>article.id===id)).map(pressCard).join('');

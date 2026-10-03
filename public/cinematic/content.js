@@ -1,5 +1,5 @@
-import { records } from './data.js?v=20261003-honors';
-import { pressImages } from './media.js?v=20261003-honors';
+import { records } from './data.js?v=20261003-flow';
+import { pressImages } from './media.js?v=20261003-flow';
 // 개인 소개와 대표 프로젝트 순서는 여기서, 전체 프로젝트는 data.js에서 수정합니다.
 export { records };
 export const featuredIds = ['project-factline', 'project-handmade-car', 'project-autonomous', 'project-iot-ring', 'project-self-powered-dehumidifier', 'project-upcycle'];

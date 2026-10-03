@@ -1,7 +1,8 @@
 export const clamp = (value, low=0, high=1) => Math.min(high, Math.max(low, value));
+const dragThreshold=6;
 export function dragPosition(start, delta, width, count) {
   const anchor=Math.round(start);
-  return clamp(anchor+clamp(start-anchor+delta/Math.max(240,width*.48),-1,1),0,count-1);
+  return clamp(anchor+clamp(start-anchor+delta/Math.max(120,width*.2),-1,1),0,count-1);
 }
 export function wheelGesture(state, delta, now) {
   if(now-state.last>220&&now>=state.until){state.used=false;state.total=0;}
@@ -9,10 +10,10 @@ export function wheelGesture(state, delta, now) {
   if(state.used)return 0;
   state.total+=delta;
   if(Math.abs(state.total)<18)return 0;
-  state.used=true;state.until=now+850;
+  state.used=true;state.until=now+420;
   return Math.sign(state.total);
 }
-export const gestureIndex=(start,delta,count)=>clamp(Math.round(start)+(Math.abs(delta)>=8?Math.sign(delta):0),0,count-1);
+export const gestureIndex=(start,delta,count)=>clamp(Math.round(start)+(Math.abs(delta)>=dragThreshold?Math.sign(delta):0),0,count-1);
 export function workPose(distance, width) {
   const angle=clamp(distance,-2.5,2.5)*.76;
   return {x:Math.sin(angle)*width*.91,y:distance*width*.038,z:(Math.cos(angle)-1)*width*.58,rotation:-angle*180/Math.PI*.66,opacity:1-clamp((Math.abs(distance)-1.1)/1.4),scale:1-clamp(Math.abs(distance))*.12};
@@ -35,10 +36,10 @@ export function createHomeMotion({onWork,onPractice}) {
   const fraction=element=>{const b=bounds(element);return clamp((scrollY-b.start)/(b.end-b.start));};
   const visible=element=>{const b=element.getBoundingClientRect();return b.bottom>0&&b.top<innerHeight;};
   function seek(top,animate=true){
-    cancelAnimationFrame(seekFrame);
+    clearTimeout(snapTimer);cancelAnimationFrame(seekFrame);seekFrame=0;
     if(preference.matches||!animate){scrollTo({top,behavior:'instant'});return;}
     const from=scrollY,started=performance.now();
-    const step=now=>{if(home.hidden){seekFrame=0;return;}const p=clamp((now-started)/760),e=1-Math.pow(1-p,4);scrollTo({top:from+(top-from)*e,behavior:'instant'});if(p<1)seekFrame=requestAnimationFrame(step);else seekFrame=0;};
+    const step=now=>{if(home.hidden){seekFrame=0;return;}const p=clamp((now-started)/420),e=1-Math.pow(1-p,4);scrollTo({top:from+(top-from)*e,behavior:'instant'});if(p<1)seekFrame=requestAnimationFrame(step);else seekFrame=0;};
     seekFrame=requestAnimationFrame(step);
   }
   function goToWork(index){const b=bounds(works);seek(b.start+clamp(index,0,cards.length-1)/(cards.length-1)*(b.end-b.start));}
@@ -51,7 +52,7 @@ export function createHomeMotion({onWork,onPractice}) {
   function render(now){
     raf=0;if(home.hidden)return;
     const target=fraction(works)*(cards.length-1),dt=lastTime?now-lastTime:16;lastTime=now;
-    position=preference.matches?target:position+(target-position)*(1-Math.exp(-dt/105));
+    position=preference.matches?target:position+(target-position)*(1-Math.exp(-dt/70));
     if(Math.abs(position-target)<.0002)position=target;
     const selected=Math.round(position),rect=works.getBoundingClientRect();
     works.querySelector('[data-drag-scene]').style.touchAction=rect.top<=1&&rect.bottom>=innerHeight-1?'pinch-zoom':'pan-y pinch-zoom';
@@ -78,11 +79,11 @@ export function createHomeMotion({onWork,onPractice}) {
     document.querySelector('#quote-count').textContent=`0${qIndex+1} / 0${quotes.length}`;
     const about=document.querySelector('#about'),a=about.getBoundingClientRect(),ap=clamp(1-a.top/innerHeight);
     about.style.setProperty('--chapter-in',String(preference.matches?1:ap));
-    about.querySelector('.chapter-sticky').classList.toggle('is-memory-playing',visible(about));
+    home.classList.toggle('is-memory-playing',visible(about)||visible(vision));
     const c=contact.getBoundingClientRect(),cp=clamp(1-c.top/innerHeight),hold=fraction(contact);
     contact.style.setProperty('--contact-in',String(preference.matches?1:cp));contact.style.setProperty('--contact-progress',String(hold));
     const serviceTarget=innerHeight<=800?manualPractice:fraction(practice)*(practiceCount-1);
-    servicePosition=preference.matches?serviceTarget:servicePosition+(serviceTarget-servicePosition)*(1-Math.exp(-dt/95));
+    servicePosition=preference.matches?serviceTarget:servicePosition+(serviceTarget-servicePosition)*(1-Math.exp(-dt/65));
     if(Math.abs(servicePosition-serviceTarget)<.0002)servicePosition=serviceTarget;
     const serviceIndex=Math.round(servicePosition);
     if(serviceIndex!==activePractice){activePractice=serviceIndex;onPractice(activePractice);}
@@ -98,7 +99,7 @@ export function createHomeMotion({onWork,onPractice}) {
   function update(){if(!raf){lastTime=0;raf=requestAnimationFrame(render);}}
   function scheduleSnap(){
     clearTimeout(snapTimer);if(preference.matches||home.hidden||drag||seekFrame)return;
-    snapTimer=setTimeout(()=>{for(const [section,count,go] of [[works,cards.length,goToWork],[practice,practiceCount,goToPractice]]){const b=bounds(section);if(section===practice&&innerHeight<=800)continue;if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(section)*(count-1);if(Math.abs(p-Math.round(p))>.012)go(Math.round(p));break;}}},320);
+    snapTimer=setTimeout(()=>{if(home.hidden||drag||seekFrame)return;for(const [section,count,go] of [[works,cards.length,goToWork],[practice,practiceCount,goToPractice]]){const b=bounds(section);if(section===practice&&innerHeight<=800)continue;if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(section)*(count-1);if(Math.abs(p-Math.round(p))>.012)go(Math.round(p));break;}}},320);
   }
   addEventListener('scroll',()=>{update();scheduleSnap();},{passive:true});addEventListener('resize',update);
   addEventListener('wheel',event=>{
@@ -120,18 +121,18 @@ export function createHomeMotion({onWork,onPractice}) {
     area.addEventListener('dragstart',event=>event.preventDefault());
     area.addEventListener('pointerdown',event=>{
       if(!event.isPrimary||event.button!==0||event.target.closest('button,input,select'))return;
-      if((area.closest('section')===practice&&innerHeight<=800)||(area.closest('section')===vision&&innerHeight<=650))return;
+      if(area.closest('section')===vision&&innerHeight<=650)return;
       const section=area.closest('section'),rect=section.getBoundingClientRect();
-      if(rect.top>1||rect.bottom<innerHeight-1)return;
+      if(!(section===practice&&innerHeight<=800)&&(rect.top>1||rect.bottom<innerHeight-1))return;
       cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);
       const count=section===works?cards.length:section===vision?quotes.length:section===practice?practiceCount:2;
-      drag={id:event.pointerId,x:event.clientX,y:event.clientY,start:section===works?Math.max(0,active):fraction(section)*(count-1),count,delta:0,axis:null,area,section,moved:false,touch:event.pointerType==='touch'};
+      drag={id:event.pointerId,x:event.clientX,y:event.clientY,start:section===works?Math.max(0,active):section===practice?activePractice:fraction(section)*(count-1),count,delta:0,axis:null,area,section,moved:false,touch:event.pointerType==='touch'};
     });
   }
   addEventListener('pointermove',event=>{
     if(!drag||drag.id!==event.pointerId)return;
     const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
-    if(!drag.moved&&Math.hypot(dx,dy)<8)return;
+    if(!drag.moved&&Math.hypot(dx,dy)<dragThreshold)return;
     // Touch keeps native vertical scrolling; horizontal gestures seek the pinned scene.
     if(drag.touch&&drag.section!==works&&!drag.moved&&Math.abs(dy)>Math.abs(dx)){drag=null;return;}
     drag.moved=true;drag.area.classList.add('is-dragging');
@@ -139,20 +140,22 @@ export function createHomeMotion({onWork,onPractice}) {
     drag.axis??=Math.abs(dx)>=Math.abs(dy)?'x':'y';
     drag.delta=drag.axis==='x'?-dx:-dy;
     const b=bounds(drag.section);
-    if(drag.section===practice&&innerHeight<=800)return;
     const p=dragPosition(drag.start,drag.delta,innerWidth,drag.count);
+    if(drag.section===practice&&innerHeight<=800){manualPractice=p;update();return;}
     scrollTo({top:b.start+p/(drag.count-1)*(b.end-b.start),behavior:'instant'});
   },{passive:true});
   function release(event){
     if(!drag||drag.id!==event.pointerId)return;
     const finished=drag;drag=null;finished.area.classList.remove('is-dragging');
     if(finished.area.hasPointerCapture(event.pointerId))finished.area.releasePointerCapture(event.pointerId);
+    if(event.type==='pointercancel'&&finished.section===practice&&innerHeight<=800){manualPractice=Math.round(finished.start);update();}
     if(finished.moved){
       clickBlockedUntil=performance.now()+400;
       if(event.type!=='pointercancel'){
         const next=gestureIndex(finished.start,finished.delta,finished.count),b=bounds(finished.section);
         const leaving=finished.touch&&finished.section===works&&((Math.round(finished.start)===0&&finished.delta<0)||(Math.round(finished.start)===finished.count-1&&finished.delta>0));
-        seek(leaving?(finished.delta>0?b.end+innerHeight*.65:b.start-innerHeight*.65):b.start+next/(finished.count-1)*(b.end-b.start));
+        if(finished.section===practice)goToPractice(next);
+        else seek(leaving?(finished.delta>0?b.end+innerHeight*.65:b.start-innerHeight*.65):b.start+next/(finished.count-1)*(b.end-b.start));
       }
     }
   }

@@ -4,18 +4,22 @@ import { records, content, projects, awards, press, featured, categories, filter
 import { resolvePage, escapeHTML, pressCard, photoSource, fieldPhotos, activityIds, projectFacts } from './pages.js';
 import { institutions } from './media.js';
 import { workPose, awardPose, clamp, dragPosition, wheelGesture, gestureIndex } from './home-motion.js';
-for(const width of [320,390,1440])for(let start=0;start<6;start++){
-  assert.equal(dragPosition(start,10000,width,6),Math.min(5,start+1),'Long drag must advance only one card');
-  assert.equal(dragPosition(start,-10000,width,6),Math.max(0,start-1),'Reverse drag must retreat only one card');
-  assert.equal(dragPosition(start,0,width,6),start);
+for(const count of [3,6])for(const width of [320,390,1440])for(let start=0;start<count;start++){
+  assert.equal(dragPosition(start,10000,width,count),Math.min(count-1,start+1),'Long drag must advance only one card');
+  assert.equal(dragPosition(start,-10000,width,count),Math.max(0,start-1),'Reverse drag must retreat only one card');
+  assert.equal(dragPosition(start,0,width,count),start);
 }
 assert.equal(dragPosition(1.25,0,1440,6),1.25,'Grabbing a moving card must not jump');
-for(const delta of [8,30,10000]){assert.equal(gestureIndex(2,delta,6),3);assert.equal(gestureIndex(2,-delta,6),1);}
+for(const delta of [6,9,30,10000]){assert.equal(gestureIndex(2,delta,6),3);assert.equal(gestureIndex(2,-delta,6),1);assert.equal(gestureIndex(0,delta,3),1);}
 assert.equal(gestureIndex(2,5,6),2,'Clicks must not advance a card');
+assert.equal(gestureIndex(0,-9,3),0);assert.equal(gestureIndex(2,9,3),2);
+assert(dragPosition(1,6,1440,6)>1.02,'A gentle drag must immediately preview movement');
 const wheel={last:-Infinity,until:0,total:0,used:false};
 assert.equal(wheelGesture(wheel,6,0),0);assert.equal(wheelGesture(wheel,12,10),1);
-for(const time of [30,100,300,800])assert.equal(wheelGesture(wheel,500,time),0,'Momentum must not skip another card');
+for(const time of [30,100,300,500,700,800])assert.equal(wheelGesture(wheel,500,time),0,'Momentum must not skip another card');
 assert.equal(wheelGesture(wheel,-30,1200),-1,'New gestures can move back');
+const quickWheel={last:-Infinity,until:0,total:0,used:false};
+assert.equal(wheelGesture(quickWheel,18,0),1);assert.equal(wheelGesture(quickWheel,18,450),1,'A second deliberate gesture must not wait for the old 850ms lock');
 const lab=resolvePage('motion/');assert.equal(lab.kind,'lab');assert.equal((lab.html.match(/class="lab-case"/g)||[]).length,4);assert(!lab.html.includes('data-material'));
 assert.equal(projectFacts(projects.find(item=>item.id==='project-iot-ring')).participants,'4명');
 for(const project of projects){const html=resolvePage(itemPath(project)).html;for(const field of ['IDEA / 한 줄 소개','TEAM / 참여 인원','MY ROLE / 역할'])assert(html.includes(field));}
