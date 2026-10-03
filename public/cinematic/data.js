@@ -439,15 +439,7 @@ export const records = [
     "featured": false,
     "rank": 99,
     "category": "Recognition",
-    "images": [
-      {
-        "src": "assets/portfolio/full/evidence/award-collection.svg",
-        "thumb": "assets/portfolio/thumb/evidence/award-collection.svg",
-        "alt": "수상 기록 모음",
-        "role": "certificate",
-        "illustrative": false
-      }
-    ],
+    "images": [],
     "details": {},
     "links": [],
     "videos": []
@@ -1253,10 +1245,20 @@ export const records = [
     "category": "Mobility",
     "images": [
       {
+        "src": "assets/portfolio/press/autonomous-airsim.jpg",
+        "thumb": "assets/portfolio/press/autonomous-airsim.jpg",
+        "alt": "권용현의 AirSim 자율주행 제어 시뮬레이션 영상 미리보기",
+        "role": "cover",
+        "source": {
+          "label": "권용현 · 자율주행 실습 영상",
+          "url": "https://youtu.be/sLgSZitPeOc"
+        }
+      },
+      {
         "src": "assets/portfolio/full/notion-projects/carla-cover.webp",
         "thumb": "assets/portfolio/thumb/notion-projects/carla-cover.webp",
         "alt": "CARLA 자율주행 시뮬레이션 커버",
-        "role": "cover",
+        "role": "gallery",
         "illustrative": false
       },
       {
@@ -1355,7 +1357,7 @@ export const records = [
     "videos": [
       {
         "url": "https://youtu.be/sLgSZitPeOc",
-        "title": "자율주행 시뮬레이터 시연"
+        "title": "AirSim 자율주행 제어 시뮬레이션"
       }
     ]
   },
@@ -2370,10 +2372,20 @@ export const records = [
     "category": "Product",
     "images": [
       {
+        "src": "assets/portfolio/press/recap-soldout-2026.jpg",
+        "alt": "전북현대 경기장 판매 부스에서 Re:CAP의 업사이클링 키링을 소개하는 현장",
+        "source": {
+          "label": "원광대학교 RISE사업단",
+          "url": "https://rise.wku.ac.kr/?p=3811"
+        },
+        "thumb": "assets/portfolio/press/recap-soldout-2026.jpg",
+        "role": "cover"
+      },
+      {
         "src": "assets/portfolio/full/notion-projects/jbmotors-upcycle-cover.webp",
         "thumb": "assets/portfolio/thumb/notion-projects/jbmotors-upcycle-cover.webp",
         "alt": "전북현대모터스 FC 업사이클 커버",
-        "role": "cover",
+        "role": "gallery",
         "illustrative": false
       },
       {
@@ -3164,7 +3176,7 @@ export const records = [
     "type": "project",
     "title": "학교폭력 증거 정리 AI 서비스",
     "summary": "학교폭력이라는 민감한 문제를 참교육과 함께 다루며, 사건 자료를 시각적으로 · 순서대로 정리하고 빠진 증거를 짚어 주는 증거 누락 방지 · 정리 서비스입니다.",
-    "year": "",
+    "year": "2026",
     "tags": [
       "AI",
       "Data Viz",
@@ -3174,7 +3186,18 @@ export const records = [
     "featured": true,
     "rank": 1,
     "category": "AI & Data",
-    "images": [],
+    "images": [
+      {
+        "src": "assets/portfolio/press/huss-ai-2026.jpg",
+        "alt": "2026 HUSS 융합캠프 AI 경진대회와 해커톤 우수상 수상팀 공식 사진",
+        "source": {
+          "label": "원광대학교",
+          "url": "https://www.wku.ac.kr/k-컬처-사업단-2026-huss-융합캠프서-우수한-성적-거둬원광대.html"
+        },
+        "thumb": "assets/portfolio/press/huss-ai-2026.jpg",
+        "role": "cover"
+      }
+    ],
     "details": {
       "한줄소개": "학교폭력 사건 자료를 시각적으로, 순서대로 정리하고 빠진 증거를 짚어 주는 AI 서비스",
       "문제정의": "학교폭력 사건은 민감한 만큼 자료를 빠짐없이, 정확한 순서로 남겨야 합니다. 흩어진 자료만으로는 사건의 흐름을 세우기 어렵고, 중요한 증거가 누락되기 쉽습니다.",

@@ -18,18 +18,17 @@ export function workPose(distance, width) {
   const angle=clamp(distance,-2.5,2.5)*.76;
   return {x:Math.sin(angle)*width*.91,y:distance*width*.038,z:(Math.cos(angle)-1)*width*.58,rotation:-angle*180/Math.PI*.66,opacity:1-clamp((Math.abs(distance)-1.1)/1.4),scale:1-clamp(Math.abs(distance))*.12};
 }
-export function awardPose(distance) {
-  const d=clamp(distance,-2,2),depth=Math.abs(d);
-  return {x:d*22,y:depth*3,rotation:-d*12,scale:1-depth*.08,opacity:1-depth*.23};
+export function recognitionPose(index, progress, count) {
+  const travel=clamp((progress-.12)/.8)*(Math.ceil(count/3)+3),depth=travel-Math.floor(index/3);
+  return {column:index%3-1,z:-depth*1050,rotation:(index%3-1)*8+depth*3,opacity:clamp((depth+.45)/.45)*clamp(1-depth*.25),visible:depth>-.45&&depth<4};
 }
 
 // Native scroll remains the timeline; each wheel or drag gesture seeks one work card.
-export function createHomeMotion({onWork,onPractice}) {
+export function createHomeMotion({onWork}) {
   const home=document.querySelector('#home-page'),works=document.querySelector('#works');
   const cards=[...document.querySelectorAll('.work-card')],vision=document.querySelector('#vision'),contact=document.querySelector('#contact');
   const quotes=[...document.querySelectorAll('.quote-frame')],practice=document.querySelector('#practice'),preference=matchMedia('(prefers-reduced-motion: reduce)'),precision=matchMedia('(hover: hover) and (pointer: fine)');
-  const practiceCount=document.querySelectorAll('[data-practice]').length;
-  const practiceCards=[...document.querySelectorAll('.practice-card')];
+  const awardFlights=[...document.querySelectorAll('.award-flight')],selectedAwards=document.querySelector('.recognition-selected');
   let pointed=null,pointedBounds=null;
   function clearPointed(){
     if(pointed){pointed.classList.remove('is-pointed');pointed.style.setProperty('--tilt-x','0deg');pointed.style.setProperty('--tilt-y','0deg');}
@@ -37,7 +36,7 @@ export function createHomeMotion({onWork,onPractice}) {
   }
   home.addEventListener('pointermove',event=>{
     if(preference.matches||!precision.matches||event.pointerType!=='mouse'||drag){clearPointed();return;}
-    const surface=event.target.closest('.work-card[tabindex="0"],.practice-card[aria-hidden="false"] .practice-object');
+    const surface=event.target.closest('.work-card[tabindex="0"],.recognition-paper');
     if(surface!==pointed){clearPointed();pointed=surface;pointedBounds=surface?.getBoundingClientRect();}
     if(!pointed)return;
     const x=clamp((event.clientX-pointedBounds.left)/pointedBounds.width,0,1),y=clamp((event.clientY-pointedBounds.top)/pointedBounds.height,0,1),angle=pointed.classList.contains('work-card')?5:3;
@@ -45,7 +44,7 @@ export function createHomeMotion({onWork,onPractice}) {
     pointed.style.setProperty('--light-x',`${x*100}%`);pointed.style.setProperty('--light-y',`${y*100}%`);pointed.classList.add('is-pointed');
   },{passive:true});
   home.addEventListener('pointerleave',clearPointed);addEventListener('blur',clearPointed);precision.addEventListener('change',clearPointed);
-  let position=0,servicePosition=0,active=-1,activePractice=0,activeQuote=-1,manualPractice=0,raf=0,lastTime=0,drag=null,clickBlockedUntil=0,snapTimer=0,seekFrame=0;
+  let position=0,active=-1,activeQuote=-1,raf=0,lastTime=0,drag=null,clickBlockedUntil=0,snapTimer=0,seekFrame=0;
   const wheel={last:-Infinity,until:0,total:0,used:false};
   const bounds=element=>({start:element.offsetTop,end:element.offsetTop+Math.max(1,element.offsetHeight-innerHeight)});
   const fraction=element=>{const b=bounds(element);return clamp((scrollY-b.start)/(b.end-b.start));};
@@ -59,12 +58,6 @@ export function createHomeMotion({onWork,onPractice}) {
   }
   function goToWork(index){const b=bounds(works);seek(b.start+clamp(index,0,cards.length-1)/(cards.length-1)*(b.end-b.start));}
   function goToQuote(index){const b=bounds(vision);seek(b.start+clamp(index,0,quotes.length-1)/(quotes.length-1)*(b.end-b.start));}
-  function goToPractice(index){
-    clearPointed();
-    index=clamp(index,0,practiceCount-1);
-    if(innerHeight<=800){manualPractice=index;update();return;}
-    const b=bounds(practice);seek(b.start+clamp(index,0,practiceCount-1)/(practiceCount-1)*(b.end-b.start));
-  }
   function render(now){
     raf=0;if(home.hidden)return;
     const target=fraction(works)*(cards.length-1),dt=lastTime?now-lastTime:16;lastTime=now;
@@ -79,6 +72,18 @@ export function createHomeMotion({onWork,onPractice}) {
       card.style.transform=preference.matches?`translate3d(calc(-50% + ${d*innerWidth*.9}px),-50%,0)`:`translate3d(calc(-50% + ${p.x}px),calc(-50% + ${p.y}px),${p.z}px) rotateY(${p.rotation}deg) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(${p.scale})`;
       card.style.opacity=String(p.opacity);card.style.zIndex=String(10-Math.round(Math.abs(d)*2));card.tabIndex=index===selected?0:-1;
       card.setAttribute('aria-hidden',String(Math.abs(d)>1.9));card.style.pointerEvents=Math.abs(d)>1.9?'none':'';
+      if(card.dataset.previewVideo){
+        const playing=index===selected&&!preference.matches&&!document.hidden&&rect.top<innerHeight*.4&&rect.bottom>innerHeight*.6;
+        const preview=card.querySelector('iframe');
+        if(!playing)preview?.remove();
+        else if(!preview){
+          const iframe=document.createElement('iframe'),id=card.dataset.previewVideo;
+          iframe.className='work-video';iframe.title=card.dataset.videoTitle;iframe.tabIndex=-1;iframe.setAttribute('aria-hidden','true');
+          iframe.allow='autoplay; encrypted-media';iframe.referrerPolicy='strict-origin-when-cross-origin';
+          iframe.src=`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&playsinline=1&rel=0`;
+          card.append(iframe);
+        }
+      }
     });
     if(selected!==active){active=selected;onWork(active);}
     const q=fraction(vision)*(quotes.length-1),qIndex=Math.round(q);
@@ -95,27 +100,29 @@ export function createHomeMotion({onWork,onPractice}) {
     document.querySelector('#quote-count').textContent=`0${qIndex+1} / 0${quotes.length}`;
     const about=document.querySelector('#about'),a=about.getBoundingClientRect(),ap=clamp(1-a.top/innerHeight);
     about.style.setProperty('--chapter-in',String(preference.matches?1:ap));
-    home.classList.toggle('is-memory-playing',visible(about)||visible(vision));
+    home.classList.toggle('is-memory-playing',[about,vision].some(section=>{const r=section.getBoundingClientRect();return r.bottom>innerHeight*.1&&r.top<innerHeight*.9;}));
     const c=contact.getBoundingClientRect(),cp=clamp(1-c.top/innerHeight),hold=fraction(contact);
     contact.style.setProperty('--contact-in',String(preference.matches?1:cp));contact.style.setProperty('--contact-progress',String(hold));
-    const serviceTarget=innerHeight<=800?manualPractice:fraction(practice)*(practiceCount-1);
-    servicePosition=preference.matches?serviceTarget:servicePosition+(serviceTarget-servicePosition)*(1-Math.exp(-dt/65));
-    if(Math.abs(servicePosition-serviceTarget)<.0002)servicePosition=serviceTarget;
-    const serviceIndex=Math.round(servicePosition);
-    if(serviceIndex!==activePractice){activePractice=serviceIndex;onPractice(activePractice);}
-    practiceCards.forEach((card,index)=>{
-      const d=index-servicePosition,p=awardPose(d),certificate=card.querySelector('.practice-object');
-      card.style.zIndex=String(10-Math.round(Math.abs(d)*2));
-      card.style.visibility=Math.abs(d)>2.1||(preference.matches&&index!==serviceIndex)?'hidden':'visible';
-      certificate.style.transform=preference.matches?'none':`translate3d(${p.x}%,${p.y}%,${-Math.abs(d)*60}px) rotateZ(${p.rotation}deg) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(${p.scale})`;
-      certificate.style.opacity=String(preference.matches?1:p.opacity);
+    const progress=fraction(practice),intro=preference.matches?0:clamp(progress/.23),end=preference.matches?0:clamp((progress-.87)/.08);
+    selectedAwards.style.transform=preference.matches?'none':`translate3d(0,${-intro*8}vh,${-intro*1500}px) rotateX(${intro*9}deg)`;
+    selectedAwards.style.opacity=String(1-intro);selectedAwards.inert=intro>.8;selectedAwards.setAttribute('aria-hidden',String(intro>.8));
+    practice.querySelector('.recognition-wall').style.opacity=String((1-intro)*.1);
+    const ending=practice.querySelector('.recognition-end');ending.style.opacity=String(end);ending.inert=end<.8;ending.setAttribute('aria-hidden',String(end<.8));
+    if(progress<.12)practice.querySelector('#recognition-year').textContent='2023 — 2026';
+    awardFlights.forEach((card,index)=>{
+      const p=recognitionPose(index,progress,awardFlights.length);
+      if(progress>=.12&&p.z<=0&&p.z>-1050)practice.querySelector('#recognition-year').textContent=card.querySelector('p').textContent.slice(0,4);
+      card.style.visibility=!preference.matches&&progress>.08&&p.visible?'visible':'hidden';
+      if(!p.visible)return;
+      card.style.opacity=String(p.opacity*clamp((progress-.08)/.07));
+      card.style.transform=`translate3d(calc(-50% + ${p.column*innerWidth*.29}px),calc(-50% + ${Math.abs(p.column)*innerHeight*.04}px),${p.z}px) rotateZ(${p.rotation}deg)`;
     });
-    if(position!==target||servicePosition!==serviceTarget)raf=requestAnimationFrame(render);
+    if(position!==target)raf=requestAnimationFrame(render);
   }
   function update(){if(!raf){lastTime=0;raf=requestAnimationFrame(render);}}
   function scheduleSnap(){
     clearTimeout(snapTimer);if(preference.matches||home.hidden||drag||seekFrame)return;
-    snapTimer=setTimeout(()=>{if(home.hidden||drag||seekFrame)return;for(const [section,count,go] of [[works,cards.length,goToWork],[practice,practiceCount,goToPractice]]){const b=bounds(section);if(section===practice&&innerHeight<=800)continue;if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(section)*(count-1);if(Math.abs(p-Math.round(p))>.012)go(Math.round(p));break;}}},320);
+    snapTimer=setTimeout(()=>{if(home.hidden||drag||seekFrame)return;const b=bounds(works);if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(works)*(cards.length-1);if(Math.abs(p-Math.round(p))>.012)goToWork(Math.round(p));}},320);
   }
   addEventListener('scroll',()=>{clearPointed();update();scheduleSnap();},{passive:true});addEventListener('resize',()=>{clearPointed();update();});
   addEventListener('wheel',event=>{
@@ -140,10 +147,10 @@ export function createHomeMotion({onWork,onPractice}) {
       clearPointed();
       if(area.closest('section')===vision&&innerHeight<=650)return;
       const section=area.closest('section'),rect=section.getBoundingClientRect();
-      if(!(section===practice&&innerHeight<=800)&&(rect.top>1||rect.bottom<innerHeight-1))return;
+      if(rect.top>1||rect.bottom<innerHeight-1)return;
       cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);
-      const count=section===works?cards.length:section===vision?quotes.length:section===practice?practiceCount:2;
-      drag={id:event.pointerId,x:event.clientX,y:event.clientY,start:section===works?Math.max(0,active):section===practice?activePractice:fraction(section)*(count-1),count,delta:0,axis:null,area,section,moved:false,touch:event.pointerType==='touch'};
+      const count=section===works?cards.length:section===vision?quotes.length:2;
+      drag={id:event.pointerId,x:event.clientX,y:event.clientY,start:section===works?Math.max(0,active):fraction(section)*(count-1),count,delta:0,axis:null,area,section,moved:false,touch:event.pointerType==='touch'};
     });
   }
   addEventListener('pointermove',event=>{
@@ -158,21 +165,18 @@ export function createHomeMotion({onWork,onPractice}) {
     drag.delta=drag.axis==='x'?-dx:-dy;
     const b=bounds(drag.section);
     const p=dragPosition(drag.start,drag.delta,innerWidth,drag.count);
-    if(drag.section===practice&&innerHeight<=800){manualPractice=p;update();return;}
     scrollTo({top:b.start+p/(drag.count-1)*(b.end-b.start),behavior:'instant'});
   },{passive:true});
   function release(event){
     if(!drag||drag.id!==event.pointerId)return;
     const finished=drag;drag=null;finished.area.classList.remove('is-dragging');
     if(finished.area.hasPointerCapture(event.pointerId))finished.area.releasePointerCapture(event.pointerId);
-    if(event.type==='pointercancel'&&finished.section===practice&&innerHeight<=800){manualPractice=Math.round(finished.start);update();}
     if(finished.moved){
       clickBlockedUntil=performance.now()+400;
       if(event.type!=='pointercancel'){
         const next=gestureIndex(finished.start,finished.delta,finished.count),b=bounds(finished.section);
         const leaving=finished.touch&&finished.section===works&&((Math.round(finished.start)===0&&finished.delta<0)||(Math.round(finished.start)===finished.count-1&&finished.delta>0));
-        if(finished.section===practice)goToPractice(next);
-        else seek(leaving?(finished.delta>0?b.end+innerHeight*.65:b.start-innerHeight*.65):b.start+next/(finished.count-1)*(b.end-b.start));
+        seek(leaving?(finished.delta>0?b.end+innerHeight*.65:b.start-innerHeight*.65):b.start+next/(finished.count-1)*(b.end-b.start));
       }
     }
   }
@@ -182,6 +186,7 @@ export function createHomeMotion({onWork,onPractice}) {
   document.querySelector('.work-scrubber').addEventListener('click',event=>{const button=event.target.closest('[data-work-index]');if(button)goToWork(Number(button.dataset.workIndex));});
   document.querySelector('.quote-controls').addEventListener('click',event=>{const button=event.target.closest('[data-quote]');if(button)goToQuote(Number(button.dataset.quote));});
   preference.addEventListener('change',()=>{activeQuote=-1;stop();update();});
-  function stop(){clearPointed();cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);if(drag)release({pointerId:drag.id,type:'pointercancel'});}
-  return {update,goToWork,goToPractice,stop};
+  function stop(){document.querySelectorAll('.work-video').forEach(video=>video.remove());clearPointed();cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);if(drag)release({pointerId:drag.id,type:'pointercancel'});}
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else update();});
+  return {update,goToWork,stop};
 }

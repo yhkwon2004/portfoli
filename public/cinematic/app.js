@@ -1,9 +1,9 @@
-import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261003-studio';
-import { createScene } from './scene.js?v=20261003-studio';
-import { createHomeMotion } from './home-motion.js?v=20261003-studio';
+import { content, projects, awards, press, featured, cover, itemPath, filterProjects, youtubeId } from './content.js?v=20261003-archive';
+import { createScene } from './scene.js?v=20261003-archive';
+import { createHomeMotion } from './home-motion.js?v=20261003-archive';
 import { animatePageTransition } from './page-transition.js';
-import { institutions } from './media.js?v=20261003-studio';
-import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-studio';
+import { institutions } from './media.js?v=20261003-archive';
+import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-archive';
 
 const $ = selector => document.querySelector(selector);
 const text = (selector, value) => { $(selector).textContent = value; };
@@ -32,9 +32,10 @@ $('#quote-stage').innerHTML=content.quotes.map((quote,index)=>{
  return `<div class="quote-frame" aria-hidden="${index!==0}"><div class="quote-thought"><span class="eyebrow">PROBLEM INTO POSSIBILITY / 0${index+1}</span><p class="quote-line" aria-label="${e(quote.line.replaceAll('|',' '))}">${quote.line.split('|').map(line=>line.split(' ').map(word=>`<span class="quote-mask" aria-hidden="true"><span class="quote-word">${e(word)}</span></span>`).join(' ')).join('<br> ')}</p><p class="quote-note">${e(quote.note)}</p></div></div>`;
 }).join('');
 $('.quote-controls').innerHTML=content.quotes.map((quote,index)=>`<button data-quote="${index}" aria-label="문장 ${index+1}" aria-pressed="${index===0}"><span></span></button>`).join('');
-$('.mission-memory').innerHTML=featured.map((item,index)=>`<img src="${e(cover(item).thumb)}" alt="" style="--memory-delay:${index*1.8}s" loading="lazy">`).join('');
+$('.mission-memory').style.setProperty('--memory-duration',`${featured.length*1.8}s`);
+$('.mission-memory').innerHTML=featured.map((item,index)=>`<img src="${e(cover(item).src)}" alt="" style="--memory-delay:${index*1.8}s" loading="lazy">`).join('');
 $('.memory-toggle').addEventListener('click',event=>{const paused=event.currentTarget.getAttribute('aria-pressed')!=='true';event.currentTarget.setAttribute('aria-pressed',String(paused));event.currentTarget.textContent=paused?'PROJECT MEMORIES ▷':'PROJECT MEMORIES Ⅱ';home.classList.toggle('memory-paused',paused);});
-const logoHTML=item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${['AWS','전남대학교','캠틱종합기술원'].includes(item.name)?'logo-dark':''}"><img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy"><span>${e(item.name)}</span></a>`;
+const logoHTML=item=>`<a href="${e(item.url)}" target="_blank" rel="noopener noreferrer" class="institution-logo ${item.tone==='light'||['AWS','전남대학교','캠틱종합기술원'].includes(item.name)?'logo-dark':''}">${item.logo?`<img src="${e(item.logo)}" alt="${e(item.name)}" loading="lazy">`:`<div class="institution-wordmark" aria-hidden="true"><b>${e(item.wordmark)}</b><small>${e(item.caption)}</small></div>`}<span>${e(item.name)}</span></a>`;
 $('#institution-logos').innerHTML=[0,1].map(row=>{const logos=institutions.filter((_,index)=>index%2===row).map(logoHTML).join('');return `<div class="institution-logos"><div class="logo-group">${logos}</div><div class="logo-group" aria-hidden="true" inert>${logos}</div></div>`;}).join('');
 $('#email-link').href=`mailto:${content.email}`;
 $('#email-link').innerHTML=`${e(content.email)} <span>↗</span>`;
@@ -53,26 +54,21 @@ $('#contact-socials').querySelectorAll('a').forEach((link,index)=>{
 $('#home-stats').innerHTML=`<a href="works/"><b>${projects.length}</b><span>PROJECTS</span></a><a href="news/"><b>${awards.length}</b><span>AWARDS</span></a>`;
 $('#news-list').innerHTML=content.news.map(item=>`<a href="${item.target}"><time>${e(item.date)}</time><p>${e(item.title)}</p></a>`).join('');
 if($('#home-press'))$('#home-press').innerHTML=['huss-ai-2026','capstone-2025','innovation-league-2025'].map(id=>press.find(article=>article.id===id)).map(pressCard).join('');
-$('#work-track').innerHTML=featured.map((item,index)=>`<a class="work-card" href="${itemPath(item)}" aria-label="${e(item.title)} 프로젝트 자세히 보기">${visual(item,{eager:true})}<span class="card-label">${String(index+1).padStart(2,'0')} / ${e(item.category.toUpperCase())}</span><span class="card-open" aria-hidden="true">↗</span></a>`).join('');
+$('#work-track').innerHTML=featured.map((item,index)=>`<a class="work-card" ${item.id==='project-autonomous'?`data-preview-video="${youtubeId(item.videos[0].url)}" data-video-title="${e(item.videos[0].title)}"`:""} href="${itemPath(item)}" aria-label="${e(item.title)} 프로젝트 자세히 보기">${visual(item,{eager:true})}${item.id==='project-autonomous'?'<span class="work-video-label">▶ AIRSIM / AUTONOMOUS DRIVING</span>':''}<span class="card-label">${String(index+1).padStart(2,'0')} / ${e(item.category.toUpperCase())}</span><span class="card-open" aria-hidden="true">↗</span></a>`).join('');
 $('.work-scrubber').innerHTML=featured.map((item,index)=>`<button type="button" data-work-index="${index}" aria-label="${index+1}. ${e(item.title)}" aria-pressed="false"><span></span></button>`).join('');
 const recognition=['award-driveup','award-jeonju-startup-2025','award-gangneung'].map(id=>awards.find(item=>item.id===id));
-const awardPlaces=['대상.','최우수상.','대상.'],awardNames=['GOVERNOR','SME OFFICE','MAYOR'],awardProjects=['project-upcycle-jbmotors','project-coffee-box',null];
 const awardIssuers=['전북특별자치도지사상','전북지방중소벤처기업청장상','강릉시장상'];
-$('#practice-grid').innerHTML=recognition.map((item,index)=>`<button class="practice-tab" id="practice-tab-${index}" type="button" role="tab" aria-controls="practice-card-${index}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-practice="${index}"><span>0${index+1}</span><strong>${awardNames[index]}</strong></button>`).join('');
-$('#practice-panel').innerHTML=recognition.map((item,index)=>{
- const project=projects.find(project=>project.id===awardProjects[index]),institution=institutions.find(logo=>logo.name===(index===0?'전북현대모터스FC':'원광대학교'));
- return `<article class="practice-card" id="practice-card-${index}" data-award-id="${e(item.id)}" role="tabpanel" aria-labelledby="practice-tab-${index}" aria-hidden="${index!==0}"><div class="practice-card-header"><a class="practice-partner ${index===0?'is-crest':''}" href="${e(institution.url)}" target="_blank" rel="noopener noreferrer"><img src="${e(institution.logo)}" alt="${e(institution.name)}"><span>RECOGNITION / ${e(item.year.slice(0,4))}</span></a><span>0${index+1} — 03</span></div><a class="practice-object" href="${itemPath(item)}" aria-label="${e(item.title)} 원본 상장과 수상 기록">${visual(item,{full:true})}<span class="award-media-label">ORIGINAL CERTIFICATE / 0${index+1}</span><span class="practice-object-open" aria-hidden="true">↗</span></a><div class="practice-copy"><span class="eyebrow">${e(item.year)} / SELECTED RECOGNITION</span><p class="award-issuer">${awardIssuers[index]}</p><h3>${awardPlaces[index]}</h3><h4>${e(item.title)}</h4><p>${e(item.summary)}</p><div class="tags">${item.tags.map(tag=>`<span>${e(tag)}</span>`).join('')}</div><a class="practice-result" href="${itemPath(item)}"><span>AWARD RECORD</span>원본 상장과 수상 기록 보기 ↗</a><a class="practice-proof" href="${project?itemPath(project):'news/'}"><span><small>${project?'THE PROJECT BEHIND THE AWARD':'THE COMPLETE RECOGNITION ARCHIVE'}</small><strong>${project?e(project.title):`${awards.length}개 수상 기록 모두 보기`}</strong></span><b aria-hidden="true">↗</b></a></div></article>`;
+const awardNames=['Drive-UP 창업캠프','전주 청년 창업경진대회','근거기반 지역문제 해결 캠프'];
+text('#recognition-total',String(awards.length).padStart(2,'0'));
+$('#recognition-selected').innerHTML=recognition.map((item,index)=>`<a class="recognition-feature" data-award-id="${e(item.id)}" href="${itemPath(item)}"><div class="recognition-paper">${visual(item,{full:true})}</div><div class="recognition-caption"><span>0${index+1} / ${e(awardIssuers[index])}</span><h3>${index===1?'최우수상':'대상'}<b aria-hidden="true">↗</b></h3><p>${e(awardNames[index])}</p></div></a>`).join('');
+const awardHistory=[...awards].sort((a,b)=>b.year.localeCompare(a.year));
+const awardEvidence=item=>item.images.some(image=>image.role==='certificate')?'원본 상장':item.images.length?'수상 현장 사진':'수상 기록';
+$('#recognition-wall').innerHTML=awardHistory.filter(item=>cover(item)).map(item=>`<img src="${e(cover(item).thumb)}" alt="" loading="lazy">`).join('');
+$('#recognition-flight').innerHTML=awardHistory.map((item,index)=>`<div class="award-flight" data-award-id="${e(item.id)}"><div class="award-flight-paper">${visual(item)}</div><p>${e(item.year)} / ${e(item.title)}</p></div>`).join('');
+$('#award-years').innerHTML=[...new Set(awardHistory.map(item=>item.year.slice(0,4)))].map((year,index)=>{
+ const entries=awardHistory.filter(item=>item.year.startsWith(year));
+ return `<details class="award-year" ${index===0?'open':''}><summary><span>${e(year)}</span><span>${String(entries.length).padStart(2,'0')} RECORDS <b aria-hidden="true">＋</b></span></summary><div class="award-records">${entries.map(item=>`<a class="award-record" data-award-id="${e(item.id)}" href="${itemPath(item)}"><div class="award-record-image">${visual(item)}</div><div><span class="eyebrow">${e(item.year)} / ${awardEvidence(item)}</span><h3>${e(item.title)}</h3><p>${e(item.summary)}</p><span class="award-record-more">수상 기록 자세히 보기 ↗</span></div></a>`).join('')}</div></details>`;
 }).join('');
-function selectPractice(index){
- document.querySelectorAll('[data-practice]').forEach((button,i)=>{button.setAttribute('aria-selected',String(i===index));button.tabIndex=i===index?0:-1;});
- document.querySelectorAll('.practice-card').forEach((card,i)=>{card.setAttribute('aria-hidden',String(i!==index));card.inert=i!==index;});
- text('#practice-count',`0${index+1} / 03`);$('#previous-practice').disabled=index===0;$('#next-practice').disabled=index===recognition.length-1;
-}
-selectPractice(0);
-$('#previous-practice').addEventListener('click',()=>homeMotion.goToPractice(Number($('.practice-tab[aria-selected="true"]').dataset.practice)-1));
-$('#next-practice').addEventListener('click',()=>homeMotion.goToPractice(Number($('.practice-tab[aria-selected="true"]').dataset.practice)+1));
-$('#practice-grid').addEventListener('click',event=>{const button=event.target.closest('[data-practice]');if(button)homeMotion.goToPractice(Number(button.dataset.practice));});
-$('#practice-grid').addEventListener('keydown',event=>{if(!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const i=Number(event.target.dataset.practice),next=event.key==='Home'?0:event.key==='End'?2:(i+(['ArrowDown','ArrowRight'].includes(event.key)?1:2))%3;homeMotion.goToPractice(next);document.querySelectorAll('[data-practice]')[next].focus();});
 $('.section-rail [data-section="about"]').href='./#about';
 $('.footer-nav a').href='works/';
 const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.08});
@@ -167,7 +163,7 @@ document.addEventListener('click',event=>{
   navigate(url);
 });
 
-const homeMotion=createHomeMotion({onPractice:selectPractice,onWork(index){
+const homeMotion=createHomeMotion({onWork(index){
  activeWork=index;const item=featured[index];
  text('#active-work-title',item.title);$('#active-work-subtitle').innerHTML=item.tags.map(tag=>`<span>${e(tag)}</span>`).join('');text('#active-work-type',`${item.year} / ${item.category.toUpperCase()}`);$('#active-work-title').href=itemPath(item);
  document.querySelectorAll('[data-work-index]').forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));

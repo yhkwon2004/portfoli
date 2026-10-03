@@ -23,7 +23,14 @@ export const institutions = [
  {name:'캠틱종합기술원',url:'http://www.camtic.co.kr/camtic',logo:'assets/logos/camtic.png'},
  {name:'전북현대모터스FC',url:'https://hyundai-motorsfc.com/',logo:'assets/logos/jbfc.png'},
  {name:'GIST',url:'https://www.gist.ac.kr/',logo:'assets/logos/gist.png'},
- {name:'전남대학교',url:'https://www.jnu.ac.kr/',logo:'assets/logos/jnu.png'}
+ {name:'전남대학교',url:'https://www.jnu.ac.kr/',logo:'assets/logos/jnu.png'},
+ {name:'HUSS · 글로벌 K-컬처 사업단',url:'https://globalk-culture.wku.ac.kr/',logo:'assets/logos/huss.png',tone:'light'},
+ {name:'COSS · 첨단분야 혁신융합대학',url:'https://coss.ac.kr/',logo:'assets/logos/coss.png'},
+ {name:'공학교육혁신센터',url:'https://www.wku.ac.kr/about/school-info/organization.html',wordmark:'ENGINEERING',caption:'EDUCATION INNOVATION'},
+ {name:'한국연구재단',url:'https://www.nrf.re.kr/',wordmark:'NRF',caption:'NATIONAL RESEARCH FOUNDATION'},
+ {name:'RISE 사업단',url:'https://rise.wku.ac.kr/',wordmark:'RISE',caption:'REGIONAL INNOVATION'},
+ {name:'원광대학교 앵커사업단',url:'https://rise.wku.ac.kr/',logo:'assets/logos/anchor.png',tone:'light'},
+ {name:'SW중심대학사업단',url:'https://www.wku.ac.kr/about/school-info/organization.html',wordmark:'SW UNIVERSITY',caption:'WONKWANG UNIVERSITY'}
 ];
 
 // Logo sources (unaltered files, or the AWS homepage's inline SVG):
@@ -36,3 +43,8 @@ export const institutions = [
 // JBFC: https://hyundai-motorsfc.com/img/logo.533b784e.png
 // GIST: https://www.gist.ac.kr/en/img/common/logo.png
 // JNU: https://www.jnu.ac.kr/images/common/logo.png
+
+// HUSS: https://cmsorgan.wku.ac.kr/globalk-culture/wp-content/uploads/sites/122/2024/06/자산-36@4x-8-1024x128.png
+// COSS: https://coss.ac.kr/intro_img/footer_logo.png
+// ANCHOR: https://cmsorgan.wku.ac.kr/rise/wp-content/uploads/sites/139/2026/08/7.원광대학교-앵커사업단-로고_가로형_흰바탕.png
+// Remaining departments use typeset names, not invented official emblems.

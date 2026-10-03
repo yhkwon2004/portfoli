@@ -10,8 +10,8 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23060609'/%3E%3Cpath d='M7 25L16 7l9 18h-5l-4-9-4 9z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="pages.css?v=20260928-transition">
-  <link rel="stylesheet" href="detail-updates.css?v=20261003-studio">
-  <link rel="stylesheet" href="home-motion.css?v=20261003-studio">
+  <link rel="stylesheet" href="detail-updates.css?v=20261003-archive">
+  <link rel="stylesheet" href="home-motion.css?v=20261003-archive">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
 <body class="booting">
@@ -56,7 +56,7 @@
         <div class="section-topline"><span>01 / SELECTED WORKS</span><span class="work-count">01 — 06</span></div>
         <h2 id="works-title" class="works-title sr-only">Selected Works.</h2><span class="work-direction" aria-hidden="true">DRAG TO EXPLORE / ↔</span>
         <div class="work-stage"><div class="work-track" id="work-track"></div></div>
-        <div class="work-bottom"><div><span class="eyebrow" id="active-work-type"></span><h3><a id="active-work-title" href="works/"></a></h3><p id="active-work-subtitle"></p></div><div class="work-controls"><button id="previous-work" aria-label="이전 프로젝트">←</button><span id="work-index">01 / 06</span><button id="next-work" aria-label="다음 프로젝트">→</button></div></div>
+        <div class="work-bottom"><div><span class="eyebrow" id="active-work-type"></span><h3><a id="active-work-title" href="works/"></a></h3><p id="active-work-subtitle"></p></div><div class="work-controls"><button id="previous-work" aria-label="이전 프로젝트">←</button><span id="work-index">01 / 05</span><button id="next-work" aria-label="다음 프로젝트">→</button></div></div>
         <div class="work-scrubber" role="group" aria-label="대표 프로젝트 선택"></div><a class="all-works-link" href="works/">More Works <span>↗</span></a>
       </div>
     </section>
@@ -71,11 +71,15 @@
       <div class="chapter-word" aria-hidden="true">Vision</div><div class="hourglass-lines" aria-hidden="true"><i></i><i></i><span></span></div><div class="quote-stage" id="quote-stage"></div>
       <div class="quote-footer"><span id="quote-count">01 / 03</span><div class="quote-controls" role="group" aria-label="문장 선택"></div><span>DRAG / SCROLL TO CONTINUE ↔</span></div>
     </div></section>
-    <section id="practice" class="practice" aria-labelledby="practice-title"><div class="practice-sticky" data-drag-scene>
-      <div class="section-topline"><span>04 / SELECTED RECOGNITION</span><span>IDEAS INTO ACHIEVEMENTS</span></div>
-      <div class="practice-heading"><h2 id="practice-title" class="practice-title">Recognition</h2><p>문제에서 시작한 아이디어가<br>성과로 이어진 순간들.</p></div>
-      <div class="practice-lab"><div class="practice-tabs" id="practice-grid" role="tablist" aria-label="대표 수상 기록"></div><div id="practice-panel" class="practice-panel" role="group" aria-label="프로젝트와 연결된 수상 포트폴리오"></div><div class="practice-controls"><button id="previous-practice" aria-label="이전 수상 기록">←</button><span id="practice-count">01 / 03</span><button id="next-practice" aria-label="다음 수상 기록">→</button></div></div></div>
-    </section>
+    <section id="practice" class="recognition" aria-labelledby="practice-title"><div class="recognition-sticky">
+      <header class="recognition-heading"><div><p class="eyebrow">04 / RECOGNITION</p><h2 id="practice-title">Every effort.<br><em>A lasting mark.</em></h2></div><a class="recognition-archive-link" href="#award-archive"><span id="recognition-total"></span> ALL RECORDS ↗</a></header>
+      <div class="recognition-wall" id="recognition-wall" aria-hidden="true" inert></div>
+      <div class="recognition-selected" id="recognition-selected" aria-label="대표 수상 3개"></div>
+      <div class="recognition-flight" id="recognition-flight" aria-hidden="true" inert></div>
+      <div class="recognition-end"><span class="eyebrow">THE JOURNEY CONTINUES</span><h3>쌓아온 경험이,<br>다음 가능성으로.</h3><a href="#award-archive" class="underlined-link">상장과 수상 기록 모두 보기 ↓</a></div>
+      <div class="recognition-footer"><p>문제를 발견하고, 만들고, 증명한 순간들.</p><span>SCROLL THROUGH THE YEARS ↓</span><span id="recognition-year">2023 — 2026</span></div>
+    </div></section>
+    <section class="award-archive" id="award-archive" aria-labelledby="award-archive-title"><header><div><p class="eyebrow">THE COMPLETE ARCHIVE</p><h2 id="award-archive-title">상장으로 남은 기록.</h2></div><p>수상 기록을 선택하면 해당 상장과<br>활동 내용을 자세히 볼 수 있습니다.</p></header><div id="award-years"></div></section>
     <section class="institution-section" aria-labelledby="institution-title"><div><p class="eyebrow">LEARNING / MAKING / CONNECTIONS</p><h2 id="institution-title">함께 배우고, 함께 만든 경험.</h2><p>학업과 프로젝트, 교육과 창업으로 만난 기관들.</p></div><div class="institution-marquee"><div class="institution-stack" id="institution-logos"></div></div></section>
     <section class="home-journal" id="journal" aria-labelledby="journal-title"><header class="journal-heading"><div><p class="eyebrow">FIELD NOTES / IN THE PRESS</p><h2 id="journal-title">Beyond<br><em>the screen.</em></h2></div><p>화면 밖에서 이어지는 이야기.<br>실제 현장의 기록과 언론이 전한 소식.</p></header><div id="home-press" class="press-grid"></div><a class="underlined-link" href="news/#press">All stories ↗</a></section>
     <section id="contact" class="contact" aria-labelledby="contact-title">
@@ -88,6 +92,6 @@
   <dialog id="lightbox" class="lightbox" aria-label="프로젝트 이미지 확대 보기"><button class="lightbox-close" aria-label="이미지 닫기">×</button><button class="lightbox-prev" aria-label="이전 이미지">←</button><figure><img alt=""><figcaption></figcaption></figure><button class="lightbox-next" aria-label="다음 이미지">→</button><span class="lightbox-count"></span></dialog>
   <p id="announcement" class="sr-only" aria-live="polite"></p>
   <noscript><p class="noscript">이 포트폴리오의 인터랙션을 보려면 JavaScript를 켜 주세요.</p></noscript>
-  <script type="module" src="app.js?v=20261003-studio"></script>
+  <script type="module" src="app.js?v=20261003-archive"></script>
 </body>
 </html>

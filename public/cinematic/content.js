@@ -1,8 +1,8 @@
-import { records } from './data.js?v=20261003-studio';
-import { pressImages } from './media.js?v=20261003-studio';
+import { records } from './data.js?v=20261003-archive';
+import { pressImages } from './media.js?v=20261003-archive';
 // 개인 소개와 대표 프로젝트 순서는 여기서, 전체 프로젝트는 data.js에서 수정합니다.
 export { records };
-export const featuredIds = ['project-factline', 'project-handmade-car', 'project-autonomous', 'project-iot-ring', 'project-self-powered-dehumidifier', 'project-upcycle'];
+export const featuredIds = ['project-iot-ring', 'project-handmade-car', 'project-ai-evidence', 'project-autonomous', 'project-upcycle-jbmotors'];
 export const projects = records.filter(item => item.type === 'project').sort((a,b)=>(featuredIds.indexOf(a.id)+1 || featuredIds.length+1)-(featuredIds.indexOf(b.id)+1 || featuredIds.length+1));
 export const awards = records.filter(item => item.type === 'award');
 export const categories = ['All', 'Mobility', 'Hardware', 'AI & Data', 'Software', 'Product'];
