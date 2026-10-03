@@ -1,9 +1,9 @@
-import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261003-flow';
-import { createScene } from './scene.js?v=20261003-flow';
-import { createHomeMotion } from './home-motion.js?v=20261003-flow';
+import { content, projects, awards, press, featured, cover, itemPath, filterProjects } from './content.js?v=20261003-studio';
+import { createScene } from './scene.js?v=20261003-studio';
+import { createHomeMotion } from './home-motion.js?v=20261003-studio';
 import { animatePageTransition } from './page-transition.js';
-import { institutions } from './media.js?v=20261003-flow';
-import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-flow';
+import { institutions } from './media.js?v=20261003-studio';
+import { resolvePage, projectCard, pressCard, photoSource, emptyResults, escapeHTML, externalLinks, visual } from './pages.js?v=20261003-studio';
 
 const $ = selector => document.querySelector(selector);
 const text = (selector, value) => { $(selector).textContent = value; };
@@ -78,7 +78,7 @@ $('.footer-nav a').href='works/';
 const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.08});
 const observeReveals=()=>{
   observer.disconnect();
-  document.querySelectorAll('.project-card,.detail-copy section,.gallery-item,.profile-row,.press-card,.field-photo,.activity-entry,.related-card').forEach(element=>element.classList.add('reveal'));
+  document.querySelectorAll('.project-card,.detail-copy section,.gallery-item,.profile-row,.press-card,.field-photo,.activity-entry,.related-card,#about-title,.chapter-word,.practice-title,.journal-heading').forEach(element=>element.classList.add('reveal'));
   document.querySelectorAll('.reveal:not(.visible)').forEach(element=>reducedMotion?element.classList.add('visible'):observer.observe(element));
 };
 observeReveals();

@@ -27,9 +27,24 @@ export function awardPose(distance) {
 export function createHomeMotion({onWork,onPractice}) {
   const home=document.querySelector('#home-page'),works=document.querySelector('#works');
   const cards=[...document.querySelectorAll('.work-card')],vision=document.querySelector('#vision'),contact=document.querySelector('#contact');
-  const quotes=[...document.querySelectorAll('.quote-frame')],practice=document.querySelector('#practice'),preference=matchMedia('(prefers-reduced-motion: reduce)');
+  const quotes=[...document.querySelectorAll('.quote-frame')],practice=document.querySelector('#practice'),preference=matchMedia('(prefers-reduced-motion: reduce)'),precision=matchMedia('(hover: hover) and (pointer: fine)');
   const practiceCount=document.querySelectorAll('[data-practice]').length;
   const practiceCards=[...document.querySelectorAll('.practice-card')];
+  let pointed=null,pointedBounds=null;
+  function clearPointed(){
+    if(pointed){pointed.classList.remove('is-pointed');pointed.style.setProperty('--tilt-x','0deg');pointed.style.setProperty('--tilt-y','0deg');}
+    pointed=pointedBounds=null;
+  }
+  home.addEventListener('pointermove',event=>{
+    if(preference.matches||!precision.matches||event.pointerType!=='mouse'||drag){clearPointed();return;}
+    const surface=event.target.closest('.work-card[tabindex="0"],.practice-card[aria-hidden="false"] .practice-object');
+    if(surface!==pointed){clearPointed();pointed=surface;pointedBounds=surface?.getBoundingClientRect();}
+    if(!pointed)return;
+    const x=clamp((event.clientX-pointedBounds.left)/pointedBounds.width,0,1),y=clamp((event.clientY-pointedBounds.top)/pointedBounds.height,0,1),angle=pointed.classList.contains('work-card')?5:3;
+    pointed.style.setProperty('--tilt-x',`${(y-.5)*-angle*2}deg`);pointed.style.setProperty('--tilt-y',`${(x-.5)*angle*2}deg`);
+    pointed.style.setProperty('--light-x',`${x*100}%`);pointed.style.setProperty('--light-y',`${y*100}%`);pointed.classList.add('is-pointed');
+  },{passive:true});
+  home.addEventListener('pointerleave',clearPointed);addEventListener('blur',clearPointed);precision.addEventListener('change',clearPointed);
   let position=0,servicePosition=0,active=-1,activePractice=0,activeQuote=-1,manualPractice=0,raf=0,lastTime=0,drag=null,clickBlockedUntil=0,snapTimer=0,seekFrame=0;
   const wheel={last:-Infinity,until:0,total:0,used:false};
   const bounds=element=>({start:element.offsetTop,end:element.offsetTop+Math.max(1,element.offsetHeight-innerHeight)});
@@ -45,6 +60,7 @@ export function createHomeMotion({onWork,onPractice}) {
   function goToWork(index){const b=bounds(works);seek(b.start+clamp(index,0,cards.length-1)/(cards.length-1)*(b.end-b.start));}
   function goToQuote(index){const b=bounds(vision);seek(b.start+clamp(index,0,quotes.length-1)/(quotes.length-1)*(b.end-b.start));}
   function goToPractice(index){
+    clearPointed();
     index=clamp(index,0,practiceCount-1);
     if(innerHeight<=800){manualPractice=index;update();return;}
     const b=bounds(practice);seek(b.start+clamp(index,0,practiceCount-1)/(practiceCount-1)*(b.end-b.start));
@@ -60,7 +76,7 @@ export function createHomeMotion({onWork,onPractice}) {
     works.style.setProperty('--work-entry',String(preference.matches?1:clamp(1-rect.top/innerHeight)));
     cards.forEach((card,index)=>{
       const d=index-position,p=workPose(d,innerWidth);
-      card.style.transform=preference.matches?`translate3d(calc(-50% + ${d*innerWidth*.9}px),-50%,0)`:`translate3d(calc(-50% + ${p.x}px),calc(-50% + ${p.y}px),${p.z}px) rotateY(${p.rotation}deg) scale(${p.scale})`;
+      card.style.transform=preference.matches?`translate3d(calc(-50% + ${d*innerWidth*.9}px),-50%,0)`:`translate3d(calc(-50% + ${p.x}px),calc(-50% + ${p.y}px),${p.z}px) rotateY(${p.rotation}deg) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(${p.scale})`;
       card.style.opacity=String(p.opacity);card.style.zIndex=String(10-Math.round(Math.abs(d)*2));card.tabIndex=index===selected?0:-1;
       card.setAttribute('aria-hidden',String(Math.abs(d)>1.9));card.style.pointerEvents=Math.abs(d)>1.9?'none':'';
     });
@@ -91,7 +107,7 @@ export function createHomeMotion({onWork,onPractice}) {
       const d=index-servicePosition,p=awardPose(d),certificate=card.querySelector('.practice-object');
       card.style.zIndex=String(10-Math.round(Math.abs(d)*2));
       card.style.visibility=Math.abs(d)>2.1||(preference.matches&&index!==serviceIndex)?'hidden':'visible';
-      certificate.style.transform=preference.matches?'none':`translate3d(${p.x}%,${p.y}%,${-Math.abs(d)*60}px) rotateZ(${p.rotation}deg) scale(${p.scale})`;
+      certificate.style.transform=preference.matches?'none':`translate3d(${p.x}%,${p.y}%,${-Math.abs(d)*60}px) rotateZ(${p.rotation}deg) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(${p.scale})`;
       certificate.style.opacity=String(preference.matches?1:p.opacity);
     });
     if(position!==target||servicePosition!==serviceTarget)raf=requestAnimationFrame(render);
@@ -101,7 +117,7 @@ export function createHomeMotion({onWork,onPractice}) {
     clearTimeout(snapTimer);if(preference.matches||home.hidden||drag||seekFrame)return;
     snapTimer=setTimeout(()=>{if(home.hidden||drag||seekFrame)return;for(const [section,count,go] of [[works,cards.length,goToWork],[practice,practiceCount,goToPractice]]){const b=bounds(section);if(section===practice&&innerHeight<=800)continue;if(scrollY>b.start+12&&scrollY<b.end-12){const p=fraction(section)*(count-1);if(Math.abs(p-Math.round(p))>.012)go(Math.round(p));break;}}},320);
   }
-  addEventListener('scroll',()=>{update();scheduleSnap();},{passive:true});addEventListener('resize',update);
+  addEventListener('scroll',()=>{clearPointed();update();scheduleSnap();},{passive:true});addEventListener('resize',()=>{clearPointed();update();});
   addEventListener('wheel',event=>{
     if(home.hidden||event.ctrlKey||event.target.closest('dialog,input,select,textarea'))return;
     const b=bounds(works),delta=(Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY)*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
@@ -121,6 +137,7 @@ export function createHomeMotion({onWork,onPractice}) {
     area.addEventListener('dragstart',event=>event.preventDefault());
     area.addEventListener('pointerdown',event=>{
       if(!event.isPrimary||event.button!==0||event.target.closest('button,input,select'))return;
+      clearPointed();
       if(area.closest('section')===vision&&innerHeight<=650)return;
       const section=area.closest('section'),rect=section.getBoundingClientRect();
       if(!(section===practice&&innerHeight<=800)&&(rect.top>1||rect.bottom<innerHeight-1))return;
@@ -165,6 +182,6 @@ export function createHomeMotion({onWork,onPractice}) {
   document.querySelector('.work-scrubber').addEventListener('click',event=>{const button=event.target.closest('[data-work-index]');if(button)goToWork(Number(button.dataset.workIndex));});
   document.querySelector('.quote-controls').addEventListener('click',event=>{const button=event.target.closest('[data-quote]');if(button)goToQuote(Number(button.dataset.quote));});
   preference.addEventListener('change',()=>{activeQuote=-1;stop();update();});
-  function stop(){cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);if(drag)release({pointerId:drag.id,type:'pointercancel'});}
+  function stop(){clearPointed();cancelAnimationFrame(seekFrame);seekFrame=0;clearTimeout(snapTimer);if(drag)release({pointerId:drag.id,type:'pointercancel'});}
   return {update,goToWork,goToPractice,stop};
 }
